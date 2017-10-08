@@ -16,3 +16,11 @@ use Illuminate\Http\Request;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::post("/upload", function(Request $request) {
+    $requestData = $request->all();
+    $data = $requestData["data"];
+    // Completely insecure :)
+    $data->move("/tmp", $requestData["fname"]);
+    return "We did it!";
+});

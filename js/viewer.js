@@ -41,7 +41,8 @@ Viewer = {
         dc.strokeStyle = "black";
         dc.moveTo(
             0,
-            height - (row[0] - dataMin) * heightScale)
+            height - (row[0] - dataMin) * heightScale
+        );
         for (var i = 1; i < row.length; ++i) {
             dc.lineTo(
                 i * widthScale,

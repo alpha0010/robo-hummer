@@ -1,5 +1,5 @@
 #include <iostream>
-#include <vector>
+#include <memory>
 #include <marsyas/system/MarSystemManager.h>
 
 int main(int argc, const char** argv)
@@ -14,23 +14,18 @@ int main(int argc, const char** argv)
 
     Marsyas::MarSystemManager mng;
 
-    Marsyas::MarSystem* net = mng.create("Series", "net");
+    std::unique_ptr<Marsyas::MarSystem> net(mng.create("Series", "net"));
 
     net->addMarSystem(mng.create("SoundFileSource", "src"));
     net->addMarSystem(mng.create("Stereo2Mono", "s2m"));
-    net->addMarSystem(mng.create("ShiftInput", "si"));
-    net->addMarSystem(mng.create("NormMaxMin", "norm"));
-    net->addMarSystem(mng.create("Windowing", "win"));
-    net->addMarSystem(mng.create("Spectrum", "spk"));
-    net->addMarSystem(mng.create("PowerSpectrum", "pspk"));
+    // Composite from MarSystemManager.cpp
+    net->addMarSystem(mng.create("PowerSpectrumNet", "pspk"));
+    net->addMarSystem(mng.create("MFCC", "mel"));
 
     net->updControl("SoundFileSource/src/mrs_string/filename", filename);
     net->updControl("SoundFileSource/src/mrs_natural/inSamples", 256);
-    net->updControl("ShiftInput/si/mrs_natural/winSize", 2048);
-    net->updControl("NormMaxMin/norm/mrs_string/mode", "twopass");
-    net->updControl("PowerSpectrum/pspk/mrs_string/spectrumType", "decibels");
-
-    std::vector<double> theStuff;
+    net->updControl("PowerSpectrumNet/pspk/mrs_natural/winSize", 2048);
+    net->updControl("MFCC/mel/mrs_natural/coefficients", 16);
 
     while (net->getctrl("SoundFileSource/src/mrs_bool/hasData")
               ->to<Marsyas::mrs_bool>())
@@ -52,8 +47,6 @@ int main(int argc, const char** argv)
         }
         std::cout << std::endl;
     }
-
-    delete net;
 
     return 0;
 }

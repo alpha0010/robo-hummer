@@ -1,7 +1,7 @@
 # Config.
 
-SRCS = src/main.cpp
-OUT = analyzer
+SRCS = marsyasTest.cpp
+OUT = marsyasTest
 
 OBJDIR = obj
 OUTDIR = bin
@@ -11,11 +11,10 @@ LD = g++
 
 MARSYAS_INSTALL = /home/alpha/dev/marsyas/build/install-spot
 
-INC = -I${MARSYAS_INSTALL}/include -I/usr/include/evhtp
+INC = -I${MARSYAS_INSTALL}/include
 CFLAGS = -Wall -Wextra -std=c++11 -O2
-LIB = -lmarsyas -levent -levhtp
-LDFLAGS = -s -Wl,--no-undefined -Wl,-rpath=${MARSYAS_INSTALL}/lib \
-          -L${MARSYAS_INSTALL}/lib
+LIB = -lmarsyas
+LDFLAGS = -s -Wl,--no-undefined -L${MARSYAS_INSTALL}/lib
 
 
 # Rules.
@@ -35,7 +34,7 @@ clean:
 
 output_dirs:
 	@test -d $(OUTDIR) || { mkdir -p $(OUTDIR); echo mkdir $(OUTDIR); }
-	@test -d $(OBJDIR)/src || { mkdir -p $(OBJDIR)/src; echo mkdir $(OBJDIR); }
+	@test -d $(OBJDIR) || { mkdir -p $(OBJDIR); echo mkdir $(OBJDIR); }
 
 $(OUTDIR)/$(OUT): $(OBJS)
 	$(LD) -fPIC -o $(OUTDIR)/$(OUT) $(OBJS) $(LDFLAGS) $(LIB)

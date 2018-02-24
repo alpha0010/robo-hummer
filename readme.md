@@ -7,7 +7,4 @@
 
 --------------------------------------
 
-    pip install librosa
-    pip install matplotlib
-    pip install IPython
-    apt-get install python-tk
+    apt-get install libevhtp libevent-dev libssl-dev

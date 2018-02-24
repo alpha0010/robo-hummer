@@ -1,6 +1,8 @@
 #include <evhtp.h>
 #include <iostream>
-#include <string>
+#include <regex>
+
+#include "analyzer.h"
 
 int main(int argc, const char** argv)
 {
@@ -10,23 +12,36 @@ int main(int argc, const char** argv)
     // Process.
     evhtp_set_glob_cb(
         htp,
-        "/analyze/*",
+        "/analyze/*.ogg",
         [](evhtp_request_t* req, void* data) {
             evhtp_headers_add_header(
                 req->headers_out,
                 evhtp_header_new("Content-Type", "text/csv", 0, 0)
             );
 
-            // TODO: Create actual stuff.
-            std::string theStuff(req->uri->path->full);
+            std::string features;
 
-            char* csvBuff = new char[theStuff.size()];
-            theStuff.copy(csvBuff, theStuff.size());
+            std::regex nameExtractor("^/analyze/(([a-z0-9]+/)*[a-z0-9]+\\.ogg)$");
+            std::cmatch matches;
+            if (std::regex_match(req->uri->path->full, matches, nameExtractor))
+            {
+                Analyzer analyzer(matches[1]);
+                features = analyzer.getFeatues();
+            }
+
+            if (features.empty())
+            {
+                // TODO: Handle match failure better.
+                features = "Uh oh...";
+            }
+
+            char* csvBuff = new char[features.size()];
+            features.copy(csvBuff, features.size());
 
             evbuffer_add_reference(
                 req->buffer_out,
                 csvBuff,
-                theStuff.size(),
+                features.size(),
                 [](const void* charBuffer, size_t datLen, void* extra) {
                     delete (char*)charBuffer;
                 },
@@ -65,10 +80,10 @@ int main(int argc, const char** argv)
             );
             evhtp_send_reply(req, EVHTP_RES_OK);
 
-            timeval oneSec;
-            oneSec.tv_usec = 0;
-            oneSec.tv_sec  = 1;
-            event_base_loopexit((evbase_t*)data, &oneSec);
+            timeval delay;
+            delay.tv_usec = 100000;
+            delay.tv_sec  = 0;
+            event_base_loopexit((evbase_t*)data, &delay);
         },
         evbase
     );

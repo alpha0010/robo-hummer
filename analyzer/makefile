@@ -1,6 +1,6 @@
 # Config.
 
-SRCS = src/main.cpp
+SRCS = src/main.cpp src/analyzer.cpp
 OUT = analyzer
 
 OBJDIR = obj
@@ -35,6 +35,7 @@ clean:
 
 output_dirs:
 	@test -d $(OUTDIR) || { mkdir -p $(OUTDIR); echo mkdir $(OUTDIR); }
+	@test -e $(OUTDIR)/data || { ln -s `pwd`/../data bin/data; echo ln -s `pwd`/../data bin/data; }
 	@test -d $(OBJDIR)/src || { mkdir -p $(OBJDIR)/src; echo mkdir $(OBJDIR); }
 
 $(OUTDIR)/$(OUT): $(OBJS)

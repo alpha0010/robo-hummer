@@ -8,9 +8,9 @@ class Router;
 
 struct Request
 {
-    Request(evhtp_request_t* _req, Router* _router) :
+    Request(Router* _router, const char* _path) :
         router(_router),
-        path(_req->uri->path->full)
+        path(_path)
     {}
 
     Router* router;

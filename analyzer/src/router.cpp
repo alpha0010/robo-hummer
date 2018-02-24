@@ -30,7 +30,7 @@ void Router::serve(const char* addr, uint16_t port, int backlog)
 
 Request Router::makeRequest(evhtp_request_t* req)
 {
-    return Request(req, this);
+    return Request(this, req->uri->path->full);
 }
 
 void Router::sendReply(evhtp_request_t* req, const Response& response)

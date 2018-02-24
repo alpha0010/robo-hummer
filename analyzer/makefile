@@ -35,7 +35,7 @@ clean:
 
 output_dirs:
 	@test -d $(OUTDIR) || { mkdir -p $(OUTDIR); echo mkdir $(OUTDIR); }
-	@test -e $(OUTDIR)/data || { ln -s `pwd`/../data bin/data; echo ln -s `pwd`/../data bin/data; }
+	@test -e $(OUTDIR)/data || { ln -s `pwd`/../data $(OUTDIR)/data; echo ln -s `pwd`/../data $(OUTDIR)/data; }
 	@test -d $(OBJDIR)/src || { mkdir -p $(OBJDIR)/src; echo mkdir $(OBJDIR); }
 
 $(OUTDIR)/$(OUT): $(OBJS)

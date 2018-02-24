@@ -1,9 +1,34 @@
-#include "analyzer.h"
+#include "analyzehandler.h"
 
 #include <marsyas/system/MarSystemManager.h>
 #include <memory>
+#include <regex>
 
-std::string Analyzer::getFeatues()
+Response AnalyzeHandler::handle(Request request)
+{
+    std::string features;
+
+    std::regex nameExtractor("^/analyze/(([a-z0-9]+/)*[a-z0-9]+\\.ogg)$");
+    std::cmatch matches;
+    if (std::regex_match(request.path, matches, nameExtractor))
+    {
+        features = getFeatues(matches[1]);
+    }
+
+    if (features.empty())
+    {
+        // TODO: Handle failure better.
+        features = "Uh oh...";
+    }
+
+    Response response;
+    response.body = features;
+    response.contentType = ContentType::csv;
+
+    return response;
+}
+
+std::string AnalyzeHandler::getFeatues(std::string file)
 {
     Marsyas::MarSystemManager mng;
 
@@ -15,7 +40,7 @@ std::string Analyzer::getFeatues()
     net->addMarSystem(mng.create("PowerSpectrumNet", "pspk"));
     net->addMarSystem(mng.create("MFCC", "mel"));
 
-    net->updControl("SoundFileSource/src/mrs_string/filename", m_file);
+    net->updControl("SoundFileSource/src/mrs_string/filename", file);
     net->updControl("SoundFileSource/src/mrs_natural/inSamples", 256);
     net->updControl("PowerSpectrumNet/pspk/mrs_natural/winSize", 2048);
     net->updControl("MFCC/mel/mrs_natural/coefficients", 16);

@@ -1,6 +1,6 @@
 # Config.
 
-SRCS = src/main.cpp src/analyzer.cpp
+SRCS := $(wildcard src/*.cpp)
 OUT = analyzer
 
 OBJDIR = obj

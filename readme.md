@@ -7,4 +7,4 @@
 
 --------------------------------------
 
-    apt-get install libevhtp libevent-dev libssl-dev
+    apt-get install libevhtp-dev libevent-dev libssl-dev

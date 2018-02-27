@@ -6,6 +6,18 @@
 class ShutdownHandler
 {
     public:
+        /**
+         * @brief
+         *  Handle a shutdown request.
+         *
+         * Calling this will initiate shutdown of the server.
+         *
+         * @param request
+         *  The request.
+         *
+         * @return
+         *  Acknowledgement of request.
+         */
         Response handle(Request request);
 };
 

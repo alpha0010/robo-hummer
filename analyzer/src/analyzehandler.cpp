@@ -8,6 +8,7 @@ Response AnalyzeHandler::handle(Request request)
 {
     std::string features;
 
+    // Basic url validation to prevent root escape.
     std::regex nameExtractor("^/analyze/(([a-z0-9]+/)*[a-z0-9]+\\.ogg)$");
     std::cmatch matches;
     if (std::regex_match(request.path, matches, nameExtractor))
@@ -30,6 +31,7 @@ Response AnalyzeHandler::handle(Request request)
 
 std::string AnalyzeHandler::getFeatues(std::string file)
 {
+    // Build the analyzer.
     Marsyas::MarSystemManager mng;
 
     std::unique_ptr<Marsyas::MarSystem> net(mng.create("Series", "net"));
@@ -45,6 +47,7 @@ std::string AnalyzeHandler::getFeatues(std::string file)
     net->updControl("PowerSpectrumNet/pspk/mrs_natural/winSize", 2048);
     net->updControl("MFCC/mel/mrs_natural/coefficients", 16);
 
+    // Extract features.
     std::ostringstream features;
 
     while (net->getctrl("SoundFileSource/src/mrs_bool/hasData")

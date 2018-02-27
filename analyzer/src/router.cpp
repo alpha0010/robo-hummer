@@ -35,6 +35,7 @@ Request Router::makeRequest(evhtp_request_t* req)
 
 void Router::sendReply(evhtp_request_t* req, const Response& response)
 {
+    // Add headers.
     switch (response.contentType)
     {
         case ContentType::csv:
@@ -55,6 +56,7 @@ void Router::sendReply(evhtp_request_t* req, const Response& response)
             break;
     }
 
+    // Allocate and bind response buffer.
     char* buffer = new char[response.body.size()];
     response.body.copy(buffer, response.body.size());
 
@@ -68,5 +70,6 @@ void Router::sendReply(evhtp_request_t* req, const Response& response)
         nullptr
     );
 
+    // Send.
     evhtp_send_reply(req, EVHTP_RES_OK);
 }

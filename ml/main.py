@@ -4,31 +4,49 @@ import tensorflow as tf
 import urllib2
 
 def main():
+    model = train()
+    #saver = tf.train.Saver()
+    #with tf.Session() as sess:
+    #tf.add_to_collection('vars', model)
+    #sess = tf.Session()
+    #saver.save( sess, "model.ckpt" )
+    # saver.restore( sess, "model.ckpt" )
+
+    predict(model, "c4/021.ogg", 60)
+    predict(model, "d4/021.ogg", 62)
+    predict(model, "e4/021.ogg", 64)
+    predict(model, "f4/021.ogg", 65)
+    predict(model, "cs4/flute.ogg", 65)
+    predict(model, "g4/021.ogg", 67)
+    predict(model, "a4/021.ogg", 69)
+    predict(model, "b4/021.ogg", 71)
+    predict(model, "c5/021.ogg", 72)
+def train():
     # Train.
     data = [
-        ("c4/021.ogg", 261.626),
-        ("c4/022.ogg", 261.626),
+        ("c4/021.ogg", 60),
+        ("c4/022.ogg", 60),
 
-        ("d4/021.ogg", 293.665),
-        ("d4/022.ogg", 293.665),
+        ("d4/021.ogg", 62),
+        ("d4/022.ogg", 62),
 
-        ("e4/021.ogg", 329.628),
-        ("e4/022.ogg", 329.628),
+        ("e4/021.ogg", 64),
+        ("e4/022.ogg", 64),
 
-        ("f4/021.ogg", 349.228),
-        ("f4/022.ogg", 349.228),
+        ("f4/021.ogg", 65),
+        ("f4/022.ogg", 65),
 
-        ("g4/021.ogg", 391.995),
-        ("g4/022.ogg", 391.995),
+        ("g4/021.ogg", 67),
+        ("g4/022.ogg", 67),
 
-        ("a4/021.ogg", 440.000),
-        ("a4/022.ogg", 440.000),
+        ("a4/021.ogg", 69.0),
+        ("a4/022.ogg", 69.0),
 
-        ("b4/021.ogg", 493.883),
-        ("b4/022.ogg", 493.883),
+        ("b4/021.ogg", 71),
+        ("b4/022.ogg", 71),
 
-        ("c5/021.ogg", 523.251),
-        ("c5/022.ogg", 523.251),
+        ("c5/021.ogg", 72),
+        ("c5/022.ogg", 72),
     ]
 
     features = []
@@ -45,18 +63,28 @@ def main():
 
     model = tf.estimator.DNNRegressor(
         hidden_units=[512, 256, 128], # Magic?
-        feature_columns=[melFeatureColumn]
+        feature_columns=[melFeatureColumn],
+        model_dir = '.'
     )
 
     logging.getLogger().setLevel(logging.INFO)
     # Increase steps later for higher accuracy.
-    model.train(input_fn=lambda:inputTrainFn(features, freqs), steps=5000)
+    #model.train(input_fn=lambda:inputTrainFn(features, freqs), steps=5000)
 
+    print("training done")
+    return(model)
+
+def predict(model, file, expected):
     # Predict.
-    nFeats, nFreqs = readFeatures("a4/020.ogg", 440.000)
+    nFeats, nFreqs = readFeatures(file, expected)
     predictions = model.predict(input_fn=lambda:inputPredictFn(nFeats))
+    sum = 0
+    print file
     for (pred, expect) in zip(predictions, nFreqs):
-        print pred, expect
+        sum = sum + pred['predictions'][0]
+        print pred['predictions'][0], expect
+    print "average"
+    print sum/len(nFreqs)
 
 def inputTrainFn(features, freqs):
     dataset = tf.data.Dataset.from_tensor_slices((

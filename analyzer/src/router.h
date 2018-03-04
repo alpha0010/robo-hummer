@@ -2,6 +2,7 @@
 #define ROUTER_H
 
 #include <evhtp.h>
+#include <iosfwd>
 #include <string>
 
 class Router;
@@ -33,7 +34,7 @@ struct Response
 class Router
 {
     public:
-        Router();
+        Router(std::ostream& log);
         ~Router();
 
         /**
@@ -44,7 +45,7 @@ class Router
          *  The path to handle; supports `*` for wildcards.
          *
          * @tparam Handler
-         *  Class to call when this route  is triggered.
+         *  Class to call when this route is triggered.
          */
         template<typename Handler>
         void route(std::string path);

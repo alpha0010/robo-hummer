@@ -1,5 +1,6 @@
 #include "router.h"
 
+#include <arpa/inet.h>
 #include <ctime>
 #include <iostream>
 
@@ -15,7 +16,44 @@ Router::Router(std::ostream& log)
             evhtp_hook_request_fini_cb onRequestFinish = [](evhtp_request_t* req, void* arg) -> evhtp_res {
                 std::ostream& log = *(std::ostream*)arg;
 
-                log << "- - -";
+                char ipAddress[INET6_ADDRSTRLEN];
+                sockaddr* saddr = req->conn->saddr;
+                const char* ret = nullptr;
+
+                switch (saddr->sa_family)
+                {
+                    case AF_INET:
+                        ret = inet_ntop(
+                            AF_INET,
+                            &reinterpret_cast<sockaddr_in*>(saddr)->sin_addr,
+                            ipAddress,
+                            INET6_ADDRSTRLEN
+                        );
+                        break;
+
+                    case AF_INET6:
+                        ret = inet_ntop(
+                            AF_INET6,
+                            &reinterpret_cast<sockaddr_in6*>(saddr)->sin6_addr,
+                            ipAddress,
+                            INET6_ADDRSTRLEN
+                        );
+                        break;
+
+                    default:
+                        break;
+                }
+
+                if (ret != nullptr)
+                {
+                    log << ipAddress;
+                }
+                else
+                {
+                    log << '-';
+                }
+
+                log << " - -";
 
                 std::time_t rawTime;
                 std::time(&rawTime);
@@ -28,6 +66,7 @@ Router::Router(std::ostream& log)
                     << "HTTP/" << (req->proto == EVHTP_PROTO_10 ? "1.0" : "1.1")
                     << '"';
 
+                // TODO: Get response code.
                 log << " -";
 
                 const char* contentLen = evhtp_header_find(req->headers_out, "Content-Length");

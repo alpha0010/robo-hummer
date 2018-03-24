@@ -1,8 +1,10 @@
+from datetime import timedelta
 from namedb import NameDB
 import nmslib
 import os
 import searcher
 import sys
+import time
 import xml.etree.ElementTree as ET
 
 noteNumbers = {
@@ -23,49 +25,76 @@ def musicXmlToNotes(fileName):
         if note.find("rest") is not None:
             continue
 
+        # Skip grace notes.
+        if note.find("grace") is not None:
+            continue
+
         step     = note.find("pitch/step").text
-        octave   = note.find("pitch/octave").text
+        octave   = int(note.find("pitch/octave").text)
         alter_q  = note.find("pitch/alter")
-        duration = note.find("duration").text
+        duration = int(note.find("duration").text)
 
-        alter = "0"
+        # Sanity check.
+        if duration <= 0:
+            continue
+
+        alter = 0
         if alter_q is not None:
-            alter = alter_q.text
+            alter = int(alter_q.text)
 
-        midinote = 12 * (int(octave) + 2) + int(noteNumbers[step]) + int(alter)
+        midinote = 12 * (octave + 2) + noteNumbers[step] + alter
 
         yield {
             "freq": midinote,
-            "len":  int(duration)
+            "len":  duration
         }
 
 class ProgressBar:
-    def __init__(self, count, width = 60):
+    def __init__(self, count, width = 40):
         self.step = 0
-        self.stepSize = float(width) / count
+        self.count = count
         self.width = width
+        self.lastRender = -1
 
     def start(self):
-        sys.stdout.write("[%s]" % (" " * self.width))
-        sys.stdout.flush()
-        sys.stdout.write("\b" * (self.width + 1))
+        self.startTime = time.time()
+        sys.stdout.write("\n")
+        self.renderBar()
 
     def advance(self):
-        diff = min(
-                   int(self.step + self.stepSize),
-                   self.width
-               ) - int(self.step)
-        if diff > 0:
-            sys.stdout.write("-" * diff)
-            sys.stdout.flush()
-
-        self.step += self.stepSize
+        self.step = min(self.step + 1, self.count)
+        if time.time() > self.lastRender + 1:
+            # Render at most once per second.
+            self.renderBar()
 
     def finish(self):
-        diff = self.width - int(self.step)
-        if diff > 0:
-            sys.stdout.write("-" * diff)
+        self.step = self.count
+        self.renderBar()
         sys.stdout.write("\n")
+
+    def renderBar(self):
+        percent = float(self.step) / self.count
+        progress = int(round(self.width * percent))
+
+        curTime = time.time()
+        elapsedSeconds = curTime - self.startTime
+        elapsed = timedelta(seconds=round(elapsedSeconds))
+        estimated = "--"
+        if elapsedSeconds > 5 and percent > 0.001:
+            estimated = timedelta(
+                seconds=round(elapsedSeconds / percent)
+            )
+
+        bar = "\r[{}{}] {}/{}".format(
+            "-" * progress,
+            " " * (self.width - progress),
+            elapsed,
+            estimated
+        )
+
+        sys.stdout.write(bar)
+        sys.stdout.flush()
+        self.lastRender = curTime
 
 # Create the search index.
 def main(argv):

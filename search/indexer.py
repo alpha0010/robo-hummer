@@ -39,6 +39,34 @@ def musicXmlToNotes(fileName):
             "len":  int(duration)
         }
 
+class ProgressBar:
+    def __init__(self, count, width = 60):
+        self.step = 0
+        self.stepSize = float(width) / count
+        self.width = width
+
+    def start(self):
+        sys.stdout.write("[%s]" % (" " * self.width))
+        sys.stdout.flush()
+        sys.stdout.write("\b" * (self.width + 1))
+
+    def advance(self):
+        diff = min(
+                   int(self.step + self.stepSize),
+                   self.width
+               ) - int(self.step)
+        if diff > 0:
+            sys.stdout.write("-" * diff)
+            sys.stdout.flush()
+
+        self.step += self.stepSize
+
+    def finish(self):
+        diff = self.width - int(self.step)
+        if diff > 0:
+            sys.stdout.write("-" * diff)
+        sys.stdout.write("\n")
+
 # Create the search index.
 def main(argv):
     if len(argv) < 2:
@@ -59,11 +87,17 @@ def main(argv):
 
     files = argv[1:]
 
+    bar = ProgressBar(len(files))
+    bar.start()
+
     for fileName in files:
         notes = musicXmlToNotes(fileName)
         features = list(searcher.extractAllFeatures(notes, contextLen))
         featureIDs = nameDB.generateIDs(nameDB[fileName], len(features))
         searchIndex.addDataPointBatch(data=features, ids=featureIDs)
+        bar.advance()
+
+    bar.finish()
 
     # TODO: Do we want any parameters?
     # https://github.com/searchivarius/nmslib/blob/master/similarity_search/src/method/hnsw.cc#L157

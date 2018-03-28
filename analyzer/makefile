@@ -9,7 +9,7 @@ OUTDIR = bin
 CXX = g++
 LD = g++
 
-MARSYAS_INSTALL = /home/mng-local/dev/marsyas
+MARSYAS_INSTALL = /home2/mng-local/dev/marsyas
 
 INC = -I${MARSYAS_INSTALL}/include -I/usr/include/evhtp
 CFLAGS = -Wall -Wextra -std=c++11 -O2

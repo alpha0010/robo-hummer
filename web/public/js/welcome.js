@@ -7,10 +7,11 @@ Welcome = {
     },
 
     onRecord: function() {
-        navigator.mediaDevices.
-            getUserMedia({audio: true}).
-            then(Welcome.onMediaSuccess).
-            catch(Welcome.onMediaError);
+        navigator.getUserMedia(
+            {audio: true},
+            Welcome.onMediaSuccess,
+            Welcome.onMediaError
+        );
     },
 
     onSave: function() {
@@ -21,6 +22,7 @@ Welcome = {
 
     onMediaSuccess: function(stream) {
         var mediaRecorder = new MediaStreamRecorder(stream);
+        mediaRecorder.mimeType = "audio/wav";
         mediaRecorder.ondataavailable = Welcome.uploadFile;
 
         mediaRecorder.start(30 * 1000);
@@ -32,10 +34,8 @@ Welcome = {
     },
 
     uploadFile: function(blob) {
-        var ext = blob.type.substring(blob.type.lastIndexOf("/") + 1);
         var fd = new FormData();
-        fd.append("fname", "the-sound." + ext);
-        fd.append("data", blob);
+        fd.append("audio", blob);
 
         jQuery.ajax({
             type: "POST",

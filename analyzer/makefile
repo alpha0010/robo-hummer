@@ -22,7 +22,7 @@ LDFLAGS = -s -Wl,--no-undefined -Wl,-rpath=${MARSYAS_INSTALL}/lib \
 
 OBJS = $(SRCS:%.cpp=$(OBJDIR)/%.o)
 
-all: output_dirs $(OUTDIR)/$(OUT)
+all: output_dirs $(OUTDIR)/$(OUT) $(OUTDIR)/data $(OUTDIR)/recordings
 
 help:
 	@echo "Targets:"
@@ -31,12 +31,17 @@ help:
 	@echo "  help    - show this message\n"
 
 clean:
-	rm -f $(OBJS) $(OUTDIR)/$(OUT)
+	rm -f $(OBJS) $(OUTDIR)/$(OUT) $(OUTDIR)/data $(OUTDIR)/recordings
 
 output_dirs:
 	@test -d $(OUTDIR) || { mkdir -p $(OUTDIR); echo mkdir $(OUTDIR); }
-	@test -e $(OUTDIR)/data || { ln -s `pwd`/../data $(OUTDIR)/data; echo ln -s `pwd`/../data $(OUTDIR)/data; }
 	@test -d $(OBJDIR)/src || { mkdir -p $(OBJDIR)/src; echo mkdir $(OBJDIR); }
+
+$(OUTDIR)/data:
+	ln -s `pwd`/../data $(OUTDIR)/data
+
+$(OUTDIR)/recordings:
+	ln -s `pwd`/../web/storage/app/recordings $(OUTDIR)/recordings
 
 $(OUTDIR)/$(OUT): $(OBJS)
 	$(LD) -fPIC -o $(OUTDIR)/$(OUT) $(OBJS) $(LDFLAGS) $(LIB)

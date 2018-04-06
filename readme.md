@@ -16,7 +16,16 @@ Edit `/etc/apache2/sites-enabled/xxx.conf`, adding the key `AllowOverride All`
 
 --------------------------------------
 
-    apt-get install libevhtp-dev libevent-dev libssl-dev
+Edit `MARSYAS_INSTALL` path in `analyzer/makefile` to match intall location of
+[Marsyas](https://github.com/marsyas/marsyas).
+
+    apt-get install build-essential libevent-dev libevhtp-dev libssl-dev
+    cd analyzer
+    make
+    cd bin
+    ./analyzer
+
+To send it to the background, press `Ctrl-Z`, then execute `bg`.
 
 
 ## Build the indexer

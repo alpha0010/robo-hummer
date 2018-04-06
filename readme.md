@@ -1,5 +1,7 @@
 ## RoboHummer
 
+### Web front end
+
     apt-get install php php-mbstring php-xml php-zip composer
     a2enmod rewrite
     cd web
@@ -16,6 +18,8 @@ Edit `/etc/apache2/sites-enabled/xxx.conf`, adding the key `AllowOverride All`
 
 --------------------------------------
 
+### Audio analyzer service
+
 Edit `MARSYAS_INSTALL` path in `analyzer/makefile` to match intall location of
 [Marsyas](https://github.com/marsyas/marsyas).
 
@@ -27,21 +31,12 @@ Edit `MARSYAS_INSTALL` path in `analyzer/makefile` to match intall location of
 
 To send it to the background, press `Ctrl-Z`, then execute `bg`.
 
+--------------------------------------
 
-## Build the indexer
+### Search index
 
-* virtualenv venv
-* source venv/bin/activate
-* pip install nmslib
-* sudo apt install sqlite
-* cd search
-* python indexer.py /home/hplantin/work/fanny/flexdata/melody/xml/*.xml
-
-## run the analyzer webserver
-
-* cd analyzer
-* make
-* cd bin
-* ./analyzer
-
-
+    apt-get install python-dev virtualenv
+    source venv/bin/activate
+    pip install nmslib
+    cd search
+    python indexer.py /path/to/music-xml/*.xml

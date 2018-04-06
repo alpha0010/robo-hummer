@@ -1,6 +1,10 @@
+import csv
 from collections import deque
+import json
 from namedb import NameDB
 import nmslib
+import sys
+import urllib2
 
 # Generate lists of size 'window' starting at each value of 'iterable'.
 def windowItr(iterable, window):
@@ -28,30 +32,45 @@ def extractAllFeatures(notes, contextLen):
     for segment in windowItr(notes, contextLen):
         yield computeFeatures(segment)
 
-# Test searching.
-def main():
+# Search.
+def main(argv):
     contextLen = 4
 
+    # Load the search index.
     nameDB = NameDB("file-index.sqlite")
     searchIndex = nmslib.init()
     searchIndex.loadIndex("notes.index")
 
-    testData = [
-        ("data/AAHH2001-120.xml", [{"freq": 81, "len": 6720}, {"freq": 79, "len": 6720}, {"freq": 79, "len": 6720}, {"freq": 81, "len": 6720}, {"freq": 83, "len": 6720}, {"freq": 83, "len": 10080}, {"freq": 81, "len": 3360}]),
-        ("data/AAHH2001-136.xml", [{"freq": 77, "len": 6720}, {"freq": 73, "len": 3360}, {"freq": 75, "len": 5040}, {"freq": 75, "len": 1680}, {"freq": 75, "len": 3360}, {"freq": 75, "len": 3360}, {"freq": 73, "len": 3360}])
-    ]
+    # Analyze for notes.
+    notesCSV = urllib2.urlopen("http://localhost:8080/midi/" + argv[1])
+    reader = csv.reader(notesCSV)
+    notes = []
+    for row in reader:
+        freq = float(row[2])
+        if not notes or notes[-1]["freq"] != freq:
+            notes.append({
+                "freq": freq,
+                "len": 1
+            })
+        else:
+            notes[-1]["len"] += 1
 
-    for fileName, notes in testData:
-        print "Expected:", fileName
+    # Search.
+    features = list(extractAllFeatures(notes, contextLen))
+    results = searchIndex.knnQueryBatch(queries=features, k=30)
 
-        features = list(extractAllFeatures(notes, contextLen))
-        results = searchIndex.knnQueryBatch(queries=features, k=5)
+    # Process results.
+    featureIDs = []
+    for IDs, diffs in results:
+        featureIDs += list(IDs)
 
-        featureIDs = []
-        for IDs, diffs in results:
-            featureIDs += list(IDs)
+    print json.dumps(
+        nameDB.summarizeHits(featureIDs)[:10],
+        indent=4,
+        sort_keys=True
+    )
 
-        print " ", nameDB.summarizeHits(featureIDs)
+    return 0
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main(sys.argv))

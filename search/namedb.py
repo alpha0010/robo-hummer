@@ -96,4 +96,4 @@ class NameDB:
 
             cur.execute("DROP TABLE tmpJoinBuff")
 
-            return summary
+            return [{"name": name, "score": score} for name, score in summary]

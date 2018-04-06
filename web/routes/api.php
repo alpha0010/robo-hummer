@@ -13,12 +13,4 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::post("/upload", function(Request $request) {
-    if (  !$request->audio->isValid()
-        || $request->audio->getClientMimeType() != "audio/wav")
-    {
-        return "Unaccepted mime type.";
-    }
-
-    return $request->audio->store("recordings");
-});
+Route::post("/upload", "HomeController@search")->name("search");

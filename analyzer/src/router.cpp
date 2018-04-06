@@ -143,6 +143,10 @@ void Router::sendReply(evhtp_request_t* req, const Response& response)
                 req->headers_out,
                 evhtp_header_new("Content-Type", "text/csv", 0, 0)
             );
+            evhtp_headers_add_header(
+                req->headers_out,
+                evhtp_header_new("Content-Disposition", "attachment; filename=\"result.csv\"", 0, 0)
+            );
             break;
 
         case ContentType::html:

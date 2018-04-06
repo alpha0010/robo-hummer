@@ -11,6 +11,8 @@
     cp .env.example .env
     ./artisan key:generate
 
+Edit `.env` as necessary for system configuration.
+
 Edit `/etc/apache2/sites-enabled/xxx.conf`, adding the key `AllowOverride All`
 (for htaccess files), and configure to serve `web/public/`.
 

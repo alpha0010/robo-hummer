@@ -1,5 +1,6 @@
 analyzer/bin/*
 analyzer/obj/*
+ml/model/*
 *.index
 *.pyc
 *.sqlite

@@ -9,7 +9,7 @@ Response AnalyzeHandler::handle(Request request)
     std::string features;
 
     // Basic url validation to prevent root escape.
-    std::regex nameExtractor("^/analyze/(([a-z0-9-]+/)*[a-z0-9]+\\.ogg)$");
+    std::regex nameExtractor("^/analyze/(([a-zA-Z0-9-]+/)*[a-zA-Z0-9]+\\.[a-z]+)$");
     std::cmatch matches;
     if (std::regex_match(request.path, matches, nameExtractor))
     {

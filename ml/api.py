@@ -1,9 +1,15 @@
 import csv
 from collections import deque
-import urllib2
+try:
+    from urllib2 import urlopen
+except ImportError:
+    from codecs import iterdecode
+    from urllib.request import urlopen as urlopen3
+    def urlopen(url):
+        return iterdecode(urlopen3(url), "utf-8")
 
 def readFeatures(audioFile):
-    featureCSV = urllib2.urlopen("http://localhost:8080/analyze/" + audioFile)
+    featureCSV = urlopen("http://localhost:8080/analyze/" + audioFile)
     reader = csv.reader(featureCSV)
 
     features = []

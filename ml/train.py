@@ -84,7 +84,7 @@ def inputTrainFn(features, freqs):
         .get_next()
 
 def readFeatures(notes, freq):
-    print "Reading", notes
+    print("Reading {}".format(notes))
     features = api.readFeatures("training/" + notes)
     return (features, [freq] * len(features))
 

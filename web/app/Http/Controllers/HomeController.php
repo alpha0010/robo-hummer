@@ -26,6 +26,11 @@ class HomeController extends Controller
         return view("home");
     }
 
+	public function keyboard()
+	{
+		return view("keyboard");
+	}
+
     /**
      * Show the application dashboard.
      *

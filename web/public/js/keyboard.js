@@ -2,8 +2,8 @@
  * keyboard.js operates the keyboard using the interface.
  */
 var csv = '';
-var current = [];
-var previous = [];
+var current = {'note': -1, 'date':Date.now()};
+var previous = {'note': -1, 'date':Date.now()};
 
 function onButton(note){
 	console.log(note);

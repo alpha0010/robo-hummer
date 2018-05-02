@@ -59,6 +59,8 @@ class HomeController extends Controller
         {
             return [
                 "error" => "Search failed with code $exitCode.",
+                "stdout" => $process->getOutput(),
+                "stderr" => $process->getErrorOutput(),
             ];
         }
 
@@ -79,6 +81,8 @@ class HomeController extends Controller
         {
             return [
                 "error" => "Search failed with code $exitCode.",
+                "stdout" => $process->getOutput(),
+                "stderr" => $process->getErrorOutput(),
             ];
         }
 

@@ -47,10 +47,10 @@ def main(argv):
         reader = csv.reader(sys.stdin)
         for row in reader:
             notes.append({
-                "freq": float(row[0])
+                "freq": float(row[0]),
                 "len": float(row[1])
             })
-	else:
+    else:
         # Analyze for notes.
         notesCSV = urllib2.urlopen("http://localhost:8080/midi/" + argv[1])
         reader = csv.reader(notesCSV)

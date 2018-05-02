@@ -49,6 +49,10 @@ $(document).ready(function()
 	});
 
 	$('#searchCSV').click( function(e){
-		alert('clicked');
+		$.post(
+			'/api/uploadCSV',
+			$('#csv').text(),
+			function(e){console.log(e)}
+		);
 	});
 });

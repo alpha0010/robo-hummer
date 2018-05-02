@@ -64,4 +64,24 @@ class HomeController extends Controller
 
         return json_decode($process->getOutput());
     }
+    public function searchCSV(Request $request)
+    {
+		$csv = $request->getContent();
+        $searcher  = base_path("../search/searcher2.sh");
+        $process = new Process([
+            $searcher,
+            config("search.virtualenv"),
+        ]);
+        $process->setInput( $csv );
+
+        $exitCode = $process->run();
+        if ( $exitCode != 0 )
+        {
+            return [
+                "error" => "Search failed with code $exitCode.",
+            ];
+        }
+
+        return json_decode($process->getOutput());
+	}
 }

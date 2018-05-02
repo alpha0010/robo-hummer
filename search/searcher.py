@@ -41,19 +41,28 @@ def main(argv):
     searchIndex = nmslib.init()
     searchIndex.loadIndex("notes.index")
 
-    # Analyze for notes.
-    notesCSV = urllib2.urlopen("http://localhost:8080/midi/" + argv[1])
-    reader = csv.reader(notesCSV)
     notes = []
-    for row in reader:
-        freq = float(row[2])
-        if not notes or notes[-1]["freq"] != freq:
+
+    if argv[1] == '--csv':
+        reader = csv.reader(sys.stdin)
+        for row in reader:
             notes.append({
-                "freq": freq,
-                "len": 1
+                "freq": float(row[0])
+                "len": float(row[1])
             })
-        else:
-            notes[-1]["len"] += 1
+	else:
+        # Analyze for notes.
+        notesCSV = urllib2.urlopen("http://localhost:8080/midi/" + argv[1])
+        reader = csv.reader(notesCSV)
+        for row in reader:
+            freq = float(row[2])
+            if not notes or notes[-1]["freq"] != freq:
+                notes.append({
+                    "freq": freq,
+                    "len": 1
+                })
+            else:
+                notes[-1]["len"] += 1
 
     # Search.
     features = list(extractAllFeatures(notes, contextLen))

@@ -37,11 +37,18 @@ var codes = {
 	'Quote': 76,
 };
 
-$('.keyboard').keydown( function(e){
-	/* Use codes since they are layout agnostic */
-	if ( codes[e.originalEvent.code] != undefined )
-	{
-		onButton(codes[e.originalEvent.code]);
-		e.preventDefault();
-	}
+$(document).ready(function()
+{
+	$('.keyboard').keydown( function(e){
+		/* Use codes since they are layout agnostic */
+		if ( codes[e.originalEvent.code] != undefined )
+		{
+			onButton(codes[e.originalEvent.code]);
+			e.preventDefault();
+		}
+	});
+
+	$('#searchCSV').click( function(e){
+		alert('clicked');
+	});
 });

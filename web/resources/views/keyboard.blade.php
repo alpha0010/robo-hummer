@@ -5,7 +5,7 @@
 			<object id='Jazz2' type='audio/x-jazz' class='hidden'></object>
 		</object>
 		-->
-	<div class='content'>
+<div class='content'>
 	<h5>Works best in Chrome.
 		<!--For other browser support, consider installing the <a href='http://jazz-soft.net/download/Jazz-Plugin/'>Jazz-Plugin</a>-->
 	</h5>
@@ -42,9 +42,13 @@
 	</div>
 
 	<pre id='csv' style='font-size: .5em;'></pre>
+	<button id='searchCSV' class='btn btn-primary'>Search CSV</button>
 </div>
 
-<script type="text/javascript" src="js/webmidi.min.js"></script>
-<script type="text/javascript" src="js/keyboard.js"></script>
 <link rel="stylesheet" href="css/keyboard.css">
 @endsection
+
+@section('scripts')
+<script type="text/javascript" src="js/keyboard.js"></script>
+<script type="text/javascript" src="js/webmidi.min.js"></script>
+@stop

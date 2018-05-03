@@ -43,6 +43,7 @@
 
 	<pre id='csv' style='font-size: .5em;'></pre>
 	<button id='searchCSV' class='btn btn-primary'>Search CSV</button>
+	<div id='results'></div>
 </div>
 
 <link rel="stylesheet" href="css/keyboard.css">

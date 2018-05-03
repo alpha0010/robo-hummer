@@ -18,6 +18,11 @@ Edit `/etc/apache2/sites-enabled/xxx.conf`, adding the key `AllowOverride All`
 
     systemctl restart apache2
 
+in the web folder:
+
+    npm install
+    npm run dev
+
 --------------------------------------
 
 ### Audio analyzer service

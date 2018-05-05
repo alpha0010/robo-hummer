@@ -39,6 +39,7 @@
 	<a href='#' onclick='onButton(82);' class='BlackKey'></a>
 	<a href='#' onclick='onButton(83);' class='WhiteKey'></a>
 	<a href='#' onclick='onButton(84);' class='WhiteKey'></a>-->
+	<form><input type='text'></input></form>
 	</div>
 
 	<pre id='csv' style='font-size: .5em;'></pre>

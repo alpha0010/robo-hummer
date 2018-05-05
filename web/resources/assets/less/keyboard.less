@@ -1,30 +1,31 @@
-@scale: 3;
+@scaleH: 100% / 264;
+@scaleV: 3px;
 .WhiteKey{
 	background-color: white;
-	width: 24px * @scale;
-	height: 60px * @scale;
+	width: 24 * @scaleH;
+	height: 60 * @scaleV;
 	/* Get the text to align slightly lower to avoid overlap */
-	line-height: 70px * @scale;
+	line-height: 70 * @scaleV;
 }
 
 .BlackKey{
 	background-color: black;
 	color: white;
-	width: 15px * @scale;
-	height: 30px * @scale;
-	line-height: 30px * @scale;
+	width: 15 * @scaleH;
+	height: 30 * @scaleV;
+	line-height: 30 * @scaleV;
 	display: inline-block;
 	position: absolute;
 }
 /* The mechanism of each key is 14 apart */
 .BlackKey.cs, .BlackKey.fs{
-	margin-left: -9px * @scale;
+	margin-left: -9 * @scaleH;
 }
 .BlackKey.gs{
-	margin-left: -7px * @scale;
+	margin-left: -7 * @scaleH;
 }
 .BlackKey.ds, .BlackKey.as{
-	margin-left: -5px * @scale;
+	margin-left: -5 * @scaleH;
 }
 
 .keyboard{
@@ -33,7 +34,8 @@
 }
 
 .keyboard .WhiteKey, .keyboard .BlackKey{
-	font-size: 10px * @scale;
+	font-size: 24px;
+	font-family: monospace;
 	box-sizing: border-box;
 	text-decoration: none;
 	padding: 1%;

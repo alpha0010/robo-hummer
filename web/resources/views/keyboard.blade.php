@@ -52,4 +52,19 @@
 @section('scripts')
 <script type="text/javascript" src="js/keyboard.js"></script>
 <script type="text/javascript" src="js/webmidi.min.js"></script>
+
+<!-- polyfill -->
+<script src="midi/inc/shim/Base64.js" type="text/javascript"></script>
+<script src="midi/inc/shim/Base64binary.js" type="text/javascript"></script>
+<script src="midi/inc/shim/WebAudioAPI.js" type="text/javascript"></script>
+<!-- midi.js package -->
+<script src="midi/js/midi/audioDetect.js" type="text/javascript"></script>
+<script src="midi/js/midi/gm.js" type="text/javascript"></script>
+<script src="midi/js/midi/loader.js" type="text/javascript"></script>
+<script src="midi/js/midi/plugin.audiotag.js" type="text/javascript"></script>
+<script src="midi/js/midi/plugin.webaudio.js" type="text/javascript"></script>
+<script src="midi/js/midi/plugin.webmidi.js" type="text/javascript"></script>
+<!-- utils -->
+<script src="midi/js/util/dom_request_xhr.js" type="text/javascript"></script>
+<script src="midi/js/util/dom_request_script.js" type="text/javascript"></script>
 @stop

@@ -22,6 +22,7 @@
         "vue": "^2.5.7"
     },
     "dependencies": {
+        "midi": "github:mudcube/MIDI.js",
         "webmidi": "^2.0.5"
     }
 }

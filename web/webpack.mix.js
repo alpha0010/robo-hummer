@@ -13,6 +13,7 @@ let mix = require('laravel-mix');
 
 mix.js('resources/assets/js/app.js', 'public/js')
    .js('node_modules/webmidi/webmidi.min.js', 'public/js' )
+   .copyDirectory('node_modules/midi/','public/midi' )
    .sass('resources/assets/sass/app.scss', 'public/css')
    .less('resources/assets/less/keyboard.less', 'public/css')
    .sourceMaps();

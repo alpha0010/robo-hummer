@@ -11,6 +11,13 @@ function onButton(note){
 	current.date = Date.now();//gives time in milliseconds since epoch.
 	length = current.date - previous.date;
 	var csv = previous.note + "," + length + "\n";
+
+	if ( previous.note != -1 )
+	{
+		MIDI.noteOff(0,previous.note,0,0);
+	}
+	MIDI.noteOn(0,current.note,100,0);
+
 	previous.note = note;
 	previous.date = current.date;
 	/* Store it in the DOM */
@@ -70,3 +77,17 @@ function showResults( results )
 		$('#results').append( reslink );
 	}
 }
+
+window.onload = function () {
+	MIDI.loadPlugin({
+		soundfontUrl: "/midi/examples/soundfont/",
+		instrument: "acoustic_grand_piano",
+		onprogress: function(state, progress) {
+			console.log(state, progress);
+		},
+		onsuccess: function() {
+			// play the note
+			MIDI.setVolume(0, 127);
+		}
+	});
+};

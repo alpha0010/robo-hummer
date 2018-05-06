@@ -10,7 +10,7 @@ def main(argv):
         shape=len(features[0])
     )
     model = tf.estimator.DNNRegressor(
-        hidden_units=[64, 32],
+        hidden_units=[16, 16],
         feature_columns=[melFeatureColumn],
         model_dir="model"
     )

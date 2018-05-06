@@ -45,7 +45,7 @@ std::string AnalyzeHandler::getFeatues(std::string file)
     net->updControl("SoundFileSource/src/mrs_string/filename", file);
     net->updControl("SoundFileSource/src/mrs_natural/inSamples", 256);
     net->updControl("PowerSpectrumNet/pspk/mrs_natural/winSize", 2048);
-    net->updControl("MFCC/mel/mrs_natural/coefficients", 16);
+    net->updControl("MFCC/mel/mrs_natural/coefficients", 24);
 
     // Extract features.
     std::ostringstream features;

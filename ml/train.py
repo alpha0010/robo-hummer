@@ -21,13 +21,16 @@ def main(argv):
     )
 
     model = tf.estimator.DNNRegressor(
-        hidden_units=[64, 32],
+        hidden_units=[16, 16],
         feature_columns=[melFeatureColumn],
         model_dir="model"
     )
 
     logging.getLogger().setLevel(logging.INFO)
-    model.train(input_fn=lambda:inputTrainFn(features, freqs), steps=500000)
+    model.train(
+        input_fn=lambda:inputTrainFn(features, freqs),
+        steps=int(60 * 60 * 24 / 0.004346347821159404)
+    )
 
     return 0
 
@@ -61,7 +64,7 @@ def genNoteToMidi():
 
     curOctave = 2
     curMidi = 36
-    for x in range(4):
+    for x in range(5):
         for name, hop in names:
             nameToMidi[name + str(curOctave)] = curMidi
             curMidi += hop

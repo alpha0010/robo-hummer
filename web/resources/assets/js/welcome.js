@@ -1,3 +1,5 @@
+var MediaStreamRecorder = require("msr");
+
 Welcome = {
     init: function() {
         Welcome.mediaRecorder = null;

@@ -56,6 +56,10 @@ $(document).ready(function()
 		}
 	});
 
+	$('.keyboard > a').click( function(e){
+		onButton($(e.currentTarget).data('midi'));
+	});
+
 	$('#searchCSV').click( function(e){
 		$.post(
 			'/api/uploadCSV',
@@ -81,7 +85,7 @@ function showResults( results )
 
 window.onload = function () {
 	MIDI.loadPlugin({
-		soundfontUrl: "/midi/examples/soundfont/",
+		soundfontUrl: "/soundfont/",
 		instrument: "acoustic_grand_piano",
 		onprogress: function(state, progress) {
 			console.log(state, progress);

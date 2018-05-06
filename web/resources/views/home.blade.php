@@ -1,5 +1,9 @@
 @extends('layouts.app')
 
+@section('scripts')
+<script src="{{ asset('js/welcome.js') }}" defer></script>
+@endsection
+
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
@@ -15,10 +19,4 @@
         </div>
     </div>
 </div>
-@if (config('app.debug'))
-    <script src="{{ asset('js/MediaStreamRecorder.js') }}" defer></script>
-@else
-    <script src="{{ asset('js/MediaStreamRecorder.min.js') }}" defer></script>
-@endif
-<script src="{{ asset('js/welcome.js') }}" defer></script>
 @endsection

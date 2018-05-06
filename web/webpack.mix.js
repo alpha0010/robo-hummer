@@ -12,8 +12,23 @@ let mix = require('laravel-mix');
  */
 
 mix.js('resources/assets/js/app.js', 'public/js')
-   .js('node_modules/webmidi/webmidi.min.js', 'public/js' )
-   .copyDirectory('node_modules/midi/','public/midi' )
+   .js('resources/assets/js/welcome.js', 'public/js')
+   .js('resources/assets/js/keyboard.js', 'public/js')
+   .scripts([
+       'node_modules/midi/js/midi/audioDetect.js',
+       'node_modules/midi/js/midi/gm.js',
+       'node_modules/midi/js/midi/loader.js',
+       'node_modules/midi/js/midi/player.js',
+       'node_modules/midi/js/midi/plugin.audiotag.js',
+       'node_modules/midi/js/midi/plugin.webaudio.js',
+       'node_modules/midi/js/midi/plugin.webmidi.js',
+       'node_modules/midi/js/util/dom_request_script.js',
+       'node_modules/midi/js/util/dom_request_xhr.js',
+       'node_modules/midi/inc/shim/Base64.js',
+       'node_modules/midi/inc/shim/Base64binary.js',
+       'node_modules/midi/inc/shim/WebAudioAPI.js',
+   ], 'public/js/MIDI.js')
+   .copyDirectory('node_modules/midi/examples/soundfont', 'public/soundfont')
    .sass('resources/assets/sass/app.scss', 'public/css')
    .less('resources/assets/less/keyboard.less', 'public/css')
    .sourceMaps();

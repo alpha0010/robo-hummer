@@ -23,6 +23,6 @@
     },
     "dependencies": {
         "midi": "github:mudcube/MIDI.js",
-        "webmidi": "^2.0.5"
+        "msr": "^1.3.4"
     }
 }

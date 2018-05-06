@@ -14,31 +14,31 @@
 	<div id='dropdowns'></div>
 
 	<div class='keyboard'>
-	<a href='#' onclick='onButton(60);' class='WhiteKey'>A</a>
-	<a href='#' onclick='onButton(61);' class='BlackKey cs'>W</a>
-	<a href='#' onclick='onButton(62);' class='WhiteKey'>S</a>
-	<a href='#' onclick='onButton(63);' class='BlackKey ds'>E</a>
-	<a href='#' onclick='onButton(64);' class='WhiteKey'>D</a>
-	<a href='#' onclick='onButton(65);' class='WhiteKey '>F</a>
-	<a href='#' onclick='onButton(66);' class='BlackKey fs'>T</a>
-	<a href='#' onclick='onButton(67);' class='WhiteKey'>G</a>
-	<a href='#' onclick='onButton(68);' class='BlackKey gs'>Y</a>
-	<a href='#' onclick='onButton(69);' class='WhiteKey'>H</a>
-	<a href='#' onclick='onButton(70);' class='BlackKey as'>U</a>
-	<a href='#' onclick='onButton(71);' class='WhiteKey'>J</a>
-	<a href='#' onclick='onButton(72);' class='WhiteKey'>K</a>
-	<a href='#' onclick='onButton(73);' class='BlackKey cs'>O</a>
-	<a href='#' onclick='onButton(74);' class='WhiteKey'>L</a>
-	<a href='#' onclick='onButton(75);' class='BlackKey ds'>P</a>
-	<a href='#' onclick='onButton(76);' class='WhiteKey'>;</a>
-	<a href='#' onclick='onButton(77);' class='WhiteKey'>'</a><!--
-	<a href='#' onclick='onButton(78);' class='BlackKey'></a>
-	<a href='#' onclick='onButton(79);' class='WhiteKey'></a>
-	<a href='#' onclick='onButton(80);' class='BlackKey'></a>
-	<a href='#' onclick='onButton(81);' class='WhiteKey'></a>
-	<a href='#' onclick='onButton(82);' class='BlackKey'></a>
-	<a href='#' onclick='onButton(83);' class='WhiteKey'></a>
-	<a href='#' onclick='onButton(84);' class='WhiteKey'></a>-->
+	<a href='#' data-midi='60' class='WhiteKey'>A</a>
+	<a href='#' data-midi='61' class='BlackKey cs'>W</a>
+	<a href='#' data-midi='62' class='WhiteKey'>S</a>
+	<a href='#' data-midi='63' class='BlackKey ds'>E</a>
+	<a href='#' data-midi='64' class='WhiteKey'>D</a>
+	<a href='#' data-midi='65' class='WhiteKey '>F</a>
+	<a href='#' data-midi='66' class='BlackKey fs'>T</a>
+	<a href='#' data-midi='67' class='WhiteKey'>G</a>
+	<a href='#' data-midi='68' class='BlackKey gs'>Y</a>
+	<a href='#' data-midi='69' class='WhiteKey'>H</a>
+	<a href='#' data-midi='70' class='BlackKey as'>U</a>
+	<a href='#' data-midi='71' class='WhiteKey'>J</a>
+	<a href='#' data-midi='72' class='WhiteKey'>K</a>
+	<a href='#' data-midi='73' class='BlackKey cs'>O</a>
+	<a href='#' data-midi='74' class='WhiteKey'>L</a>
+	<a href='#' data-midi='75' class='BlackKey ds'>P</a>
+	<a href='#' data-midi='76' class='WhiteKey'>;</a>
+	<a href='#' data-midi='77' class='WhiteKey'>'</a><!--
+	<a href='#' data-midi='78' class='BlackKey'></a>
+	<a href='#' data-midi='79' class='WhiteKey'></a>
+	<a href='#' data-midi='80' class='BlackKey'></a>
+	<a href='#' data-midi='81' class='WhiteKey'></a>
+	<a href='#' data-midi='82' class='BlackKey'></a>
+	<a href='#' data-midi='83' class='WhiteKey'></a>
+	<a href='#' data-midi='84' class='WhiteKey'></a>-->
 	<form><input type='text'></input></form>
 	</div>
 
@@ -51,21 +51,6 @@
 @endsection
 
 @section('scripts')
-<script type="text/javascript" src="js/keyboard.js"></script>
-<script type="text/javascript" src="js/webmidi.min.js"></script>
-
-<!-- polyfill -->
-<script src="midi/inc/shim/Base64.js" type="text/javascript"></script>
-<script src="midi/inc/shim/Base64binary.js" type="text/javascript"></script>
-<script src="midi/inc/shim/WebAudioAPI.js" type="text/javascript"></script>
-<!-- midi.js package -->
-<script src="midi/js/midi/audioDetect.js" type="text/javascript"></script>
-<script src="midi/js/midi/gm.js" type="text/javascript"></script>
-<script src="midi/js/midi/loader.js" type="text/javascript"></script>
-<script src="midi/js/midi/plugin.audiotag.js" type="text/javascript"></script>
-<script src="midi/js/midi/plugin.webaudio.js" type="text/javascript"></script>
-<script src="midi/js/midi/plugin.webmidi.js" type="text/javascript"></script>
-<!-- utils -->
-<script src="midi/js/util/dom_request_xhr.js" type="text/javascript"></script>
-<script src="midi/js/util/dom_request_script.js" type="text/javascript"></script>
-@stop
+<script type="text/javascript" src="js/keyboard.js" defer></script>
+<script type="text/javascript" src="js/MIDI.js" defer></script>
+@endsection

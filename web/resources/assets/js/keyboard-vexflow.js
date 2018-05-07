@@ -1,27 +1,10 @@
-VF = Vex.Flow;
-// Create a stave of width 400 at position 10, 40 on the canvas.
-var stave = new VF.Stave(10, 40, 400);
-
 $(document).ready(function(){
-	// Add a clef and time signature.
-	stave.addClef("treble");
-	drawStave();
+	updateStave();
 });
 
-function drawStave(){
-	// Create an SVG renderer and attach it to the DIV element named "boo".
-	var div = document.getElementById("staveInput")
-	var renderer = new VF.Renderer(div, VF.Renderer.Backends.SVG);
-
-	// Configure the rendering context.
-	renderer.resize(500, 200);
-	var context = renderer.getContext();
-	context.setFont("Arial", 10, "").setBackgroundFillStyle("#eed");
-
-	// Connect it to the rendering context and draw!
-	stave.setContext(context).draw();
-}
-
+/**
+ * @brief Make the stave match the state of the csv.
+ */
 function updateStave(){
 	var notes = "";
 	var totalTime = 0;
@@ -54,10 +37,6 @@ function updateStave(){
 
 	var score = vf.EasyScore();
 	var system = vf.System();
-
-	//var voice = new vf.Voice({num_beats: 4 * totalTime, beat_value: 4});
-	//voice.addTickables(score.notes(notes, {stem: 'up'}));
-	//voice.draw(context, stave);
 
 	system.addStave({
 		voices: [

@@ -23,6 +23,7 @@
     },
     "dependencies": {
         "midi": "github:mudcube/MIDI.js",
-        "msr": "^1.3.4"
+        "msr": "^1.3.4",
+        "reveal.js": "^3.6.0"
     }
 }

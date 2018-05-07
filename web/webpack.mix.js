@@ -14,6 +14,11 @@ let mix = require('laravel-mix');
 mix.js('resources/assets/js/app.js', 'public/js')
    .js('resources/assets/js/welcome.js', 'public/js')
    .js('resources/assets/js/keyboard.js', 'public/js')
+   .js('resources/assets/js/slides.js', 'public/js')
+   .styles([
+       'node_modules/reveal.js/css/reveal.css',
+       'node_modules/reveal.js/css/theme/serif.css',
+   ], 'public/css/reveal.css')
    .scripts([
        'node_modules/midi/js/midi/audioDetect.js',
        'node_modules/midi/js/midi/gm.js',

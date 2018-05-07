@@ -2,7 +2,10 @@
     "slides": [
         "intro",
         "status",
+        "time",
         "training-1",
-        "training-2"
+        "training-2",
+        "note-phrase",
+        "note-context"
     ]
 }

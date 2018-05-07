@@ -1,7 +1,6 @@
-RoboHummer
-==========
+## Robo ~~Hummer~~ Reinstaller
+------------------------------
 
-The Song Searcher
------------------
+### The Song Searcher
 
 Zach DeCook, Micah Ng

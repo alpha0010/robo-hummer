@@ -20,6 +20,10 @@ mix.js('resources/assets/js/app.js', 'public/js')
        'node_modules/reveal.js/css/theme/serif.css',
    ], 'public/css/reveal.css')
    .scripts([
+       'node_modules/midi/inc/shim/Base64.js',
+       'node_modules/midi/inc/shim/Base64binary.js',
+       'node_modules/midi/inc/shim/WebAudioAPI.js',
+
        'node_modules/midi/js/midi/audioDetect.js',
        'node_modules/midi/js/midi/gm.js',
        'node_modules/midi/js/midi/loader.js',
@@ -27,11 +31,9 @@ mix.js('resources/assets/js/app.js', 'public/js')
        'node_modules/midi/js/midi/plugin.audiotag.js',
        'node_modules/midi/js/midi/plugin.webaudio.js',
        'node_modules/midi/js/midi/plugin.webmidi.js',
-       'node_modules/midi/js/util/dom_request_script.js',
+
        'node_modules/midi/js/util/dom_request_xhr.js',
-       'node_modules/midi/inc/shim/Base64.js',
-       'node_modules/midi/inc/shim/Base64binary.js',
-       'node_modules/midi/inc/shim/WebAudioAPI.js',
+       'node_modules/midi/js/util/dom_request_script.js',
    ], 'public/js/MIDI.js')
    .copyDirectory('node_modules/midi/examples/soundfont', 'public/soundfont')
    .sass('resources/assets/sass/app.scss', 'public/css')

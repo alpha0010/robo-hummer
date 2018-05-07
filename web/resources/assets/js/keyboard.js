@@ -1,6 +1,9 @@
 /**
  * keyboard.js operates the keyboard using the interface.
  */
+
+require('./keyboard-vexflow');
+
 var csv = '';
 var current = {'note': -1, 'date':Date.now()};
 var previous = {'note': -1, 'date':Date.now()};

@@ -59,6 +59,5 @@
 
 @section('scripts')
 <script type="text/javascript" src="js/MIDI.js" defer></script>
-<script type="text/javascript" src="js/vexflow-min.js" defer></script>
 <script type="text/javascript" src="js/keyboard.js" defer></script>
 @endsection

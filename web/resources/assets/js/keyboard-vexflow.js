@@ -1,3 +1,5 @@
+var Vex = require('vexflow');
+
 $(document).ready(function(){
 	updateStave();
 	$('#bpmSlider').change(function(val){
@@ -69,3 +71,5 @@ function getLength( milliseconds, wholeLength = 2000 ){
 	else if ( fraction >= .125 ) return .125;
 	else return .0625;
 }
+
+window.updateStave = updateStave;

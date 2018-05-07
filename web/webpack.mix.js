@@ -13,7 +13,11 @@ let mix = require('laravel-mix');
 
 mix.js('resources/assets/js/app.js', 'public/js')
    .js('resources/assets/js/welcome.js', 'public/js')
-   .js('resources/assets/js/keyboard.js', 'public/js')
+   .scripts([
+       'resources/assets/js/keyboard.js',
+       'resources/assets/js/keyboard-vexflow.js',
+   ], 'public/js/keyboard.js')
+   .copy('node_modules/vexflow/releases/vexflow-min.js', 'public/js' )
    .js('resources/assets/js/slides.js', 'public/js')
    .styles([
        'node_modules/reveal.js/css/reveal.css',

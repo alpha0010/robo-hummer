@@ -22,6 +22,7 @@ function onButton(note){
 	previous.date = current.date;
 	/* Store it in the DOM */
 	$("#csv").append(csv);
+	updateStave();
 }
 
 var codes = {

@@ -6,12 +6,13 @@
 		</object>
 		-->
 <div class='content'>
-	<h5>Works best in Chrome.
-		<!--For other browser support, consider installing the <a href='http://jazz-soft.net/download/Jazz-Plugin/'>Jazz-Plugin</a>-->
+		<!--
+		<h5>Works best in Chrome.
+		For other browser support, consider installing the <a href='http://jazz-soft.net/download/Jazz-Plugin/'>Jazz-Plugin</a>
 	</h5>
-	<a href='#' onclick='setup();'>Relink</a>
+<a href='#' onclick='setup();'>Relink</a>
 	<p id='status'></p>
-	<div id='dropdowns'></div>
+	<div id='dropdowns'></div>-->
 
 	<div class='keyboard'>
 	<a href='#' data-midi='60' class='WhiteKey'>A</a>
@@ -43,6 +44,11 @@
 	</div>
 
 	<div id="staveInput"></div>
+	<!--<p>Note: Relative note length is recorded. Changing BPM only changes rendering of input.</p>
+	<form>
+		<input id="bpmSlider" type="range" min='60' max='240' step="1" value="120"></input>
+		<span id="bpmArea"></span>
+	</form>-->
 	<pre id='csv' style='font-size: .5em;'></pre>
 	<button id='searchCSV' class='btn btn-primary'>Search CSV</button>
 	<div id='results'></div>

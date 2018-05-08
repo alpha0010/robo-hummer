@@ -102,6 +102,7 @@ def main(argv):
         sys.stderr.write("Usage: %s music-xml-files...\n" % (argv[0],))
         return 1
 
+    # TODO: Is this context length optimal?
     contextLen = 4
     sqliteDbName = "file-index.sqlite"
 
@@ -119,6 +120,7 @@ def main(argv):
     bar = ProgressBar(len(files))
     bar.start()
 
+    # Process the data.
     for fileName in files:
         notes = musicXmlToNotes(fileName)
         features = list(searcher.extractAllFeatures(notes, contextLen))

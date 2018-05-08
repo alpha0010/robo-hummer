@@ -44,6 +44,7 @@ def main(argv):
     notes = []
 
     if argv[1] == '--csv':
+        # Input is a list of notes.
         reader = csv.reader(sys.stdin)
         for row in reader:
             notes.append({
@@ -65,6 +66,9 @@ def main(argv):
                 notes[-1]["len"] += 1
 
     # Search.
+    #
+    # TODO: 30 nearest-neighbors may or may not be optimal. This might also
+    #       depend on index size.
     features = list(extractAllFeatures(notes, contextLen))
     results = searchIndex.knnQueryBatch(queries=features, k=30)
 

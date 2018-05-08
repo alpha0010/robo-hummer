@@ -2,9 +2,11 @@ import api
 import sys
 import tensorflow as tf
 
+# Predict the sequence of MIDI notes in an audio file.
 def main(argv):
     features = api.readFeatures(argv[1])
 
+    # Initialize machine learning model.
     melFeatureColumn = tf.feature_column.numeric_column(
         key="mel",
         shape=len(features[0])
@@ -20,6 +22,7 @@ def main(argv):
     for (pred, feat) in zip(predictions, features):
         notes.append(pred["predictions"][0])
 
+    # Process raw results.
     smoothed = smooth(notes)
     chunks = segment(smoothed)
 
@@ -30,13 +33,20 @@ def main(argv):
 
     return 0
 
+# Tensorflow data helper.
 def inputPredictFn(features):
     return {"mel": tf.convert_to_tensor(features)}
 
+# Temporally normalize a list.
+#
+# Uses median of 3.
 def smooth(notes):
     for segment in api.windowItr(notes, 3):
         yield api.median(segment)
 
+# Chunk a list into sublists of similar values.
+#
+# TODO: Test different magic numbers.
 def segment(notes):
     currVal = None
     runningAvg = None
@@ -48,6 +58,7 @@ def segment(notes):
         runningAvg = (2 * runningAvg + note) / 3
         if abs(currVal - runningAvg) > 0.8 and len(segmentBuf) > 1:
             yield segmentBuf
+            # TODO: Consider setting to: api.median(segmentBuf)
             currVal = note
             segmentBuf = []
         segmentBuf.append(note)
@@ -55,6 +66,10 @@ def segment(notes):
     if segmentBuf:
         yield segmentBuf
 
+# Convert a list of chunks into notes.
+#
+# TODO: Consider combining chunks when their length is significanly shorter
+#       than the length of the longer chunks.
 def coalesce(chunks):
     currData = []
     for chunk in chunks:

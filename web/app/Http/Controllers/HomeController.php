@@ -32,7 +32,7 @@ class HomeController extends Controller
 	}
 
     /**
-     * Show the application dashboard.
+     * Search via audio file.
      *
      * @return \Illuminate\Http\Response
      */
@@ -57,8 +57,9 @@ class HomeController extends Controller
         $exitCode = $process->run();
         if ( $exitCode != 0 )
         {
+            // TODO: Do not use http response 200.
             return [
-                "error" => "Search failed with code $exitCode.",
+                "error"  => "Search failed with code $exitCode.",
                 "stdout" => $process->getOutput(),
                 "stderr" => $process->getErrorOutput(),
             ];
@@ -66,11 +67,17 @@ class HomeController extends Controller
 
         return json_decode($process->getOutput());
     }
+
+    /**
+     * Search via note csv.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function searchCSV(Request $request)
     {
-		$csv = $request->getContent();
-        $searcher  = base_path("../search/searcher2.sh");
-        $process = new Process([
+        $csv      = $request->getContent();
+        $searcher = base_path("../search/searcher2.sh");
+        $process  = new Process([
             $searcher,
             config("search.virtualenv"),
         ]);
@@ -79,8 +86,9 @@ class HomeController extends Controller
         $exitCode = $process->run();
         if ( $exitCode != 0 )
         {
+            // TODO: Do not use http response 200.
             return [
-                "error" => "Search failed with code $exitCode.",
+                "error"  => "Search failed with code $exitCode.",
                 "stdout" => $process->getOutput(),
                 "stderr" => $process->getErrorOutput(),
             ];

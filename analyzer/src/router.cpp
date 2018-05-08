@@ -67,6 +67,7 @@ Router::Router(std::ostream& log)
                     << '"';
 
                 // TODO: Get response code.
+                // https://github.com/criticalstack/libevhtp/issues/75
                 log << " -";
 
                 const char* contentLen = evhtp_header_find(req->headers_out, "Content-Length");

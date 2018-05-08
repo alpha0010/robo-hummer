@@ -21,7 +21,7 @@ class SlideController extends Controller
     }
 
     /**
-     * Show the application dashboard.
+     * View the slideshow.
      *
      * @return \Illuminate\Http\Response
      */
@@ -47,6 +47,11 @@ class SlideController extends Controller
         return view("slides", ["slides" => $slides]);
     }
 
+    /**
+     * Render a slide.
+     *
+     * @return array
+     */
     private function render(string $slideName, string $resourcePath)
     {
         return [

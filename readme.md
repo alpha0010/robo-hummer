@@ -42,7 +42,7 @@ To send it to the background, press `Ctrl-Z`, then execute `bg`.
 
 ### Search index
 
-    apt-get install python-dev virtualenv
+    apt-get install python-pip python-dev virtualenv
     source venv/bin/activate
     pip install nmslib
     cd search

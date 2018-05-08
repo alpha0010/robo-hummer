@@ -5,9 +5,11 @@ import os
 import sys
 import tensorflow as tf
 
+# Train a neural network to guess notes from an audio file.
 def main(argv):
     data = listData(argv[1])
 
+    # Pull features from analyzer server.
     features = []
     freqs = []
     for datum in data:
@@ -15,17 +17,18 @@ def main(argv):
         features.extend(nFeats)
         freqs.extend(nFreqs)
 
+    # Initialize machine learning model.
     melFeatureColumn = tf.feature_column.numeric_column(
         key="mel",
         shape=len(features[0])
     )
-
     model = tf.estimator.DNNRegressor(
         hidden_units=[16, 16],
         feature_columns=[melFeatureColumn],
         model_dir="model"
     )
 
+    # Train.
     logging.getLogger().setLevel(logging.INFO)
     model.train(
         input_fn=lambda:inputTrainFn(features, freqs),
@@ -72,7 +75,10 @@ def genNoteToMidi():
 
     return nameToMidi
 
+# Tensorflow data helper.
 def inputTrainFn(features, freqs):
+    # TODO: Test different values.
+    # These (may) impact performance and/or learning accuracy.
     bufferSize = 8000
     batchSize  = 2000
 
@@ -86,6 +92,7 @@ def inputTrainFn(features, freqs):
         .make_one_shot_iterator()       \
         .get_next()
 
+# Pull feature vectors.
 def readFeatures(notes, freq):
     print("Reading {}".format(notes))
     features = api.readFeatures("training/" + notes)

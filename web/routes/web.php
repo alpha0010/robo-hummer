@@ -14,3 +14,4 @@
 Route::get('/', 'HomeController@index')->name('home');
 Route::get('/keyboard', 'HomeController@keyboard')->name('keyboard');
 Route::get('/slides/{name}', 'SlideController@index')->name('slides');
+Route::get('/paper.pdf', 'HomeController@paper')->name('pdf paper');

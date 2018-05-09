@@ -95,5 +95,19 @@ class HomeController extends Controller
         }
 
         return json_decode($process->getOutput());
-	}
+    }
+
+    public function paper(Request $request)
+    {
+        $thePath = tempnam("/tmp", "paper-") . ".pdf";
+        $process = new Process(
+            array_merge(
+                ["pandoc", "-o", $thePath],
+                glob(resource_path("paper/*.md"))
+            )
+        );
+        $process->run();
+        return response()->file($thePath);
+    }
+
 }

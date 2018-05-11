@@ -11,7 +11,8 @@
 |
 */
 
-Route::get('/', 'HomeController@index')->name('home');
-Route::get('/keyboard', 'HomeController@keyboard')->name('keyboard');
-Route::get('/slides/{name}', 'SlideController@index')->name('slides');
-Route::get('/paper.pdf', 'HomeController@paper')->name('pdf paper');
+Route::get("/hummer",        "HomeController@index"   )->name("hummer");
+Route::get("/",              "HomeController@keyboard")->name("keyboard");
+Route::get("/slides/{name}", "SlideController@index"  )->name("slides");
+Route::get("/paper.pdf",     "HomeController@paper"   )->name("pdf paper");
+Route::get("/about",         "HomeController@about"   )->name("about");

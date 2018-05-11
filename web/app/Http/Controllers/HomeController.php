@@ -5,18 +5,22 @@ namespace App\Http\Controllers;
 use Illuminate\Http\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Parsedown;
 use Symfony\Component\Process\Exception\RuntimeException;
 use Symfony\Component\Process\Process;
 
 class HomeController extends Controller
 {
+    private $renderer;
+
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(Parsedown $renderer)
     {
+        $this->renderer = $renderer;
     }
 
     /**
@@ -98,6 +102,14 @@ class HomeController extends Controller
         }
 
         return json_decode($process->getOutput());
+    }
+
+    public function about()
+    {
+        $content = $this->renderer->text(
+            file_get_contents(resource_path("about.md"))
+        );
+        return view("about", ["content" => $content]);
     }
 
     public function paper()

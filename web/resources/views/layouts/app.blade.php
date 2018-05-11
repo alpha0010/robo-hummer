@@ -34,12 +34,15 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
-
+                        <li><a class="nav-link" href="{{ route('about') }}">About Us</a></li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->
                     <ul class="navbar-nav ml-auto">
                         <li><a class="nav-link" href="https://github.com/alpha0010/robo-hummer">Source</a></li>
+                        <li><a class="nav-link" href="{{ route('pdf paper') }}">Paper</a></li>
+                        <li><a class="nav-link" href="{{ route('slides', 'final-report') }}">Slides</a></li>
+                        <li><a class="nav-link" href="https://cs.calvin.edu">Calvin Computer Science</a></li>
                     </ul>
                 </div>
             </div>

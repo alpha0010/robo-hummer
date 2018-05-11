@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\File;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\Process\Exception\RuntimeException;
 use Symfony\Component\Process\Process;
 
 class HomeController extends Controller
@@ -97,17 +100,48 @@ class HomeController extends Controller
         return json_decode($process->getOutput());
     }
 
-    public function paper(Request $request)
+    public function paper()
     {
-        $thePath = tempnam("/tmp", "paper-") . ".pdf";
-        $process = new Process(
-            array_merge(
-                ["pandoc", "-o", $thePath],
-                glob(resource_path("paper/*.md"))
-            )
-        );
-        $process->run();
-        return response()->file($thePath);
+        $mdFiles = glob(resource_path("paper/*.md"));
+        $hash = "";
+        foreach ($mdFiles as $mdFile)
+        {
+            $hash .= md5_file($mdFile);
+        }
+        $hash = md5($hash);
+
+        if (!Storage::exists("paper/$hash.pdf"))
+        {
+            $this->generatePaper($mdFiles, $hash);
+        }
+
+        return response()->file(storage_path("app/paper/$hash.pdf"));
     }
 
+    private function generatePaper(array $mdFiles, string $hash)
+    {
+        $tempPath = tempnam("/tmp", "paper-") . ".pdf";
+        $process = new Process(
+            array_merge(["pandoc", "-o", $tempPath], $mdFiles)
+        );
+
+        $exitCode = $process->run();
+        if ($exitCode != 0)
+        {
+            throw new RuntimeException(
+                "`" . $process->getCommandLine() . "` failed ($exitCode)\n"
+                . $process->getErrorOutput()
+            );
+        }
+
+        Storage::putFileAs("paper", new File($tempPath), "$hash.pdf");
+
+        foreach (Storage::files("paper") as $pdf)
+        {
+            if ($pdf != "paper/$hash.pdf")
+            {
+                Storage::delete($pdf);
+            }
+        }
+    }
 }

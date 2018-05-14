@@ -16,3 +16,7 @@ The audio analyzer is implemented as a REST endpoint. However, the search
 script must reinitialize indicies on each run, adding inefficiency. Converting
 to also be a micro server (ideally via
 [AIOHTTP](https://github.com/aio-libs/aiohttp)) could improve performance.
+
+Further exploration of pitch detection algorithms could provide a viable
+replacement for neural network based note recognition. Our experiments with YIN
+(and related techniques) were minimal, and so could see improvements.

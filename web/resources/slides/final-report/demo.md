@@ -1,3 +1,3 @@
 ### Demo
 
-[launch demo](/keyboard)
+[launch demo](/)

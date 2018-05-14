@@ -124,7 +124,12 @@ class HomeController extends Controller
 
         if (!Storage::exists("paper/$hash.pdf"))
         {
+            $cwd = getcwd();
+            chdir(resource_path("paper"));
+
             $this->generatePaper($mdFiles, $hash);
+
+            chdir($cwd);
         }
 
         return response()->file(storage_path("app/paper/$hash.pdf"));
@@ -134,7 +139,7 @@ class HomeController extends Controller
     {
         $tempPath = tempnam("/tmp", "paper-") . ".pdf";
         $process = new Process(
-            array_merge(["pandoc", "-o", $tempPath], $mdFiles)
+            array_merge(["pandoc", "-Vcolorlinks", "-o", $tempPath], $mdFiles)
         );
 
         $exitCode = $process->run();

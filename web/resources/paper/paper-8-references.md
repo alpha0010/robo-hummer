@@ -1,4 +1,4 @@
-### References
+## References
 
 For our project, we used Marsyas and Tensorflow for the audio analysis section.
 

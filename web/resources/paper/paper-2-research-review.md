@@ -1,4 +1,4 @@
-### Research Review
+## Research Review
 
 Searching using the on-screen keyboard on hymnary.org is quite cumbersome. 
 Various companies already produce software capable of recognizing songs from

@@ -1,4 +1,4 @@
-### Results and Conclusions
+## Conclusions
 
 Through much neural network training, we couldn't get the humming part of the project
 working soon enough.

@@ -1,4 +1,4 @@
-### Vision and Overview
+## Vision and Overview
 
 This senior design project aimed to write a program that searches for songs on
 Hymnary.org by a user's audio rendition of the melody (especially via humming).

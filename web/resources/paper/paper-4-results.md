@@ -1,4 +1,4 @@
-### Results
+## Results
 
 Our initial neural networks for predicting notes from audio data supported
 excessive learning capabilities. This resulted in the networks learning the

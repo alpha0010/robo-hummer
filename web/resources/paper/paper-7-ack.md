@@ -1,4 +1,4 @@
-### Acknowledgements
+## Acknowledgements
 
 We acknowledge Dr. W. Harry Plantinga, for provision of MusicXML files for the search index,
 as well as a script to assist in importing data from these.

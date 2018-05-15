@@ -2,7 +2,17 @@
 ---
 
 ### Zachariah DeCook
-placeholder
+| | |
+| -: | :- |
+| Email:  | ![ZJD email](/img/zjd_email.svg) |
+| Site:   | [zachdecook.com](https://zachdecook.com)|
+| Github: | [earboxer](https://github.com/earboxer) |
+
+Born in the 90s,
+[started programming in the 00s](https://gbatemp.net/threads/helicopter-ds.198626/),
+[got a job in the 10s](https://hymnary.org/search?qu=textName%3Aas+the+deer).
+
+Looking forward to see what the next couple of decades bring.
 
 ---
 

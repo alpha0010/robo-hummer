@@ -5,10 +5,14 @@ excessive learning capabilities. This resulted in the networks learning the
 exact training files. When fed new data, prediction performance was abysmal,
 often ranging +/- 1 octave.
 
+![Over-training.](predict-midi-16-64-64.pdf)
+
 To improve the model, we reduced the size of the neural network while
 increasing the number of input features. The prediction range narrowed to
 approximately +/- 3 tones. A significant improvement, but insufficient accuracy
 to make search via humming practical.
+
+![Smaller network.](predict-midi-24-16-16.pdf)
 
 Our alternate method of predicting notes was based on the YIN algorithm.
 Although this algorithm is commonly used in tuners, we were unable to get

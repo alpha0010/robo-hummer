@@ -1,0 +1,10 @@
+#!/bin/bash
+
+dart exec mysql mysql -e "CREATE DATABASE roboHummer CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" \
+    && dart exec - composer install --no-suggest        \
+    && dart exec - ./artisan key:generate               \
+    && dart exec - ./artisan migrate                    \
+    && dart exec - chgrp www-data -R storage bootstrap  \
+	&& dart exec - chmod g+w      -R storage bootstrap  \
+    && dart x - npm install                             \
+    && dart x - npm run dev

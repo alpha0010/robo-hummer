@@ -23,6 +23,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
+        $this->app[ "request" ]->server->set( "HTTPS", TRUE );
         //
     }
 }

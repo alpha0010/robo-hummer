@@ -1,0 +1,3 @@
+#!/bin/bash
+
+echo ENV_FILE="$(./container/web/make-env $3)"

@@ -1,4 +1,32 @@
 tests:
   stage: test
+  tags:
+    - php-7
   script:
-    - echo DONE
+    - mkdir ~/.ssh
+    - chmod 700 ~/.ssh
+    - cp ~/ssh-keys/* ~/.ssh/
+    - cd web
+    - composer install
+    - test ! -e .env && cp .env.example .env && ./artisan key:generate
+    - ./artisan passport:keys
+    - vendor/bin/phpunit
+  artifacts:
+    paths:
+      - web/coverage/
+    expire_in: 1 day
+  cache:
+    paths:
+      - web/vendor/
+
+docs:
+  stage: deploy
+  tags:
+    - doxygen
+  dependencies:
+    - tests
+  script:
+    - rm -rf /srv/coverage.gitlab.ccel.org/htdocs/robo-hummer
+    - mv web/coverage/ /srv/coverage.gitlab.ccel.org/htdocs/robo-hummer
+  only:
+    - master

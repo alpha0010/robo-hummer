@@ -1,4 +1,20 @@
-## RoboHummer
+# RoboHummer
+
+## Setup using Dart
+
+This project uses `/srv/robo-media` to store media.
+
+`dart up` to get the site going
+
+### Melody Search
+
+```
+dart x web
+cd ../search
+python indexer.py ../media/*/melody.xml
+```
+
+## Traditional Setup
 
 ### Web front end
 

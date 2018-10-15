@@ -9,6 +9,7 @@ services:
     volumes:
       - ..:/var/www/
       - $ENV_FILE:/var/www/web/.env
+      - /srv/robo-media:/srv/robo-media
       - /etc/hostname:/etc/host-hostname:ro # Provide the container with the host's hostname
     networks:
       - def

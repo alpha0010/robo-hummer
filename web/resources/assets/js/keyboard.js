@@ -78,11 +78,7 @@ function showResults( results )
 	$('#results').text("");
 	for( i = 0; i < results.length; i++ )
 	{
-		var filename = results[i]['name'].match( /[^/]*$/ )[0];
-		var hymnal = filename.match( /^[^-]*/ )[0];
-		var number = filename.split('-')[1].split('.')[0];
-		var reslink = "<a href='https://hymnary.org/hymn/" + hymnal + "/" + number + "'>"
-			+ filename + "</a><br/>";
+		var reslink = "<a href='" + results[i]['url'] + "'>" + results[i]['title'] + "</a>";
 		$('#results').append( reslink );
 	}
 }

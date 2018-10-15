@@ -75,7 +75,23 @@ class SearchController extends Controller
 			];
 		}
 
-		return json_decode($process->getOutput());
+		$results = json_decode($process->getOutput());
+		return $this->addTitles( $results );
+	}
+
+	/**
+	 * @brief Adds title and url for search results.
+	 */
+	private function addTitles( $results )
+	{
+		foreach ( $results as &$result )
+		{
+			// TODO: Lookup media file's title and URL.
+			$result->title = $result->name;
+			// TODO: store base-site in a variable
+			$result->url   = "https://hymnary.org/";
+		}
+		return $results;
 	}
 
 }

@@ -15,9 +15,13 @@ class CreateMediaTable extends Migration
 	{
 		Schema::create( 'media', function ( Blueprint $table ) {
 			$table->increments( 'id' );
-			$table->string( 'original', 64 );
-			$table->integer( 'tuneID' )->unsigned()->nullable();
-			$table->integer( 'textID' )->unsigned()->nullable();
+			$table->string( 'originalFile', 64 )
+				->comment( "The filename of the first media file uploaded (not generated)." );
+			$table->integer( 'tuneID' )->unsigned()->nullable()
+				->comment( "The hymnary identifier for this tune: hymnary.hymnTune.tuneID." );
+			$table->integer( 'textID' )->unsigned()->nullable()
+				->comment( "The hymnary identifier for this text: hymnary.hymnText.textID. "
+					. "Useful if a media file is uploaded before the instance tune exists." );
 			$table->timestamps();
 		});
 	}

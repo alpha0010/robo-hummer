@@ -7,10 +7,8 @@ tests:
     - chmod 700 ~/.ssh
     - cp ~/ssh-keys/* ~/.ssh/
     - cd web
-    - rm composer.lock
     - composer install
     - test ! -e .env && cp .env.example .env && ./artisan key:generate
-    - ./artisan passport:keys
     - vendor/bin/phpunit
   artifacts:
     paths:

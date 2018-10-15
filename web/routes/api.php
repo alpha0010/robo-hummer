@@ -13,5 +13,5 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::post("/upload", "HomeController@search")->name("search");
-Route::post("/uploadCSV", "HomeController@searchCSV")->name("searching with something");
+Route::post("/upload", "SearchController@search")->name("search");
+Route::post("/uploadCSV", "SearchController@searchCSV")->name("searching by csv");

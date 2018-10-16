@@ -11,7 +11,7 @@ This project uses `/srv/robo-media` to store media.
 ```
 dart x web
 cd ../search
-python indexer.py ../media/*/melody.xml
+python indexer.py /srv/robo-media/*/melody.xml
 ```
 
 ## Traditional Setup

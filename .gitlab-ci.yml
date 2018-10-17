@@ -1,4 +1,33 @@
 tests:
   stage: test
+  tags:
+    - php-7
   script:
-    - echo DONE
+    - mkdir ~/.ssh
+    - chmod 700 ~/.ssh
+    - cp ~/ssh-keys/* ~/.ssh/
+    - cd web
+    - composer install
+    - test ! -e .env && cp .env.example .env && ./artisan key:generate
+    - vendor/bin/phpunit --coverage-text | tee coverage.txt
+    - echo Print out the coverage so gitlab\'s regex picks it up.
+    - grep -P "^[^M]*Lines:\s*\d+.\d+\%" coverage.txt | sed "s/\x1B\[[0-9;]\+[A-Za-z]//g"
+  artifacts:
+    paths:
+      - web/coverage/
+    expire_in: 1 day
+  cache:
+    paths:
+      - web/vendor/
+
+docs:
+  stage: deploy
+  tags:
+    - doxygen
+  dependencies:
+    - tests
+  script:
+    - rm -rf /srv/coverage.gitlab.ccel.org/htdocs/robo-hummer
+    - mv web/coverage/ /srv/coverage.gitlab.ccel.org/htdocs/robo-hummer
+  only:
+    - master

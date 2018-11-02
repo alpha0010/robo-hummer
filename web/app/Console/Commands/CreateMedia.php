@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Media;
 use Illuminate\Console\Command;
 
 class CreateMedia extends Command
@@ -11,14 +12,18 @@ class CreateMedia extends Command
 	 *
 	 * @var string
 	 */
-	protected $signature = 'media:create';
+	protected $signature = 'media:create '
+		. '{file : URL of the file to upload} '
+		. '{--textID= : Hymnary Text ID for this media file} '
+		. '{--tuneID= : Hymnary Tune ID for this media file}'
+	;
 
 	/**
 	 * The console command description.
 	 *
 	 * @var string
 	 */
-	protected $description = 'Command description';
+	protected $description = 'Create an authoritative media file.';
 
 	/**
 	 * Create a new command instance.
@@ -37,6 +42,24 @@ class CreateMedia extends Command
 	 */
 	public function handle()
 	{
-		//
+		// TODO: Save file to temporary location.
+		$file = file_get_contents( $this->argument( 'file' ) );
+
+		// TODO: Determine file type.
+		$filename = "harmony.musicxml";
+
+		$media = new Media( [
+			"originalFile" => $filename,
+			"textID" => $this->option( 'textID' ),
+			"tuneID" => $this->option( 'tuneID' ),
+		] );
+		$media->save();
+
+		$directory = "../media/$media->id";
+		mkdir( $directory );
+		// TODO: Move file from temporary location.
+		file_put_contents( $directory . '/' . $filename, $file );
+
+		$this->line( "You can view this media at <info>" . url( "/" ) . "/media/$media->id/$filename" );
 	}
 }

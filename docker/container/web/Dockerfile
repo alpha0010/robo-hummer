@@ -1,4 +1,5 @@
-FROM docker-registry.internal.ccel.org:5443/php7
+ARG IMG_TAG=$IMG_TAG
+FROM docker-registry.internal.ccel.org:5443/php7:${IMG_TAG}
 
 WORKDIR /var/www/web
 

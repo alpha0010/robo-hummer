@@ -3,7 +3,10 @@ version: '2.2'
 
 services:
   web:
-    build: container/web/
+    build:
+      context: ./container/web/
+      args:
+        - IMG_TAG=$IMG_TAG
     ports:
       - ${WEB_PORT}:80
     volumes:

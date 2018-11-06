@@ -59,7 +59,7 @@ class CreateMedia extends Command
 		$directory = Media::getDir() . "/$media->id";
 		Storage::makeDirectory( $directory );
 		// TODO: Move file from temporary location.
-		Storage::put( $filename, $file, $directory );
+		Storage::put( $directory . "/" . $filename, $file );
 
 		$this->line( "You can view this media at <info>" . url( "/" ) . "/media/$media->id/$filename" );
 	}

@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Media;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Storage;
 
 class CreateMedia extends Command
 {
@@ -46,7 +47,7 @@ class CreateMedia extends Command
 		$file = file_get_contents( $this->argument( 'file' ) );
 
 		// TODO: Determine file type.
-		$filename = "harmony.musicxml";
+		$filename = "melody.musicxml";
 
 		$media = new Media( [
 			"originalFile" => $filename,
@@ -55,10 +56,10 @@ class CreateMedia extends Command
 		] );
 		$media->save();
 
-		$directory = "../media/$media->id";
-		mkdir( $directory );
+		$directory = Media::getDir() . "/$media->id";
+		Storage::makeDirectory( $directory );
 		// TODO: Move file from temporary location.
-		file_put_contents( $directory . '/' . $filename, $file );
+		Storage::put( $directory . "/" . $filename, $file );
 
 		$this->line( "You can view this media at <info>" . url( "/" ) . "/media/$media->id/$filename" );
 	}

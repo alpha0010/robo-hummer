@@ -2,6 +2,7 @@
 
 namespace App;
 
+use App;
 use Illuminate\Database\Eloquent\Model;
 
 class Media extends Model
@@ -14,4 +15,13 @@ class Media extends Model
 	protected $fillable = [
 		"originalFile", "textID", "tuneID",
 	];
+
+	public static function getDir()
+	{
+		if ( App::environment( "testing" ) )
+		{
+			return "testmedia";
+		}
+		return "media";
+	}
 }

@@ -35,5 +35,8 @@ class CreateMediaTest extends TestCase
 			Storage::get( Media::getDir() . "/1/melody.musicxml" ),
 			file_get_contents( $localPath )
 		);
+
+		// TODO: Test that the output of the command produced a link to the file,
+		// and that that link gives the correct file.
 	}
 }

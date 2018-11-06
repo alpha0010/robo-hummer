@@ -3,7 +3,6 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
-use ClearMedia;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -19,8 +18,7 @@ abstract class TestCase extends BaseTestCase
 		$this->app->make( "db" )
 			->getSchemaBuilder()
 			->enableForeignKeyConstraints();
-
-		$uses =  parent::setUpTraits();
+		$uses = parent::setUpTraits();
 		if ( isset( $uses[ClearMedia::class] ) )
 		{
 			$this->clearMedia();

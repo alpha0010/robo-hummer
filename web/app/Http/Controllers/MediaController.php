@@ -36,6 +36,10 @@ class MediaController extends Controller
 				// Validate that json was returned, and return the object (outputs as json).
 				return json_decode( $process->getOutput() );
 			}
+			else if ( $type == 'original' )
+			{
+				return redirect( "/media/$media->id/$media->originalFile" );
+			}
 		}
 		// Otherwise, the file wasn't found.
 		abort( 404 );

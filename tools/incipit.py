@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 from music21 import *
 from music_tokens import *
+import json
 # from mut_parser import *
 import sys, re
 
@@ -19,5 +20,4 @@ key, inc = get_incipit(s)
 inc = "{0}-{1}-{2}".format(inc[0:5], inc[5:10], inc[10:15])
 inc = re.sub('-$','',inc)
 inc = re.sub('-$','',inc)
-print("Key: {0}".format(key))
-print("Incipit: {0}".format(inc))
+print( json.dumps( [ { 'key': str(key), 'incipit': inc } ] ) )

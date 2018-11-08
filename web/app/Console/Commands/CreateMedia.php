@@ -44,7 +44,8 @@ class CreateMedia extends Command
 	public function handle()
 	{
 		$file = file_get_contents( $this->argument( 'file' ) );
-		$filename = "undetermined";
+		// Save the file as "original", so the route /media/#/original always gives the file.
+		$filename = "original";
 
 		// Save the entry in the database to get an ID,
 		$media = new Media( [
@@ -61,7 +62,8 @@ class CreateMedia extends Command
 
 		// Determine the type of the file.
 		$type = mime_content_type( "storage/app/$directory/$filename" );
-		$newName = "still_undetermined";
+
+		$newName = FALSE;
 		if ( $type == "audio/midi" )
 		{
 			$newName = "harmony.midi";
@@ -70,12 +72,17 @@ class CreateMedia extends Command
 		{
 			$newName = "harmony.musicxml";
 		}
-
-		// Move the file, and update the database.
-		Storage::move( $directory . "/" . $filename, $directory . "/" . $newName );
-		$media->originalFile = $newName;
-		$media->save();
-
+		if ( $newName )
+		{
+			// Move the file, and update the database.
+			Storage::move( $directory . "/" . $filename, $directory . "/" . $newName );
+			$media->originalFile = $newName;
+			$media->save();
+		}
+		else
+		{
+			$this->error( "Unable to determine media type." );
+		}
 		$this->line( "You can view this media at ");
 		$this->info( url( "/" ) . "/media/$media->id/$media->originalFile" );
 	}

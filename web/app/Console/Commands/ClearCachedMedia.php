@@ -53,7 +53,7 @@ class ClearCachedMedia extends Command
 							Storage::delete( $file );
 							if ( $this->option( 'verbose' ) )
 							{
-								$this->line( "Deleted <info>$file</file>" );
+								$this->line( "Deleted <info>$file</info>" );
 							}
 						}
 					}
@@ -64,7 +64,21 @@ class ClearCachedMedia extends Command
 		{
 			if ( $this->option( 'force' ) )
 			{
+				$ids = Media::pluck( 'id' )->toArray();
 				// TODO: Delete files that aren't tracked
+				$directories = Storage::directories( Media::getDir() );
+				foreach ( $directories as $dir )
+				{
+					$dirName = substr( $dir, strlen( Media::getDir() . "/" ) );
+					if ( is_numeric( $dirName ) && ! in_array( (int) $dirName, $ids ) )
+					{
+						Storage::deleteDirectory( $dir );
+						if ( $this->option( 'verbose' ) )
+						{
+							$this->line( "Deleted files inside<info>$dir</info>" );
+						}
+					}
+				}
 			}
 		}
 	}

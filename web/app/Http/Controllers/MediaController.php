@@ -16,25 +16,25 @@ class MediaController extends Controller
 		$filepath = Media::getDir() . "/$number/$type";
 		if ( Storage::exists( $filepath ) )
 		{
-			return Storage::response( $filepath );
+			return $this->getFileResponse( $filepath );
 		}
 
 		$media = Media::find( $number );
 		if ( $media )
 		{
-			if ( $type == 'incipit' )
+			if ( in_array( $type, [ 'incipit.json', 'harmony.musicxml' ] ) )
 			{
 				$shell_path = "../storage/app/"
 					. Media::getDir()
 					. "/$media->id/$media->originalFile";
-				$process = new Process( [ "../../tools/incipit.py", $shell_path ] );
+				$process = new Process( [ "../../tools/convert.py", $shell_path, $type ] );
 				$process->run();
 				if ( ! $process->isSuccessful() )
 				{
 					throw new ProcessFailedException($process);
 				}
-				// Validate that json was returned, and return the object (outputs as json).
-				return json_decode( $process->getOutput() );
+				Storage::put( $filepath, $process->getOutput() );
+				return $this->getFileResponse( $filepath );
 			}
 			else if ( $type == 'original' )
 			{
@@ -43,5 +43,19 @@ class MediaController extends Controller
 		}
 		// Otherwise, the file wasn't found.
 		abort( 404 );
+	}
+
+	/**
+	 * @brief Get a file response.
+	 * @param Filename
+	 * @returns Either an object, if this is to be returned as json, or the file response.
+	 */
+	private function getFileResponse( $filepath )
+	{
+		if ( substr( $filepath, -5 ) == '.json' )
+		{
+			return json_decode( Storage::get( $filepath ) );
+		}
+		return Storage::response( $filepath );
 	}
 }

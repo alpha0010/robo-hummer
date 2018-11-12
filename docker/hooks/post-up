@@ -7,4 +7,5 @@ dart exec mysql mysql -e "CREATE DATABASE roboHummer CHARACTER SET utf8mb4 COLLA
 	&& dart exec - chgrp www-data -R storage bootstrap  \
 	&& dart exec - chmod g+w      -R storage bootstrap  \
 	&& dart x - npm install --unsafe-perm               \
-	&& dart x - npm run dev
+	&& dart x - npm run dev                             \
+	&& ( [[ ! "$IMG_TAG" =~ .*-dev$ ]] || dart +artisan media:clear-cache --force )

@@ -11,7 +11,7 @@ RUN tar -xf /tmp/node.tar.xz -C /var/lib \
 	&& pip install pybind11 && pip install nmslib \
 	&& mv $(find /var/lib -maxdepth 1 -mindepth 1 -type d -name node-*) /var/lib/nodejs
 
-RUN apt-get install -y python3=3.5.3* python3-pip \
+RUN apt-get update && apt-get install -y python3=3.5.3* python3-pip \
 	&& pip3 install music21==5.5.0 && pip3 install numpy
 
 ENV PATH="${PATH}:/var/lib/nodejs/bin"

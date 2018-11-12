@@ -54,6 +54,26 @@ class CreateMediaTest extends TestCase
 				"originalFile" => "harmony.midi",
 			]
 		);
+		$this->assertEquals( "harmony.midi", Media::find(1)->originalFile );
+	}
+	public function testMediaTypeDeterminedMusicXML()
+	{
+		$localPath = "../examplemedia/1/melody.musicxml";
+		$exitCode = Artisan::call(
+			"media:create",
+			[ 'file' => $localPath ]
+		);
+		$this->assertEquals( 0, $exitCode );
+		$output = Artisan::output();
+		$this->assertContains( "1/harmony.musicxml", $output );
+
+		$this->assertDatabaseHas( "media",
+			[
+				"id" => 1,
+				"originalFile" => "harmony.musicxml",
+			]
+		);
+		$this->assertEquals( "harmony.musicxml", Media::find(1)->originalFile );
 	}
 
 	public function testMediaTypeUndetermined()

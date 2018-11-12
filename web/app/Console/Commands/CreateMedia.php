@@ -43,12 +43,11 @@ class CreateMedia extends Command
 	 */
 	public function handle()
 	{
-		// TODO: Save file to temporary location.
 		$file = file_get_contents( $this->argument( 'file' ) );
+		// Save the file as "original", so the route /media/#/original always gives the file.
+		$filename = "original";
 
-		// TODO: Determine file type.
-		$filename = "melody.musicxml";
-
+		// Save the entry in the database to get an ID,
 		$media = new Media( [
 			"originalFile" => $filename,
 			"textID" => $this->option( 'textID' ),
@@ -56,11 +55,35 @@ class CreateMedia extends Command
 		] );
 		$media->save();
 
+		// then save the file in the directory for the media ID.
 		$directory = Media::getDir() . "/$media->id";
 		Storage::makeDirectory( $directory );
-		// TODO: Move file from temporary location.
 		Storage::put( $directory . "/" . $filename, $file );
 
-		$this->line( "You can view this media at <info>" . url( "/" ) . "/media/$media->id/$filename" );
+		// Determine the type of the file.
+		$type = mime_content_type( "storage/app/$directory/$filename" );
+
+		$newName = FALSE;
+		if ( $type == "audio/midi" )
+		{
+			$newName = "harmony.midi";
+		}
+		else if ( $type == "application/xml" )
+		{
+			$newName = "harmony.musicxml";
+		}
+		if ( $newName )
+		{
+			// Move the file, and update the database.
+			Storage::move( $directory . "/" . $filename, $directory . "/" . $newName );
+			$media->originalFile = $newName;
+			$media->save();
+		}
+		else
+		{
+			$this->error( "Unable to determine media type." );
+		}
+		$this->line( "You can view this media at ");
+		$this->info( url( "/" ) . "/media/$media->id/$media->originalFile" );
 	}
 }

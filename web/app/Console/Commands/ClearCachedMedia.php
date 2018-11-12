@@ -47,7 +47,8 @@ class ClearCachedMedia extends Command
 				{
 					if ( $file != Media::getDir() . "/$entry->id/$entry->originalFile" )
 					{
-						if ( ! $this->option( 'type' ) || $this->option( 'type' ) == $file )
+						$typePath = Media::getDir() . "/$entry->id/" . $this->option( 'type' );
+						if ( ! $this->option( 'type' ) || $typePath == $file )
 						{
 							Storage::delete( $file );
 							if ( $this->option( 'verbose' ) )

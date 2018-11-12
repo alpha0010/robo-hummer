@@ -34,9 +34,17 @@ class ClearCachedMedia extends Command
 	public function handle()
 	{
 		$media = Media::all();
+		$mediaArg = $this->argument( 'media' );
 		if ( $this->argument( 'media' ) )
 		{
-			$media = [ Media::findOrFail( $this->argument( 'media' ) ) ];
+			$media = [ Media::find( $mediaArg ) ];
+			if ( ! $media[ 0 ] )
+			{
+				$this->error( "Could not find media entry '$mediaArg'." );
+				$this->line( "Consider using <info>media:clear-cache --force</info> "
+					. "to clear caches, including untracked media." );
+				return 1;
+			}
 		}
 		foreach ( $media as $entry )
 		{

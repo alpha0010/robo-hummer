@@ -89,6 +89,21 @@ class ClearCachedMediaTest extends TestCase
 		$this->assertDeleted( "/2/harmony.midi" );
 		$this->assertNotDeleted( "/3/harmony.musicxml" );
 	}
+	public function testClearForOneFailure()
+	{
+		$this->setupFiles();
+		$exitCode = Artisan::call( "media:clear-cache", [ 'media' => "3" ] );
+		$this->assertEquals( 1, $exitCode );
+		$output = Artisan::output();
+		$this->assertContains( "Could not find media file '3'", $output );
+		$this->assertContains( "media:clear-cache --force", $output );
+
+		$this->assertNotDeleted( "/1/harmony.midi" );
+		$this->assertNotDeleted( "/2/harmony.musicxml" );
+		$this->assertNotDeleted( "/1/harmony.musicxml" );
+		$this->assertNotDeleted( "/2/harmony.midi" );
+		$this->assertNotDeleted( "/3/harmony.musicxml" );
+	}
 
 	public function testClearForce()
 	{

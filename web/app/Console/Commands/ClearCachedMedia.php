@@ -49,13 +49,18 @@ class ClearCachedMedia extends Command
 		foreach ( $media as $entry )
 		{
 			$files = Storage::allFiles( Media::getDir() . "/" . $entry->id );
-			if ( in_array( Media::getDir() . "/$entry->id/$entry->originalFile", $files ) )
+			// Only delete cached files if the original file is still there.
+			$originalFile = Media::getDir() . "/$entry->id/$entry->originalFile";
+			if ( in_array( $originalFile, $files ) )
 			{
 				foreach ( $files as $file )
 				{
-					if ( $file != Media::getDir() . "/$entry->id/$entry->originalFile" )
+					// Don't delete the original file.
+					if ( $file != $originalFile )
 					{
 						$typePath = Media::getDir() . "/$entry->id/" . $this->option( 'type' );
+						// If the --type option is used, delete only the matching file,
+						// otherwise, delete all other cached files.
 						if ( ! $this->option( 'type' ) || $typePath == $file )
 						{
 							Storage::delete( $file );

@@ -58,4 +58,17 @@ class MediaController extends Controller
 		}
 		return Storage::response( $filepath );
 	}
+
+	public function post( Request $request )
+	{
+		$filename = 'original';
+		// TODO: Accept textID and tuneID from the post request
+		$media = new Media( [
+			"originalFile" => $filename,
+		] );
+		$media->save();
+		$request->file( 'file' )->storeAs( Media::getDir() . "/$media->id", $filename );
+		$media->updateFileType();
+		return $media;
+	}
 }

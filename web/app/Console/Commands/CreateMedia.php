@@ -60,26 +60,7 @@ class CreateMedia extends Command
 		Storage::makeDirectory( $directory );
 		Storage::put( $directory . "/" . $filename, $file );
 
-		// Determine the type of the file.
-		$type = mime_content_type( "storage/app/$directory/$filename" );
-
-		$newName = FALSE;
-		if ( $type == "audio/midi" )
-		{
-			$newName = "harmony.midi";
-		}
-		else if ( $type == "application/xml" )
-		{
-			$newName = "harmony.musicxml";
-		}
-		if ( $newName )
-		{
-			// Move the file, and update the database.
-			Storage::move( $directory . "/" . $filename, $directory . "/" . $newName );
-			$media->originalFile = $newName;
-			$media->save();
-		}
-		else
+		if ( ! $media->updateFileType() )
 		{
 			$this->error( "Unable to determine media type." );
 		}

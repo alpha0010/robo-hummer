@@ -1,17 +1,22 @@
 tests:
   stage: test
   tags:
-    - php-7
+    - unit-tests
   script:
-    - mkdir ~/.ssh
-    - chmod 700 ~/.ssh
-    - cp ~/ssh-keys/* ~/.ssh/
-    - cd web
-    - composer install
-    - test ! -e .env && cp .env.example .env && ./artisan key:generate
-    - vendor/bin/phpunit --coverage-text | tee coverage.txt
+    - export PATH=$PATH:/dart/bin
+    - dart down || echo 'already down'
+    - dart up --dev
+    - dart +phpunit --coverage-text | tee coverage.txt
     - echo Print out the coverage so gitlab\'s regex picks it up.
     - grep -P "^[^M]*Lines:\s*\d+.\d+\%" coverage.txt | sed "s/\x1B\[[0-9;]\+[A-Za-z]//g"
+  after_script:
+    - dart x web chmod -R a+w coverage
+    - dart x web chmod -R a+w vendor
+    - dart x web chmod -R a+w public
+    - dart x web chmod -R a+w node_modules
+    - dart x web chmod -R a+w storage
+    - dart x web chmod -R a+w ../tools
+    - dart down
   artifacts:
     paths:
       - web/coverage/

@@ -28,7 +28,8 @@ class PostMediaTest extends TestCase
 
 	public function testPostMediaWithIDs()
 	{
-		$file = new UploadedFile( '/var/www/examplemedia/1/melody.musicxml', 'filename.ext' );
+		$originalFile = '/var/www/examplemedia/1/melody.musicxml';
+		$file = new UploadedFile( $originalFile, 'filename.ext' );
 		$response = $this->post(
 			'/api/media',
 			[ 'file' => $file, 'textID' => 12345, 'tuneID' => 54321 ]
@@ -40,6 +41,9 @@ class PostMediaTest extends TestCase
 			->assertStatus( 201 );
 		$media = Media::find( $response->json()['id'] );
 		$response->assertJson( [ 'originalFile' => $media->originalFile ] );
-		// TODO: Test that the file was saved in the correct location.
+		$this->assertEquals(
+			file_get_contents( $originalFile ),
+			file_get_contents( '/var/www/web/storage/app/' . $media->getPath() . $media->originalFile )
+		);
 	}
 }

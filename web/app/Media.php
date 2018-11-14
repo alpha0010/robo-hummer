@@ -47,6 +47,14 @@ class Media extends Model
 		return FALSE;
 	}
 
+	/**
+	 * @brief Get the file directory for this media entry.
+	 */
+	public function getPath()
+	{
+		return Media::getDir() . "/" . $this->id . "/";
+	}
+
 	public static function getDir()
 	{
 		if ( App::environment( "testing" ) )

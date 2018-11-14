@@ -5,6 +5,8 @@ namespace App\Console\Commands;
 use App\Media;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Process;
 
 class CreateMedia extends Command
 {
@@ -58,6 +60,13 @@ class CreateMedia extends Command
 		// then save the file in the directory for the media ID.
 		$directory = Media::getDir() . "/$media->id";
 		Storage::makeDirectory( $directory );
+		$process = new Process( [ 'chown', 'www-data:www-data', "/var/www/web/storage/app/" . $directory ] );
+		$process->run();
+		if ( ! $process->isSuccessful() )
+		{
+			throw new ProcessFailedException($process);
+		}
+
 		Storage::put( $directory . "/" . $filename, $file );
 
 		if ( ! $media->updateFileType() )

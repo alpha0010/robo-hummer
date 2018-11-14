@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use app\Media;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Tests\ClearMedia;
@@ -18,9 +19,11 @@ class PostMediaTest extends TestCase
 		$response = $this->post( '/api/media', [ 'file' => $file ] );
 
 		$response
-			->assertJson( [ 'id' => 1, 'textID' => NULL, 'tuneID' => NULL ] )
+			->assertJson( [ 'textID' => NULL, 'tuneID' => NULL ] )
 			->assertJsonMissing( [ 'originalFile' => 'original' ] )
 			->assertStatus( 201 );
+		$media = Media::find( $response->json()['id'] );
+		$response->assertJson( [ 'originalFile' => $media->originalFile ] );
 	}
 
 	public function testPostMediaWithIDs()
@@ -32,8 +35,11 @@ class PostMediaTest extends TestCase
 		);
 
 		$response
-			->assertJson( [ 'id' => 1, 'textID' => 12345, 'tuneID' => 54321 ] )
+			->assertJson( [ 'textID' => 12345, 'tuneID' => 54321 ] )
 			->assertJsonMissing( [ 'originalFile' => 'original' ] )
 			->assertStatus( 201 );
+		$media = Media::find( $response->json()['id'] );
+		$response->assertJson( [ 'originalFile' => $media->originalFile ] );
+		// TODO: Test that the file was saved in the correct location.
 	}
 }

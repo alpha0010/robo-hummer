@@ -31,12 +31,15 @@ class MediaController extends Controller
 					"/var/www/tools/convert.py", $shell_path, $type,
 				] );
 				$process->run();
-				if ( ! $process->isSuccessful() ) {
+				if ( ! $process->isSuccessful() )
+				{
 					throw new ProcessFailedException($process);
 				}
 				Storage::put( $filepath, $process->getOutput() );
 				return $this->getFileResponse( $filepath );
-			} elseif ( in_array( $extension, [ 'ogg', 'mp3', 'wav' ] ) ) {
+			}
+			else if ( in_array( $extension, [ 'ogg', 'mp3', 'wav' ] ) )
+			{
 				// TODO: Don't re-render the premaster if it already exists
 				$process = new Process( [
 					"fluidsynth",
@@ -48,7 +51,8 @@ class MediaController extends Controller
 				$process->run();
 				// fluidsynth doesn't return 1 when unsuccessful (such as invalid soundfont)
 				// TODO: Find a way to verify that fluidsynth created audio that you can hear.
-				if ( ! $process->isSuccessful() ) {
+				if ( ! $process->isSuccessful() )
+				{
 					throw new ProcessFailedException($process);
 				}
 				$process = new Process( [
@@ -60,11 +64,14 @@ class MediaController extends Controller
 					$media->getAbsPath( $type )
 				] );
 				$process->run();
-				if ( ! $process->isSuccessful() ) {
+				if ( ! $process->isSuccessful() )
+				{
 					throw new ProcessFailedException($process);
 				}
 				return $this->getFileResponse( $filepath );
-			} else if ( $type == 'original' ) {
+			}
+			else if ( $type == 'original' )
+			{
 				return redirect( "/media/$media->id/$media->originalFile" );
 			}
 		}

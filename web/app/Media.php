@@ -51,7 +51,8 @@ class Media extends Model
 	public function getPath( $filename = "", $absolute = FALSE )
 	{
 		$abs = "";
-		if ( $absolute ) {
+		if ( $absolute )
+		{
 			$abs = "/var/www/web/storage/app/";
 		}
 		return $abs . Media::getDir() . "/" . $this->id . "/" . $filename;

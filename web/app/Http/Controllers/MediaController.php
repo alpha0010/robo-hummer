@@ -24,9 +24,7 @@ class MediaController extends Controller
 		{
 			if ( in_array( $type, [ 'incipit.json', 'harmony.musicxml' ] ) )
 			{
-				$shell_path = "/var/www/web/storage/app/"
-					. Media::getDir()
-					. "/$media->id/$media->originalFile";
+				$shell_path = $media->getAbsPath( $media->originalFile );
 				$process = new Process( [
 					"sudo", "-u", "python",
 					"/var/www/tools/convert.py", $shell_path, $type,

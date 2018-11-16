@@ -23,10 +23,8 @@ class Media extends Model
 	 */
 	public function updateFiletype()
 	{
-		$filename = $this->originalFile;
-		$directory = Media::getDir() . "/$this->id";
 		// Determine the type of the file.
-		$type = mime_content_type( "/var/www/web/storage/app/$directory/$filename" );
+		$type = mime_content_type( $this->getAbsPath( $this->originalFile ) );
 		$newName = FALSE;
 		if ( $type == "audio/midi" )
 		{
@@ -39,7 +37,7 @@ class Media extends Model
 		if ( $newName )
 		{
 			// Move the file, and update the database.
-			Storage::move( $directory . "/" . $filename, $directory . "/" . $newName );
+			Storage::move( $this->getPath( $this->originalFile ), $this->getPath( $newName ) );
 			$this->originalFile = $newName;
 			$this->save();
 			return TRUE;
@@ -50,9 +48,17 @@ class Media extends Model
 	/**
 	 * @brief Get the file directory for this media entry.
 	 */
-	public function getPath()
+	public function getPath( $filename = "", $absolute = FALSE )
 	{
-		return Media::getDir() . "/" . $this->id . "/";
+		$abs = "";
+		if ( $absolute ) {
+			$abs = "/var/www/web/storage/app/";
+		}
+		return $abs . Media::getDir() . "/" . $this->id . "/" . $filename;
+	}
+	public function getAbsPath( $filename = "" )
+	{
+		return $this->getPath( $filename, TRUE );
 	}
 
 	public static function getDir()

@@ -43,7 +43,7 @@ class PostMediaTest extends TestCase
 		$response->assertJson( [ 'originalFile' => $media->originalFile ] );
 		$this->assertEquals(
 			file_get_contents( $originalFile ),
-			file_get_contents( '/var/www/web/storage/app/' . $media->getPath() . $media->originalFile )
+			file_get_contents( $media->getAbsPath( $media->originalFile ) )
 		);
 	}
 }

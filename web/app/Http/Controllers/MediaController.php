@@ -22,7 +22,9 @@ class MediaController extends Controller
 		$media = Media::find( $number );
 		if ( $media )
 		{
-			list( $name, $extension ) = explode( ".", $type );
+			$parts = explode( ".", $type, 2 );
+			$name = $parts[0];
+			$extension = $parts[1] ?? '';
 			if ( in_array( $type, [ 'incipit.json', 'harmony.musicxml', 'harmony.midi' ] ) )
 			{
 				$shell_path = $media->getAbsPath( $media->originalFile );
@@ -38,14 +40,13 @@ class MediaController extends Controller
 				Storage::put( $filepath, $process->getOutput() );
 				return $this->getFileResponse( $filepath );
 			}
-			else if ( in_array( $extension, [ 'ogg', 'mp3', 'wav' ] ) )
+			else if ( $extension == 'premaster.wav' )
 			{
-				// TODO: Don't re-render the premaster if it already exists
+				$this->checkExists( $number, "$name.midi" );
 				$process = new Process( [
 					"fluidsynth",
 					"-F", $media->getAbsPath( "$name.premaster.wav" ),
 					"/usr/share/sounds/sf2/TimGM6mb.sf2",
-					// TODO: Generate midi file if it doesn't exist.
 					$media->getAbsPath( "$name.midi" )
 				] );
 				$process->run();
@@ -59,6 +60,11 @@ class MediaController extends Controller
 				{
 					abort( 500, "Unable to generate audio from midi." );
 				}
+				return TRUE;
+			}
+			else if ( in_array( $extension, [ 'ogg', 'mp3', 'wav' ] ) )
+			{
+				$this->checkExists( $number, "$name.premaster.wav" );
 				$process = new Process( [
 					'ffmpeg',
 					'-i', $media->getAbsPath( "$name.premaster.wav" ),
@@ -95,6 +101,31 @@ class MediaController extends Controller
 			return json_decode( Storage::get( $filepath ) );
 		}
 		return Storage::response( $filepath );
+	}
+
+	/**
+	 * @brief Creates a media file if it doesn't exist, otherwise, aborts execution.
+	 * @param $number The number of the media entry
+	 * @param $type The filename of the media that we want
+	 */
+	private function checkExists( $number, string $type )
+	{
+		$media = Media::find( $number );
+		if ( ! $media )
+		{
+			abort( 500, "Could not find media entry $number" );
+		}
+		else if ( Storage::exists( $media->getPath( $type ) ) )
+		{
+			return;
+		}
+		else
+		{
+			// $this->get() will also abort if there was an error.
+			$this->get( $number, $type );
+			return;
+		}
+		abort( 404 );
 	}
 
 	public function post( Request $request )

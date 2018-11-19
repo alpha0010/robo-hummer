@@ -57,7 +57,7 @@ class MediaController extends Controller
 				}
 				if ( ! Storage::exists( $media->getPath( "$name.premaster.wav" ) ) )
 				{
-					return "Unable to generate audio from midi.";
+					abort( 500, "Unable to generate audio from midi." );
 				}
 				$process = new Process( [
 					'ffmpeg',

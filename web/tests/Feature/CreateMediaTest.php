@@ -94,4 +94,46 @@ class CreateMediaTest extends TestCase
 			]
 		);
 	}
+
+	public function testTextTuneID()
+	{
+		$localPath = "../examplemedia/3/melody.ogg";
+		$exitCode = Artisan::call(
+			"media:create",
+			[ 'file' => $localPath, '--tuneID' => 12345, '--textID' => "54321" ]
+		);
+		$this->assertEquals( 0, $exitCode );
+		$output = Artisan::output();
+		$this->assertContains( "Unable to determine media type.", $output );
+
+		$this->assertDatabaseHas( "media",
+			[
+				"id" => 1,
+				"originalFile" => "original",
+				"tuneID" => 12345,
+				"textID" => 54321,
+			]
+		);
+	}
+
+	public function testNULLIDs()
+	{
+		$localPath = "../examplemedia/3/melody.ogg";
+		$exitCode = Artisan::call(
+			"media:create",
+			[ 'file' => $localPath, '--tuneID' => "NULL", '--textID' => NULL ]
+		);
+		$this->assertEquals( 0, $exitCode );
+		$output = Artisan::output();
+		$this->assertContains( "Unable to determine media type.", $output );
+
+		$this->assertDatabaseHas( "media",
+			[
+				"id" => 1,
+				"originalFile" => "original",
+				"tuneID" => NULL,
+				"textID" => NULL,
+			]
+		);
+	}
 }

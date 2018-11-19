@@ -49,11 +49,13 @@ class CreateMedia extends Command
 		// Save the file as "original", so the route /media/#/original always gives the file.
 		$filename = "original";
 
+		$textID = $this->option( 'textID' ) == "NULL" ? NULL : $this->option( 'textID' );
+		$tuneID = $this->option( 'tuneID' ) == "NULL" ? NULL : $this->option( 'tuneID' );
 		// Save the entry in the database to get an ID,
 		$media = new Media( [
 			"originalFile" => $filename,
-			"textID" => $this->option( 'textID' ),
-			"tuneID" => $this->option( 'tuneID' ),
+			"textID" => $textID,
+			"tuneID" => $tuneID,
 		] );
 		$media->save();
 

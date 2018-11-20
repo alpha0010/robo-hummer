@@ -22,11 +22,10 @@ class MediaController extends Controller
 		$media = Media::find( $number );
 		if ( $media )
 		{
+			list( $name, $extension ) = explode( ".", $type );
 			if ( in_array( $type, [ 'incipit.json', 'harmony.musicxml' ] ) )
 			{
-				$shell_path = "/var/www/web/storage/app/"
-					. Media::getDir()
-					. "/$media->id/$media->originalFile";
+				$shell_path = $media->getAbsPath( $media->originalFile );
 				$process = new Process( [
 					"sudo", "-u", "python",
 					"/var/www/tools/convert.py", $shell_path, $type,
@@ -37,6 +36,42 @@ class MediaController extends Controller
 					throw new ProcessFailedException($process);
 				}
 				Storage::put( $filepath, $process->getOutput() );
+				return $this->getFileResponse( $filepath );
+			}
+			else if ( in_array( $extension, [ 'ogg', 'mp3', 'wav' ] ) )
+			{
+				// TODO: Don't re-render the premaster if it already exists
+				$process = new Process( [
+					"fluidsynth",
+					"-F", $media->getAbsPath( "$name.premaster.wav" ),
+					"/usr/share/sounds/sf2/TimGM6mb.sf2",
+					// TODO: Generate midi file if it doesn't exist.
+					$media->getAbsPath( "$name.midi" )
+				] );
+				$process->run();
+				// fluidsynth doesn't return 1 when unsuccessful (such as invalid soundfont)
+				// TODO: Find a way to verify that fluidsynth created audio that you can hear.
+				if ( ! $process->isSuccessful() )
+				{
+					throw new ProcessFailedException($process);
+				}
+				if ( ! Storage::exists( $media->getPath( "$name.premaster.wav" ) ) )
+				{
+					return "Unable to generate audio from midi.";
+				}
+				$process = new Process( [
+					'ffmpeg',
+					'-i', $media->getAbsPath( "$name.premaster.wav" ),
+					'-filter_complex',
+					"compand=attacks=0.3 0.3:decays=0.8 0.8:points=-80/-900|-45/-25|-10/-10",
+					// ffmpeg automatically converts to the file format that is requested.
+					$media->getAbsPath( $type )
+				] );
+				$process->run();
+				if ( ! $process->isSuccessful() )
+				{
+					throw new ProcessFailedException($process);
+				}
 				return $this->getFileResponse( $filepath );
 			}
 			else if ( $type == 'original' )

@@ -66,7 +66,7 @@ class DeleteMedia extends Command
 	 *  prints out what it did
 	 * @param string $dir The storage directory from which to delete
 	 * @param Media $media A media entry to delete or NULL if it doesn't exist.
-	 * @param array $counts An array of counts of directories and files that were deleted.
+	 * @param[in,out] array $counts An array of counts of directories and files that were deleted.
 	 */
 	private function delete( $dir, $media, &$counts )
 	{

@@ -1,11 +1,11 @@
 <?php
 
-namespace Tests\Feature;
+namespace Tests;
 
 use Artisan;
 use App\Media;
 use Illuminate\Support\Facades\Storage;
-use Tests\Feature\ClearDeleteMediaTrait;
+use Tests\ClearDeleteMediaTrait;
 
 trait ClearDeleteMediaTrait
 {

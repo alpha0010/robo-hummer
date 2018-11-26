@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use Artisan;
 use App\Media;
 use Tests\ClearMedia;
-use Tests\Feature\ClearDeleteMediaTrait;
+use Tests\ClearDeleteMediaTrait;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Storage;

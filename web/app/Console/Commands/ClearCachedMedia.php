@@ -14,8 +14,7 @@ class ClearCachedMedia extends Command
 	 * @var string
 	 */
 	protected $signature = 'media:clear-cache '
-		. '{media? : id of the media file to clear cache for} '
-		. '{--force : Clear untracked files} '
+		. '{media? : id of the media entry to clear cache for} '
 		. '{--type= : Specific type of media to clear cache for}'
 	;
 
@@ -41,8 +40,8 @@ class ClearCachedMedia extends Command
 			if ( ! $media[ 0 ] )
 			{
 				$this->error( "Could not find media entry '$mediaArg'." );
-				$this->line( "Consider using <info>media:clear-cache --force</info> "
-					. "to clear caches, including untracked media." );
+				$this->line( "Consider using <info>media:delete untracked</info> "
+					. "to delete untracked files." );
 				return 1;
 			}
 		}
@@ -68,27 +67,6 @@ class ClearCachedMedia extends Command
 							{
 								$this->line( "Deleted <info>$file</info>" );
 							}
-						}
-					}
-				}
-			}
-		}
-		if ( ! $this->argument( 'media' ) )
-		{
-			if ( $this->option( 'force' ) )
-			{
-				$ids = Media::pluck( 'id' )->toArray();
-				// TODO: Delete files that aren't tracked
-				$directories = Storage::directories( Media::getDir() );
-				foreach ( $directories as $dir )
-				{
-					$dirName = substr( $dir, strlen( Media::getDir() . "/" ) );
-					if ( is_numeric( $dirName ) && ! in_array( (int) $dirName, $ids ) )
-					{
-						Storage::deleteDirectory( $dir );
-						if ( $this->option( 'verbose' ) )
-						{
-							$this->line( "Deleted files inside<info>$dir</info>" );
 						}
 					}
 				}

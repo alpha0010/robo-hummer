@@ -56,5 +56,7 @@ class SetSSOKey extends Command
 			$path = 'testing-sso-public.key';
 		}
 		Storage::put( $path, $publicKey );
+
+		$this->line( "SSO public key stored in <info>$path</info>" );
 	}
 }

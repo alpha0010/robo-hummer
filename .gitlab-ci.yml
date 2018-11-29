@@ -3,17 +3,19 @@ tests:
   tags:
     - unit-tests
   script:
+    - export SUDO_USER=$(whoami)
     - export PATH=$PATH:/dart/bin
     - dart down || echo 'already down'
     - dart up --dev
     - dart +phpunit --coverage-text | tee coverage.txt
     - echo Print out the coverage so gitlab\'s regex picks it up.
     - grep -P "^[^M]*Lines:\s*\d+.\d+\%" coverage.txt | sed "s/\x1B\[[0-9;]\+[A-Za-z]//g"
+    - ls web/coverage || exit 1
   after_script:
-    - dart x web chmod -R a+w coverage
-    - dart x web chmod -R a+w vendor
+    - dart x web chmod -R a+w coverage || echo "Didn't change coverage permissions"
+    - dart x web chmod -R a+w vendor || echo "Didn't change vendor permissions"
     - dart x web chmod -R a+w public
-    - dart x web chmod -R a+w node_modules
+    - dart x web chmod -R a+w node_modules || echo "Didn't change node_modules permissions"
     - dart x web chmod -R a+w storage
     - dart x web chmod -R a+w ../tools
     - dart down
@@ -24,6 +26,7 @@ tests:
   cache:
     paths:
       - web/vendor/
+      - web/node_modules
 
 docs:
   stage: deploy

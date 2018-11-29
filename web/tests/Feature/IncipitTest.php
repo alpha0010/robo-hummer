@@ -4,10 +4,14 @@ namespace Tests\Feature;
 
 use Artisan;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Tests\ClearMedia;
 use Tests\TestCase;
 
 class IncipitTest extends TestCase
 {
+	use RefreshDatabase;
+	use ClearMedia;
+
 	public function testCreateIncipitFromMidi()
 	{
 		$localPath = "../examplemedia/2/melody.midi";

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App;
 use App\Media;
 use Illuminate\Http\File;
 use Illuminate\Http\Request;
@@ -160,12 +161,14 @@ class MediaController extends Controller
 			$token->getHeaders();
 			$token->getClaims();
 			$data = new ValidationData();
+			$keychain = new Keychain();
+
 			if ( $token->validate( $data ) )
 			{
-				$path = 'sso-public.key';
+				$path = 'app/sso-public.key';
 				if ( App::environment( "testing" ) )
 				{
-					$path = 'testing-sso-public.key';
+					$path = 'app/testing-sso-public.key';
 				}
 				if ( $token->verify(
 					new Sha256(),

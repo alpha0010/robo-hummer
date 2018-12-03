@@ -185,9 +185,12 @@ class MediaController extends Controller
 					{
 						return TRUE;
 					}
+					// Forbidden -- user not trusted.
+					abort( 403 );
 				}
 			}
 		}
-		abort( 403 );
+		// Not authorized -- JWT missing or not trusted.
+		abort( 401 );
 	}
 }

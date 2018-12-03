@@ -37,7 +37,7 @@ class PostMediaTest extends TestCase
 		$response = $this->post( '/api/media', [ 'file' => $file ] );
 
 		$response
-			->assertStatus( 403 );
+			->assertStatus( 401 );
 	}
 
 	public function testPostMediaMangledJWT()
@@ -47,8 +47,8 @@ class PostMediaTest extends TestCase
 		$response = $this->post( '/api/media', [ 'file' => $file, 'jwt' => 'not a jwt string' ] );
 
 		$response
-			// TODO: Have this send a 403 error.
-			//->assertStatus( 403 )
+			// TODO: Have this send a 401 error.
+			//->assertStatus( 401 )
 			->assertStatus( 500 );
 	}
 
@@ -61,7 +61,6 @@ class PostMediaTest extends TestCase
 		);
 
 		$response
-			->assertSee( "User not trusted." )
 			->assertStatus( 403 );
 	}
 
@@ -80,8 +79,7 @@ class PostMediaTest extends TestCase
 		$response = $this->post( '/api/media', [ 'file' => $file, 'jwt' => $jwt ] );
 
 		$response
-			->assertSee( "Signature not trusted." )
-			->assertStatus( 403 );
+			->assertStatus( 401 );
 	}
 
 	public function testPostMedia()

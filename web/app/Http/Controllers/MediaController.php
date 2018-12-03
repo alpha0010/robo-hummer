@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App;
 use App\Media;
+use App\TrustedUUID;
 use Illuminate\Http\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -169,8 +170,7 @@ class MediaController extends Controller
 		{
 			// TODO: Cleaner abort if parsing doesn't work.
 			$token = ( new Parser())->parse( (string) $jwt );
-			$token->getHeaders();
-			$token->getClaims();
+			$claims = $token->getClaims();
 			$data = new ValidationData();
 
 			if ( $token->validate( $data ) )
@@ -180,9 +180,11 @@ class MediaController extends Controller
 					$keychain->getPublicKey( 'file://' . storage_path( $path ) )
 				) )
 				{
-					// TODO: Check that we can find a user with the uuid from here.
-					// and check other contents of the token.
-					return TRUE;
+					if ( $claims['action'] == 'prove_identity' &&
+						TrustedUUID::where( [ 'uuid' => $claims['uuid'] ] )->exists() )
+					{
+						return TRUE;
+					}
 				}
 			}
 		}

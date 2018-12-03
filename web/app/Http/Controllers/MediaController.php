@@ -2,10 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App;
 use App\Media;
 use Illuminate\Http\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Lcobucci\JWT\Parser;
+use Lcobucci\JWT\Signer\Keychain;
+use Lcobucci\JWT\Signer\Rsa\Sha256;
+use Lcobucci\JWT\ValidationData;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
@@ -130,6 +135,7 @@ class MediaController extends Controller
 
 	public function post( Request $request )
 	{
+		$this->verifyJWT( $request->jwt );
 		$filename = 'original';
 		$media = new Media( [
 			"originalFile" => $filename,
@@ -140,5 +146,41 @@ class MediaController extends Controller
 		$request->file( 'file' )->storeAs( Media::getDir() . "/$media->id", $filename );
 		$media->updateFileType();
 		return $media;
+	}
+
+	/**
+	 * @brief Verify, Validate, and check uuid in JWT.
+	 * @param string $jwt The JWT, signed by SSO, containing a UUID that we trust.
+	 */
+	private function verifyJWT( $jwt )
+	{
+		if ( $jwt )
+		{
+			// TODO: Cleaner abort if parsing doesn't work.
+			$token = ( new Parser())->parse( (string) $jwt );
+			$token->getHeaders();
+			$token->getClaims();
+			$data = new ValidationData();
+			$keychain = new Keychain();
+
+			if ( $token->validate( $data ) )
+			{
+				$path = 'app/sso-public.key';
+				if ( App::environment( "testing" ) )
+				{
+					$path = 'app/testing-sso-public.key';
+				}
+				if ( $token->verify(
+					new Sha256(),
+					$keychain->getPublicKey( 'file://' . storage_path( $path ) )
+				) )
+				{
+					// TODO: Check that we can find a user with the uuid from here.
+					// and check other contents of the token.
+					return TRUE;
+				}
+			}
+		}
+		abort( 403 );
 	}
 }

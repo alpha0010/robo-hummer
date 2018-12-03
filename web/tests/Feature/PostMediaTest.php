@@ -3,8 +3,14 @@
 namespace Tests\Feature;
 
 use app\Media;
+use Artisan;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+use Lcobucci\JWT\Builder;
+use Lcobucci\JWT\Signer\Keychain;
+use Lcobucci\JWT\Signer\Rsa\Sha256;
+use Tests\ClearKeys;
 use Tests\ClearMedia;
 use Tests\TestCase;
 
@@ -12,11 +18,21 @@ class PostMediaTest extends TestCase
 {
 	use RefreshDatabase;
 	use ClearMedia;
+	use ClearKeys;
+
+	public function testPostMediaUnAuthenticated()
+	{
+		$file = new UploadedFile( '/var/www/examplemedia/2/melody.midi', 'filename.ext' );
+		$response = $this->post( '/api/media', [ 'file' => $file ] );
+
+		$response
+			->assertStatus( 403 );
+	}
 
 	public function testPostMedia()
 	{
 		$file = new UploadedFile( '/var/www/examplemedia/2/melody.midi', 'filename.ext' );
-		$response = $this->post( '/api/media', [ 'file' => $file ] );
+		$response = $this->post( '/api/media', [ 'file' => $file, 'jwt' => $this->getJWT() ] );
 
 		$response
 			->assertJson( [ 'textID' => NULL, 'tuneID' => NULL ] )
@@ -32,7 +48,7 @@ class PostMediaTest extends TestCase
 		$file = new UploadedFile( $originalFile, 'filename.ext' );
 		$response = $this->post(
 			'/api/media',
-			[ 'file' => $file, 'textID' => 12345, 'tuneID' => 54321 ]
+			[ 'file' => $file, 'textID' => 12345, 'tuneID' => 54321, 'jwt' => $this->getJWT() ]
 		);
 
 		$response
@@ -45,5 +61,38 @@ class PostMediaTest extends TestCase
 			file_get_contents( $originalFile ),
 			file_get_contents( $media->getAbsPath( $media->originalFile ) )
 		);
+	}
+
+	/**
+	 * @brief returns a JWT one can use for posting files.
+	 */
+	private function getJWT()
+	{
+		// Generate Key pair
+		$privateKey = 'testing-sso-private.key';
+		Storage::put( $privateKey, shell_exec( "openssl genrsa 2>/dev/null" ) );
+		$privatePath = storage_path( "app/$privateKey" );
+
+		$publicKeyContents = shell_exec( "(cat $privatePath | openssl rsa -pubout)2>/dev/null" );
+		$exitCode = Artisan::call( "robo:set-sso-key", [ 'key' => $publicKeyContents ] );
+
+		// Create trusted user
+		$uuid = 'ab8bc5f3-3bc7-487d-a5bf-0a542caae79f';
+		Artisan::call( "robo:trust-uuid", [ 'uuid' => $uuid ] );
+
+		// Create JWT.
+		$keychain = new Keychain();
+		$builder = new Builder();
+		return $builder
+			->setIssuer( config( "app.url" ) )
+			->setIssuedAt( time() )
+			->setExpiration( time() + ( 60 * 3 ) )
+			->set( 'action', 'prove_identity' )
+			->set( 'uuid', $uuid )
+			->sign(
+				new Sha256(),
+				$keychain->getPrivateKey( 'file://' . $privatePath )
+			)
+			->getToken();
 	}
 }

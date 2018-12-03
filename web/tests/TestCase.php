@@ -23,6 +23,10 @@ abstract class TestCase extends BaseTestCase
 		{
 			$this->clearMedia();
 		}
+		if ( isset( $uses[ClearKeys::class] ) )
+		{
+			$this->clearKeys();
+		}
 		return $uses;
 	}
 }

@@ -154,6 +154,17 @@ class MediaController extends Controller
 	 */
 	private function verifyJWT( $jwt )
 	{
+		$path = 'app/sso-public.key';
+		if ( App::environment( "testing" ) )
+		{
+			$path = 'app/testing-sso-public.key';
+		}
+		$keychain = new Keychain();
+		if ( ! $keychain->getPublicKey( 'file://' . storage_path( $path ) ) )
+		{
+			abort( 500, "Trusted key not set up properly." );
+		}
+
 		if ( $jwt )
 		{
 			// TODO: Cleaner abort if parsing doesn't work.
@@ -161,15 +172,9 @@ class MediaController extends Controller
 			$token->getHeaders();
 			$token->getClaims();
 			$data = new ValidationData();
-			$keychain = new Keychain();
 
 			if ( $token->validate( $data ) )
 			{
-				$path = 'app/sso-public.key';
-				if ( App::environment( "testing" ) )
-				{
-					$path = 'app/testing-sso-public.key';
-				}
 				if ( $token->verify(
 					new Sha256(),
 					$keychain->getPublicKey( 'file://' . storage_path( $path ) )

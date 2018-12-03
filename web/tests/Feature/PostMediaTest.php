@@ -61,6 +61,26 @@ class PostMediaTest extends TestCase
 		);
 
 		$response
+			->assertSee( "User not trusted." )
+			->assertStatus( 403 );
+	}
+
+	public function testPostMediaUnTrustedKey()
+	{
+		$this->setupTestKeys();
+		$uuid = 'ab8bc5f3-3bc7-487d-a5bf-0a542caae79f';
+		Artisan::call( "robo:trust-uuid", [ 'uuid' => $uuid ] );
+		$jwt = $this->getJWT( $uuid );
+
+		$this->clearKeys();
+		// Generate a different public key than was used to sign the JWT.
+		$this->setupTestKeys();
+
+		$file = new UploadedFile( '/var/www/examplemedia/2/melody.midi', 'filename.ext' );
+		$response = $this->post( '/api/media', [ 'file' => $file, 'jwt' => $jwt ] );
+
+		$response
+			->assertSee( "Signature not trusted." )
 			->assertStatus( 403 );
 	}
 

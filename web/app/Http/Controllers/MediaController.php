@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App;
 use App\Media;
+use App\TrustedUUID;
 use Illuminate\Http\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -154,33 +155,42 @@ class MediaController extends Controller
 	 */
 	private function verifyJWT( $jwt )
 	{
+		$path = 'app/sso-public.key';
+		if ( App::environment( "testing" ) )
+		{
+			$path = 'app/testing-sso-public.key';
+		}
+		$keychain = new Keychain();
+		if ( ! $keychain->getPublicKey( 'file://' . storage_path( $path ) ) )
+		{
+			abort( 500, "Trusted key not set up properly." );
+		}
+
 		if ( $jwt )
 		{
 			// TODO: Cleaner abort if parsing doesn't work.
 			$token = ( new Parser())->parse( (string) $jwt );
-			$token->getHeaders();
-			$token->getClaims();
+			$claims = $token->getClaims();
 			$data = new ValidationData();
-			$keychain = new Keychain();
 
 			if ( $token->validate( $data ) )
 			{
-				$path = 'app/sso-public.key';
-				if ( App::environment( "testing" ) )
-				{
-					$path = 'app/testing-sso-public.key';
-				}
 				if ( $token->verify(
 					new Sha256(),
 					$keychain->getPublicKey( 'file://' . storage_path( $path ) )
 				) )
 				{
-					// TODO: Check that we can find a user with the uuid from here.
-					// and check other contents of the token.
-					return TRUE;
+					if ( $claims['action'] == 'prove_identity' &&
+						TrustedUUID::where( [ 'uuid' => $claims['uuid'] ] )->exists() )
+					{
+						return TRUE;
+					}
+					// Forbidden -- user not trusted.
+					abort( 403 );
 				}
 			}
 		}
-		abort( 403 );
+		// Not authorized -- JWT missing or not trusted.
+		abort( 401 );
 	}
 }

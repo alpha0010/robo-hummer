@@ -3,8 +3,16 @@
 
 cd "$(dirname "$(realpath "$0")")"
 
-ENV_FILE_NAME=$(mktemp)                      \
-	&& cp .env                $ENV_FILE_NAME \
-	&& sed -i "s/##FQN##/$1/" $ENV_FILE_NAME \
-	&& chmod a+r,a-w          $ENV_FILE_NAME \
-	&& echo                   $ENV_FILE_NAME
+FQN=$1
+DB_HOST=${2:-mysql}
+DB_USER=${3:-root}
+DB_PASS=$4
+
+ENV_FILE_NAME=$(mktemp)                                \
+    && cp .env                          $ENV_FILE_NAME \
+    && sed -i "s/##FQN##/$FQN/"         $ENV_FILE_NAME \
+    && sed -i "s/##DB_HOST##/$DB_HOST/" $ENV_FILE_NAME \
+    && sed -i "s/##DB_USER##/$DB_USER/" $ENV_FILE_NAME \
+    && sed -i "s/##DB_PASS##/$DB_PASS/" $ENV_FILE_NAME \
+    && chmod a+r,a-w                    $ENV_FILE_NAME \
+    && echo                             $ENV_FILE_NAME

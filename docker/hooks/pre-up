@@ -1,3 +1,7 @@
 #!/bin/bash
 
-echo ENV_FILE="$(./container/web/make-env $3)"
+CUSTOM_DB_HOST=$5
+CUSTOM_DB_USER=$6
+CUSTOM_DB_PASS=$7
+
+echo ENV_FILE="$(./container/web/make-env $3 "$CUSTOM_DB_HOST" "$CUSTOM_DB_USER" "$CUSTOM_DB_PASS")"

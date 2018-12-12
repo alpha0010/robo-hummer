@@ -11,10 +11,10 @@ let mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/assets/js/app.js', 'public/js')
-   .js('resources/assets/js/welcome.js', 'public/js')
-   .js('resources/assets/js/keyboard.js', 'public/js')
-   .js('resources/assets/js/slides.js', 'public/js')
+mix.js('resources/js/app.js', 'public/js')
+   .js('resources/js/welcome.js', 'public/js')
+   .js('resources/js/keyboard.js', 'public/js')
+   .js('resources/js/slides.js', 'public/js')
    .styles([
        'node_modules/reveal.js/css/reveal.css',
        'node_modules/reveal.js/css/theme/serif.css',
@@ -36,7 +36,7 @@ mix.js('resources/assets/js/app.js', 'public/js')
        'node_modules/midi/js/util/dom_request_script.js',
    ], 'public/js/MIDI.js')
    .copyDirectory('node_modules/midi/examples/soundfont', 'public/soundfont')
-   .sass('resources/assets/sass/app.scss', 'public/css')
-   .less('resources/assets/less/keyboard.less', 'public/css')
+   .sass('resources/sass/app.scss', 'public/css')
+   .less('resources/less/keyboard.less', 'public/css')
    .sourceMaps();
 

@@ -14,7 +14,7 @@ class SetSSOKey extends Command
 	 * @var string
 	 */
 	protected $signature = 'robo:set-sso-key '
-	                     . '{key? : The RSA public key that SSO uses to sign identity proof JWTs}';
+	                     . '{key : The RSA public key that SSO uses to sign identity proof JWTs}';
 
 	/**
 	 * The console command description.
@@ -40,15 +40,7 @@ class SetSSOKey extends Command
 	 */
 	public function handle()
 	{
-		$publicKey = '';
-		if ( $this->argument( 'key' ) )
-		{
-			$publicKey = $this->argument( 'key' );
-		}
-		else
-		{
-			$publicKey = $this->ask( "SSO public key:" );
-		}
+		$publicKey = $this->argument( 'key' );
 
 		$path = 'sso-public.key';
 		if ( App::environment( "testing" ) )

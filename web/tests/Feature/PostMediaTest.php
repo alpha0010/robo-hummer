@@ -132,12 +132,15 @@ class PostMediaTest extends TestCase
 	private function setupTestKeys()
 	{
 		// Generate Key pair
+		$resource = openssl_pkey_new(["private_key_type" => OPENSSL_KEYTYPE_RSA]);
+		$publicKeyContents = openssl_pkey_get_details($resource)["key"];
 		$privateKey = 'testing-sso-private.key';
-		Storage::put( $privateKey, shell_exec( "openssl genrsa 2>/dev/null" ) );
-		$privatePath = storage_path( "app/$privateKey" );
+		$privateKeyContents = '';
+		$this->assertTrue( openssl_pkey_export( $resource, $privateKeyContents ) );
+		openssl_pkey_free($resource);
 
-		$publicKeyContents = shell_exec( "(cat $privatePath | openssl rsa -pubout)2>/dev/null" );
-		$exitCode = Artisan::call( "robo:set-sso-key", [ 'key' => $publicKeyContents ] );
+		Storage::put( $privateKey, $privateKeyContents );
+		Artisan::call( "robo:set-sso-key", [ 'key' => $publicKeyContents ] );
 	}
 
 	/**

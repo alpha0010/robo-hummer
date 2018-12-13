@@ -11,7 +11,10 @@ class SetSSOKeyTest extends TestCase
 {
 	public function testKeyAsArg()
 	{
-		$publicKey = shell_exec( "(openssl genrsa | openssl rsa -pubout)2>/dev/null" );
+		$resource = openssl_pkey_new(["private_key_type" => OPENSSL_KEYTYPE_RSA]);
+		$publicKey = openssl_pkey_get_details($resource)["key"];
+		openssl_pkey_free($resource);
+
 		$exitCode = Artisan::call( "robo:set-sso-key", [ 'key' => $publicKey ] );
 		$this->assertEquals( 0, $exitCode );
 		$output = Artisan::output();

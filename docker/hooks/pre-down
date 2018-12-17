@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [[ ! $IS_PRODUCTION ]]; then
+	echo "OVERLAYS=$([[ -n "$OVERLAYS" ]] && echo "$OVERLAYS,")/srv/robo-media:ROBO_MEDIA"
+else
+	# In production, set this variable as the actual folder.
+	echo "DART_OVERLAY_ROBO_MEDIA=/srv/robo-media";
+fi

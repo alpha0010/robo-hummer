@@ -5,3 +5,60 @@ CUSTOM_DB_USER=$6
 CUSTOM_DB_PASS=$7
 
 echo ENV_FILE="$(./container/web/make-env $3 "$CUSTOM_DB_HOST" "$CUSTOM_DB_USER" "$CUSTOM_DB_PASS")"
+
+
+# Create directory if it doesn't exist
+[[ ! -a /srv/robo-media ]] && echo "Making /srv/robo-media directory." > /dev/stderr \
+	&& sudo mkdir -p /srv/robo-media
+
+# If /srv/robo-media is empty:
+if [ -z "$(ls -A /srv/robo-media)" ]; then
+
+	# Allow the user to mount directory using NFS.
+	read -p "NFS Server Hostname: " NFS_SERVER
+	if [[ -n "$NFS_SERVER" ]]; then
+
+		which fuse_xattrs > /dev/null || (
+			echo "fuse_xattrs is required for NFS mounting." > /dev/stderr
+			echo "DART_ABORT=1"
+			exit 1
+		)
+
+		# Mount the NFS drive
+		if [ -z "$(ls -A /srv/robo-media-nfs)" ]; then
+			[[ ! -a /srv/robo-media-nfs ]] && echo "Making /srv/robo-media-nfs directory." > /dev/stderr \
+				&& sudo mkdir -p /srv/robo-media-nfs
+			if [[ ! $IS_PRODUCTION ]]; then
+				echo "Mounting /srv/robo-media-nfs as read-only." > /dev/stderr
+				sudo mount -o ro -t nfs4 ${NFS_SERVER}:/exports/robo-media /srv/robo-media-nfs
+			else
+				echo "Mounting /srv/robo-media-nfs as read-write." > /dev/stderr
+				sudo mount -o rw -t nfs4 ${NFS_SERVER}:/exports/robo-media /srv/robo-media-nfs
+			fi
+		fi
+
+		# `allow_other` option lets `test -a` determine existence without root privileges.
+		sudo fuse_xattrs -o allow_other /srv/robo-media-nfs /srv/robo-media
+	fi
+elif ! mountpoint /srv/robo-media 1>/dev/null; then
+	# In some environments, it is fine to use a non-mounted /srv/robo-media.
+	echo "/srv/robo-media contains files but is not mounted." > /dev/stderr
+elif [[ $(findmnt -no fstype /srv/robo-media) != "fuse.fuse_xattrs" ]]; then
+	# In some environments, it is okay to have a /srv/robo-media mounted without fuse_xattrs
+	echo "/srv/robo-media is mounted, but not with fuse_xattrs" > /dev/stderr
+fi
+
+
+
+# Set the variable so the dockerfile knows where we are mounting from.
+if [[ ! $IS_PRODUCTION ]]; then
+	# Mount using a dart overlay.
+	echo "OVERLAYS=$([[ -n "$OVERLAYS" ]] && echo "$OVERLAYS,")/srv/robo-media:ROBO_MEDIA"
+elif [[ -w /srv/robo-media ]]; then
+	# In production, set this variable as the actual folder.
+	echo "DART_OVERLAY_ROBO_MEDIA=/srv/robo-media";
+else
+	echo "ERROR: /srv/robo-media is read-only, but you are trying to create a production site." > /dev/stderr
+	echo "DART_ABORT=1"
+	exit 1
+fi

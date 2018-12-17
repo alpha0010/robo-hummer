@@ -61,12 +61,6 @@ class CreateMedia extends Command
 
 		// then save the file in the directory for the media ID.
 		Storage::makeDirectory( $media->getPath() );
-		$process = new Process( [ 'chown', 'www-data:www-data', $media->getAbsPath() ] );
-		$process->run();
-		if ( ! $process->isSuccessful() )
-		{
-			throw new ProcessFailedException($process);
-		}
 
 		Storage::put( $media->getPath( $filename ), $file );
 

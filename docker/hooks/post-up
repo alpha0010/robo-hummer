@@ -1,11 +1,14 @@
 #!/bin/bash
 
-( [[ ! "$IMG_TAG" =~ .*-dev$ ]] || dart exec mysql mysql -e "CREATE DATABASE roboHummer CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" ) \
+( [[ $IS_PRODUCTION ]] || dart exec mysql mysql -e "CREATE DATABASE roboHummer CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" ) \
 	&& dart exec - composer install --no-suggest        \
 	&& dart exec - ./artisan key:generate               \
 	&& dart exec - ./artisan migrate                    \
-	&& dart exec - chgrp www-data -R storage bootstrap  \
-	&& dart exec - chmod g+w      -R storage bootstrap  \
+	&& ( [[ $IS_PRODUCTION ]] || (                      \
+		# Run these commands in development only.       \
+		dart exec - chgrp www-data -R storage bootstrap \
+		&& dart exec - chmod g+w   -R storage bootstrap \
+		&& dart +artisan media:delete untracked         \
+	) )                                                 \
 	&& dart x - npm install --unsafe-perm               \
-	&& dart x - npm run dev                             \
-	&& ( [[ ! "$IMG_TAG" =~ .*-dev$ ]] || dart +artisan media:delete untracked )
+	&& dart x - npm run dev

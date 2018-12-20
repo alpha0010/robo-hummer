@@ -11,4 +11,5 @@
 		&& dart +artisan media:delete untracked         \
 	) )                                                 \
 	&& dart x - npm install --unsafe-perm               \
-	&& dart x - npm run dev
+	&& dart x - npm run dev                             \
+	&& ( [[ $IS_PRODUCTION ]] || ../dev-autoconnect.sh )

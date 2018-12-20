@@ -4,11 +4,11 @@
 
 # TODO: Use better way to find out which site is sso
 # (DB_PACKAGE=sso in the .env)
-function find-sso-site {
+function find-sso-site-dir {
 	dart p | grep sso | sed 's/ \+/\t/g' | cut -f3 | head -n 1
 }
 
-SSO_DIR=$(find-sso-site)
+SSO_DIR=$(find-sso-site-dir)
 
 if [[ -n "$SSO_DIR" ]]; then
 	cat "$SSO_DIR/htdocs/api/storage/oauth-public.key" | xargs -0 dart +artisan robo:set-sso-key --

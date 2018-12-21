@@ -20,3 +20,5 @@ elif( outputformat == 'harmony.midi' ):
 	os.remove( path )
 elif( outputformat == 'incipit.json' ):
 	import incipit
+elif( outputformat == 'dynamic.svg' ):
+	import dynamic

@@ -64,6 +64,13 @@ class CreateMedia extends Command
 
 		Storage::put( $media->getPath( $filename ), $file );
 
+		$process = new Process( [ 'chmod', 'a+w', $media->getAbsPath() ] );
+		$process->run();
+		if ( ! $process->isSuccessful() )
+		{
+			throw new ProcessFailedException($process);
+		}
+
 		if ( ! $media->updateFileType() )
 		{
 			$this->error( "Unable to determine media type." );

@@ -56,7 +56,8 @@ songHeight = noteRange * yScale
 beatsPerMeasure = 4
 
 # Output notes in place
-print( "<svg width='%i' height='%i'>" % (songWidth, songHeight) )
+ns='xmlns="http://www.w3.org/2000/svg"'
+print( "<svg width='%i' height='%i' %s>" % (songWidth, songHeight, ns) )
 for note in s.recurse().notes:
 		xPos = note.measureNumber + ( note.beat / beatsPerMeasure )
 		xLen = note.duration.quarterLength / beatsPerMeasure

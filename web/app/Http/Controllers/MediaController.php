@@ -108,11 +108,8 @@ class MediaController extends Controller
 		}
 		if ( substr( $filepath, -4 ) == '.svg' )
 		{
-			return Storage::get( $filepath );
-			// TODO: Get response to send file as svg without prompting for download.
 			return response( Storage::get( $filepath ), 200 )
-				->header( 'Content-Type', 'image/svg' )
-				->header( 'Content-Disposition', 'inline' );
+				->header( 'Content-Type', 'image/svg+xml' );
 		}
 		return Storage::response( $filepath );
 	}

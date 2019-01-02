@@ -59,18 +59,25 @@ beatsPerMeasure = 4
 ns='xmlns="http://www.w3.org/2000/svg"'
 print( "<svg width='%i' height='%i' %s>" % (songWidth, songHeight, ns) )
 for note in s.recurse().notes:
-		xPos = note.measureNumber + ( note.beat / beatsPerMeasure )
+		if hasattr(note, 'midiTickStart'):
+			xPos = note.midiTickStart/4096
+		else:
+			measureNum = note.measureNumber
+			xPos = measureNum + ( note.beat / beatsPerMeasure )
+
 		xLen = note.duration.quarterLength / beatsPerMeasure
-		yPos = highNote - ((12 * note.pitch.octave ) + note.pitch.pitchClass)
-		yLen = 1
-		# TODO: Consider using music_tokens.partify
-		color = colorFromPart( note.getContextByClass('Part').recurse().getElementsByClass('Instrument')[0] )
 
-		string = note.lyric
-		if string:
-			string = string.encode('utf-8').strip()
+		for pitch in note.pitches:
+			yPos = highNote - ((12 * pitch.octave ) + pitch.pitchClass)
+			yLen = 1
+			# TODO: Consider using music_tokens.partify
+			color = colorFromPart( note.getContextByClass('Part').recurse().getElementsByClass('Instrument')[0] )
 
-		rectangle( xPos, yPos, xLen, yLen, string, color)
+			string = note.lyric
+			if string:
+				string = string.encode('utf-8').strip()
+
+			rectangle( xPos, yPos, xLen, yLen, string, color)
 print( "</svg>" )
 
 # Output lyrics below the notes

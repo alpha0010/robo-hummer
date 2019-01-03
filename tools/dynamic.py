@@ -46,12 +46,12 @@ outputformat = sys.argv[2]
 s = music21.converter.parse(filename)
 
 # Get the length of the song
-songLength = 100
+songLength = s.duration.quarterLength
 
 # Get the range of the notes
-lowNote = 0
-highNote  = 65
-noteRange = highNote - lowNote
+lowNote = min(s.pitches).midi
+highNote  = max(s.pitches).midi
+noteRange = highNote - lowNote + 1
 
 songWidth = songLength * xScale
 songHeight = noteRange * yScale
@@ -73,7 +73,7 @@ for note in s.recurse().notes:
 		xLen = note.duration.quarterLength
 
 		for pitch in note.pitches:
-			yPos = highNote - ((12 * pitch.octave ) + pitch.pitchClass)
+			yPos = highNote - pitch.midi
 			yLen = 1
 			# TODO: Consider using music_tokens.partify
 			color = colorFromPart( note.getContextByClass('Part').recurse().getElementsByClass('Instrument')[0] )

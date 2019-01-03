@@ -3,8 +3,11 @@ import music21
 import sys
 from xml.sax.saxutils import escape as XMLescape
 
-xScale = 300
+# How wide a quarter note is.
+xScale = 75
+# How tall a semitone is.
 yScale = 20
+
 border = 1
 colors = [ 'red', 'green', 'blue', 'yellow', 'cyan', 'magenta' ]
 parts = {}
@@ -60,12 +63,14 @@ ns='xmlns="http://www.w3.org/2000/svg"'
 print( "<svg width='%i' height='%i' %s>" % (songWidth, songHeight, ns) )
 for note in s.recurse().notes:
 		if hasattr(note, 'midiTickStart'):
-			xPos = note.midiTickStart/4096
+			xPos = note.midiTickStart/1024
 		else:
+			# TODO: ensure that the measure numbers are sequential and distinct.
 			measureNum = note.measureNumber
-			xPos = measureNum + ( note.beat / beatsPerMeasure )
+			beatsThisMeasure = note.getContextByClass("Measure").duration.quarterLength
+			xPos = ( measureNum * beatsThisMeasure ) + ( note.beat )
 
-		xLen = note.duration.quarterLength / beatsPerMeasure
+		xLen = note.duration.quarterLength
 
 		for pitch in note.pitches:
 			yPos = highNote - ((12 * pitch.octave ) + pitch.pitchClass)
@@ -73,8 +78,12 @@ for note in s.recurse().notes:
 			# TODO: Consider using music_tokens.partify
 			color = colorFromPart( note.getContextByClass('Part').recurse().getElementsByClass('Instrument')[0] )
 
-			string = note.lyric
+			string = False
+			if note.lyrics:
+				# TODO: use syllabic for something.
+				string = note.lyrics[0].rawText
 			if string:
+				string = XMLescape(string)
 				string = string.encode('utf-8').strip()
 
 			rectangle( xPos, yPos, xLen, yLen, string, color)

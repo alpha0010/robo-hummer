@@ -1,5 +1,8 @@
 # RoboHummer
 
+If you've already cloned without the submodules, you can use
+`git submodule update --init --recursive` to get the submodules.
+
 ## Setup using Dart
 
 This project uses `/srv/robo-media` to store media.

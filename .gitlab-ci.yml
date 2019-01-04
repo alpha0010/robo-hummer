@@ -2,6 +2,8 @@ tests:
   stage: test
   tags:
     - unit-tests
+  variables:
+    GIT_SUBMODULE_STRATEGY: "normal"
   script:
     - export SUDO_USER=$(whoami)
     - export PATH=$PATH:/dart/bin

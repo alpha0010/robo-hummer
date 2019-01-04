@@ -31,7 +31,13 @@ class MediaController extends Controller
 			$parts = explode( ".", $type, 2 );
 			$name = $parts[0];
 			$extension = $parts[1] ?? '';
-			if ( in_array( $type, [ 'incipit.json', 'harmony.musicxml', 'harmony.midi', 'dynamic.svg' ] ) )
+			if ( in_array( $type, [
+				'dynamic.svg',
+				'harmony.midi',
+				'harmony.musicxml',
+				'incipit.json',
+				'master.musicxml',
+			] ) )
 			{
 				$shell_path = $media->getAbsPath( $media->originalFile );
 				$process = new Process( [

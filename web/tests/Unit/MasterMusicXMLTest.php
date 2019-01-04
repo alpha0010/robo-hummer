@@ -36,15 +36,24 @@ class MasterMusicXMLTest extends TestCase
 	{
 		$localPath = "../examplemedia/musicxmlTestSuite/xmlFiles/$fileName";
 		Artisan::call( "media:create", [ 'file' => $localPath ] );
-		$id = Media::max('id');
-		$convertedPath = "http://localhost/media/$id/master.musicxml";
-		Artisan::call( "media:create", [ 'file' => $convertedPath ] );
-		$id2 = $id + 1;
+		$m = Media::orderBy('id','desc')->first();
 
-		$midiOriginal  = $this->get( "/media/$id/harmony.midi" );
-		$midiConverted = $this->get( "/media/$id2/harmony.midi" );
+		// Generate the master musicxml file.
+		$getMusicXML = $this->get( "/media/{$m->id}/master.musicxml" );
+		$getMusicXML->assertStatus( 200, "Could not convert $fileName to master.musicxml" );
+		// Re-upload the master musicxml file so we can compare some conversions.
+		Artisan::call( "media:create", [ 'file' => $m->getAbsPath("master.musicxml") ] );
+		$m2 = Media::orderBy('id','desc')->first();
+
+		$midiOriginal  = $this->get( "/media/{$m->id}/harmony.midi" );
+		$midiConverted = $this->get( "/media/{$m2->id}/harmony.midi" );
 
 		$midiOriginal->assertStatus( 200 );
 		$midiConverted->assertStatus( 200 );
+
+		$this->assertEquals(
+			file_get_contents( $m->getAbsPath( "harmony.midi" ) ),
+			file_get_contents( $m2->getAbsPath( "harmony.midi" ) )
+		);
 	}
 }

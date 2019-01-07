@@ -31,7 +31,13 @@ class MediaController extends Controller
 			$parts = explode( ".", $type, 2 );
 			$name = $parts[0];
 			$extension = $parts[1] ?? '';
-			if ( in_array( $type, [ 'incipit.json', 'harmony.musicxml', 'harmony.midi', 'dynamic.svg' ] ) )
+			if ( in_array( $type, [
+				'dynamic.svg',
+				'harmony.midi',
+				'harmony.musicxml',
+				'incipit.json',
+				'master.musicxml',
+			] ) )
 			{
 				$shell_path = $media->getAbsPath( $media->originalFile );
 				$process = new Process( [
@@ -108,11 +114,8 @@ class MediaController extends Controller
 		}
 		if ( substr( $filepath, -4 ) == '.svg' )
 		{
-			return Storage::get( $filepath );
-			// TODO: Get response to send file as svg without prompting for download.
 			return response( Storage::get( $filepath ), 200 )
-				->header( 'Content-Type', 'image/svg' )
-				->header( 'Content-Disposition', 'inline' );
+				->header( 'Content-Type', 'image/svg+xml' );
 		}
 		return Storage::response( $filepath );
 	}

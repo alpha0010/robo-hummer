@@ -7,9 +7,11 @@ import os
 filename = sys.argv[1]
 outputformat = sys.argv[2]
 
-if ( outputformat == 'harmony.musicxml' ):
+if ( outputformat == 'harmony.musicxml' ) or ( outputformat == 'master.musicxml' ):
 	s = converter.parse(filename)
-	s.write( 'xml', '/dev/stdout' )
+	path = s.write( 'xml' )
+	sys.stdout.buffer.write( open( path, 'rb' ).read() )
+	os.remove( path )
 elif( outputformat == 'harmony.midi' ):
 	s = converter.parse(filename)
 	# Creates a temporary file

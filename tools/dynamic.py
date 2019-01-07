@@ -3,8 +3,11 @@ import music21
 import sys
 from xml.sax.saxutils import escape as XMLescape
 
-xScale = 300
+# How wide a quarter note is.
+xScale = 75
+# How tall a semitone is.
 yScale = 20
+
 border = 1
 colors = [ 'red', 'green', 'blue', 'yellow', 'cyan', 'magenta' ]
 parts = {}
@@ -43,12 +46,12 @@ outputformat = sys.argv[2]
 s = music21.converter.parse(filename)
 
 # Get the length of the song
-songLength = 100
+songLength = s.duration.quarterLength
 
 # Get the range of the notes
-lowNote = 0
-highNote  = 65
-noteRange = highNote - lowNote
+lowNote = min(s.pitches).midi
+highNote  = max(s.pitches).midi
+noteRange = highNote - lowNote + 1
 
 songWidth = songLength * xScale
 songHeight = noteRange * yScale
@@ -56,20 +59,34 @@ songHeight = noteRange * yScale
 beatsPerMeasure = 4
 
 # Output notes in place
-print( "<svg width='%i' height='%i'>" % (songWidth, songHeight) )
+ns='xmlns="http://www.w3.org/2000/svg"'
+print( "<svg width='%i' height='%i' %s>" % (songWidth, songHeight, ns) )
 for note in s.recurse().notes:
-		xPos = note.measureNumber + ( note.beat / beatsPerMeasure )
-		xLen = note.duration.quarterLength / beatsPerMeasure
-		yPos = highNote - ((12 * note.pitch.octave ) + note.pitch.pitchClass)
-		yLen = 1
-		# TODO: Consider using music_tokens.partify
-		color = colorFromPart( note.getContextByClass('Part').recurse().getElementsByClass('Instrument')[0] )
+		if hasattr(note, 'midiTickStart'):
+			xPos = note.midiTickStart/1024
+		else:
+			# TODO: ensure that the measure numbers are sequential and distinct.
+			measureNum = note.measureNumber
+			beatsThisMeasure = note.getContextByClass("Measure").duration.quarterLength
+			xPos = ( measureNum * beatsThisMeasure ) + ( note.beat )
 
-		string = note.lyric
-		if string:
-			string = string.encode('utf-8').strip()
+		xLen = note.duration.quarterLength
 
-		rectangle( xPos, yPos, xLen, yLen, string, color)
+		for pitch in note.pitches:
+			yPos = highNote - pitch.midi
+			yLen = 1
+			# TODO: Consider using music_tokens.partify
+			color = colorFromPart( note.getContextByClass('Part').recurse().getElementsByClass('Instrument')[0] )
+
+			string = False
+			if note.lyrics:
+				# TODO: use syllabic for something.
+				string = note.lyrics[0].rawText
+			if string:
+				string = XMLescape(string)
+				string = string.encode('utf-8').strip()
+
+			rectangle( xPos, yPos, xLen, yLen, string, color)
 print( "</svg>" )
 
 # Output lyrics below the notes

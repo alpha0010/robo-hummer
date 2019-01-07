@@ -39,7 +39,7 @@ class MediaController extends Controller
 				'master.musicxml',
 			] ) )
 			{
-				$shell_path = $media->getAbsPath( $media->originalFile );
+				$shell_path = $this->getSourcePath( $media, $type );
 				$process = new Process( [
 					"sudo", "-u", "python",
 					"/var/www/tools/convert.py", $shell_path, $type,
@@ -99,6 +99,21 @@ class MediaController extends Controller
 		}
 		// Otherwise, the file wasn't found.
 		abort( 404 );
+	}
+
+	private function getSourcePath( $media, $destinationType )
+	{
+		$destToSource = [
+			'dynamic.svg' => 'master.musicxml',
+		];
+		// Default to using the original file.
+		$sourceType = $media->originalFile;
+		if ( isset( $destToSource[$destinationType] ) )
+		{
+			$sourceType = $destToSource[$destinationType];
+			$this->checkExists( $media->id, $sourceType );
+		}
+		return $media->getAbsPath( $sourceType );
 	}
 
 	/**

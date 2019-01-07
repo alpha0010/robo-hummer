@@ -3,6 +3,7 @@ from music21 import *
 
 import sys
 import os
+from masterMusicXML import makeMasterMusicXML
 
 filename = sys.argv[1]
 outputformat = sys.argv[2]
@@ -10,6 +11,10 @@ outputformat = sys.argv[2]
 if ( outputformat == 'harmony.musicxml' ) or ( outputformat == 'master.musicxml' ):
 	s = converter.parse(filename)
 	path = s.write( 'xml' )
+	if ( outputformat == 'master.musicxml' ):
+		# Note: It's important that this XML file is trusted.
+		# The XML parser in makeMasterMusicXML is not secure against maliciously constructed data.
+		makeMasterMusicXML( path )
 	sys.stdout.buffer.write( open( path, 'rb' ).read() )
 	os.remove( path )
 elif( outputformat == 'harmony.midi' ):

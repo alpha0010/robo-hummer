@@ -101,6 +101,12 @@ class MediaController extends Controller
 		abort( 404 );
 	}
 
+	/**
+	 * @brief Get the absolute path for a source file (if it exists)
+	 *  that should be used when converting to a given destination file.
+	 * @param Media $media
+	 * @param string $destinationType The file format that you want to convert to.
+	 */
 	private function getSourcePath( $media, $destinationType )
 	{
 		$destToSource = [

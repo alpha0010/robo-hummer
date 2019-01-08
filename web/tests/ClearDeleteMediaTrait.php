@@ -9,7 +9,7 @@ use Tests\ClearDeleteMediaTrait;
 
 trait ClearDeleteMediaTrait
 {
-    function setupFiles()
+    private function setupFiles()
     {
         $musicxmlFile = "../examplemedia/1/melody.musicxml";
         $midiFile = "../examplemedia/2/melody.midi";
@@ -32,14 +32,14 @@ trait ClearDeleteMediaTrait
         $this->assertTrue(Storage::exists(Media::getDir() . "/3/harmony.musicxml"));
     }
 
-    function assertDeleted($file)
+    private function assertDeleted($file)
     {
         $this->assertFalse(
             Storage::exists(Media::getDir() . $file),
             "File '$file' was not deleted."
         );
     }
-    function assertNotDeleted($file)
+    private function assertNotDeleted($file)
     {
         $this->assertTrue(
             Storage::exists(Media::getDir() . $file),

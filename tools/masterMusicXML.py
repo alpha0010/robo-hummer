@@ -11,4 +11,4 @@ def makeMasterMusicXML(path):
 		for m in p.findall('measure'):
 			m.attrib['number'] = str(i)
 			i = i + 1
-	tree.write(path)
+	tree.write(path, xml_declaration=True, encoding='utf-8', method='xml')

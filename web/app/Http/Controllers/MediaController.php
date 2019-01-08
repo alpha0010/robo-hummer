@@ -127,16 +127,8 @@ class MediaController extends Controller
 		{
 			return json_decode( Storage::get( $filepath ) );
 		}
-		if ( substr( $filepath, -4 ) == '.svg' )
-		{
-			return response( Storage::get( $filepath ), 200 )
-				->header( 'Content-Type', 'image/svg+xml' );
-		}
-		else if ( substr( $filepath, -9 ) == '.musicxml' )
-		{
-			return response( Storage::get( $filepath), 200 )
-				->header( 'Content-Type', 'application/xml' );
-		}
+		// Note: musicxml and svg files should have their XML declaration,
+		// so Storage will automatically send them with Content-Type application/xml.
 		return Storage::response( $filepath );
 	}
 

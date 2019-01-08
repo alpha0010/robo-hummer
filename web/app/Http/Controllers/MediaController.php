@@ -132,6 +132,11 @@ class MediaController extends Controller
 			return response( Storage::get( $filepath ), 200 )
 				->header( 'Content-Type', 'image/svg+xml' );
 		}
+		else if ( substr( $filepath, -9 ) == '.musicxml' )
+		{
+			return response( Storage::get( $filepath), 200 )
+				->header( 'Content-Type', 'application/xml' );
+		}
 		return Storage::response( $filepath );
 	}
 

@@ -28,16 +28,14 @@ class SlideController extends Controller
     public function index(string $name)
     {
         $indexFile = resource_path("slides/$name/index.json");
-        if (!is_readable($indexFile))
-        {
+        if (!is_readable($indexFile)) {
             abort(404);
         }
 
         $index = json_decode(file_get_contents($indexFile), true);
 
         $slides = [];
-        foreach ( $index[ "slides" ] as $slideName )
-        {
+        foreach ($index[ "slides" ] as $slideName) {
             $slides[] = $this->render(
                 $slideName,
                 resource_path("slides/$name")

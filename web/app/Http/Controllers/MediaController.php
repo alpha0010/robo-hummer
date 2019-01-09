@@ -17,13 +17,12 @@ use Symfony\Component\Process\Process;
 
 class MediaController extends Controller
 {
-	public function get( string $number, string $type )
-	{
-		$filepath = Media::getDir() . "/$number/$type";
-		if ( Storage::exists( $filepath ) )
-		{
-			return $this->getFileResponse( $filepath );
-		}
+    public function get(string $number, string $type)
+    {
+        $filepath = Media::getDir() . "/$number/$type";
+        if (Storage::exists($filepath)) {
+            return $this->getFileResponse($filepath);
+        }
 
 		$media = Media::find( $number );
 		if ( $media )
@@ -138,88 +137,77 @@ class MediaController extends Controller
 		return Storage::response( $filepath );
 	}
 
-	/**
-	 * @brief Creates a media file if it doesn't exist, otherwise, aborts execution.
-	 * @param $number The number of the media entry
-	 * @param $type The filename of the media that we want
-	 */
-	private function checkExists( $number, string $type )
-	{
-		$media = Media::find( $number );
-		if ( ! $media )
-		{
-			abort( 500, "Could not find media entry $number" );
-		}
-		else if ( Storage::exists( $media->getPath( $type ) ) )
-		{
-			return;
-		}
-		else
-		{
-			// $this->get() will also abort if there was an error.
-			$this->get( $number, $type );
-			return;
-		}
-		abort( 404 );
-	}
+    /**
+     * @brief Creates a media file if it doesn't exist, otherwise, aborts execution.
+     * @param $number The number of the media entry
+     * @param $type The filename of the media that we want
+     */
+    private function checkExists($number, string $type)
+    {
+        $media = Media::find($number);
+        if (! $media) {
+            abort(500, "Could not find media entry $number");
+        } elseif (Storage::exists($media->getPath($type))) {
+            return;
+        } else {
+            // $this->get() will also abort if there was an error.
+            $this->get($number, $type);
+            return;
+        }
+        abort(404);
+    }
 
-	public function post( Request $request )
-	{
-		$this->verifyJWT( $request->jwt );
-		$filename = 'original';
-		$media = new Media( [
-			"originalFile" => $filename,
-			"textID" => $request->textID ?? NULL,
-			"tuneID" => $request->tuneID ?? NULL,
-		] );
-		$media->save();
-		$request->file( 'file' )->storeAs( Media::getDir() . "/$media->id", $filename );
-		$media->updateFileType();
-		return $media;
-	}
+    public function post(Request $request)
+    {
+        $this->verifyJWT($request->jwt);
+        $filename = 'original';
+        $media = new Media([
+            "originalFile" => $filename,
+            "textID" => $request->textID ?? null,
+            "tuneID" => $request->tuneID ?? null,
+        ]);
+        $media->save();
+        $request->file('file')->storeAs(Media::getDir() . "/$media->id", $filename);
+        $media->updateFileType();
+        return $media;
+    }
 
-	/**
-	 * @brief Verify, Validate, and check uuid in JWT.
-	 * @param string $jwt The JWT, signed by SSO, containing a UUID that we trust.
-	 */
-	private function verifyJWT( $jwt )
-	{
-		$path = 'app/sso-public.key';
-		if ( App::environment( "testing" ) )
-		{
-			$path = 'app/testing-sso-public.key';
-		}
-		$keychain = new Keychain();
-		if ( ! $keychain->getPublicKey( 'file://' . storage_path( $path ) ) )
-		{
-			abort( 500, "Trusted key not set up properly." );
-		}
+    /**
+     * @brief Verify, Validate, and check uuid in JWT.
+     * @param string $jwt The JWT, signed by SSO, containing a UUID that we trust.
+     */
+    private function verifyJWT($jwt)
+    {
+        $path = 'app/sso-public.key';
+        if (App::environment("testing")) {
+            $path = 'app/testing-sso-public.key';
+        }
+        $keychain = new Keychain();
+        if (! $keychain->getPublicKey('file://' . storage_path($path))) {
+            abort(500, "Trusted key not set up properly.");
+        }
 
-		if ( $jwt )
-		{
-			// TODO: Cleaner abort if parsing doesn't work.
-			$token = ( new Parser())->parse( (string) $jwt );
-			$claims = $token->getClaims();
-			$data = new ValidationData();
+        if ($jwt) {
+            // TODO: Cleaner abort if parsing doesn't work.
+            $token = ( new Parser())->parse((string) $jwt);
+            $claims = $token->getClaims();
+            $data = new ValidationData();
 
-			if ( $token->validate( $data ) )
-			{
-				if ( $token->verify(
-					new Sha256(),
-					$keychain->getPublicKey( 'file://' . storage_path( $path ) )
-				) )
-				{
-					if ( $claims['action'] == 'prove_identity' &&
-						TrustedUUID::where( [ 'uuid' => $claims['uuid'] ] )->exists() )
-					{
-						return TRUE;
-					}
-					// Forbidden -- user not trusted.
-					abort( 403 );
-				}
-			}
-		}
-		// Not authorized -- JWT missing or not trusted.
-		abort( 401 );
-	}
+            if ($token->validate($data)) {
+                if ($token->verify(
+                    new Sha256(),
+                    $keychain->getPublicKey('file://' . storage_path($path))
+                ) ) {
+                    if ($claims['action'] == 'prove_identity' &&
+                        TrustedUUID::where([ 'uuid' => $claims['uuid'] ])->exists() ) {
+                        return true;
+                    }
+                    // Forbidden -- user not trusted.
+                    abort(403);
+                }
+            }
+        }
+        // Not authorized -- JWT missing or not trusted.
+        abort(401);
+    }
 }

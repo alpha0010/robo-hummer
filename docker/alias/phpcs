@@ -1,0 +1,1 @@
+x - vendor/bin/phpcs -p --standard=PSR12 app tests routes resources/views

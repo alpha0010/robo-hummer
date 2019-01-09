@@ -33,10 +33,10 @@ class HomeController extends Controller
         return view("home");
     }
 
-	public function keyboard()
-	{
-		return view("keyboard");
-	}
+    public function keyboard()
+    {
+        return view("keyboard");
+    }
 
     public function about()
     {
@@ -50,14 +50,12 @@ class HomeController extends Controller
     {
         $mdFiles = glob(resource_path("paper/*.md"));
         $hash = "";
-        foreach ($mdFiles as $mdFile)
-        {
+        foreach ($mdFiles as $mdFile) {
             $hash .= md5_file($mdFile);
         }
         $hash = md5($hash);
 
-        if (!Storage::exists("paper/$hash.pdf"))
-        {
+        if (!Storage::exists("paper/$hash.pdf")) {
             $cwd = getcwd();
             chdir(resource_path("paper"));
 
@@ -77,8 +75,7 @@ class HomeController extends Controller
         );
 
         $exitCode = $process->run();
-        if ($exitCode != 0)
-        {
+        if ($exitCode != 0) {
             throw new RuntimeException(
                 "`" . $process->getCommandLine() . "` failed ($exitCode)\n"
                 . $process->getErrorOutput()
@@ -87,10 +84,8 @@ class HomeController extends Controller
 
         Storage::putFileAs("paper", new File($tempPath), "$hash.pdf");
 
-        foreach (Storage::files("paper") as $pdf)
-        {
-            if ($pdf != "paper/$hash.pdf")
-            {
+        foreach (Storage::files("paper") as $pdf) {
+            if ($pdf != "paper/$hash.pdf") {
                 Storage::delete($pdf);
             }
         }

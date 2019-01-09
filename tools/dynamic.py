@@ -13,30 +13,30 @@ colors = [ 'red', 'green', 'blue', 'yellow', 'cyan', 'magenta' ]
 parts = {}
 
 def print( x ):
-	sys.stdout.buffer.write( x.encode('utf-8') )
+    sys.stdout.buffer.write( x.encode('utf-8') )
 
 def rectangle(x,y,w,h,textBytes,color):
-	x = x * xScale
-	w = w * xScale
-	y = y * yScale
-	h = h * yScale
-	style = "fill:%s; stroke-width: %i; stroke:rgb(0,0,0); opacity: 0.5;" % (color,border)
-	border2 = border * 2
-	#text = XMLescape( text )
-	print( "<g>" )
-	print( "<rect x='%i' y='%i' width='%i' height='%i' style='%s'/>" % (x,y,w,h, style) )
-	print( "<text x='%i' y='%i'      font-size='%ipt'>"
-		% (x+border,     y+h-border, h-border2) )
-	if textBytes:
-		sys.stdout.buffer.write( textBytes )
-	print( "</text>" )
-	print( "</g>" )
+    x = x * xScale
+    w = w * xScale
+    y = y * yScale
+    h = h * yScale
+    style = "fill:%s; stroke-width: %i; stroke:rgb(0,0,0); opacity: 0.5;" % (color,border)
+    border2 = border * 2
+    #text = XMLescape( text )
+    print( "<g>" )
+    print( "<rect x='%i' y='%i' width='%i' height='%i' style='%s'/>" % (x,y,w,h, style) )
+    print( "<text x='%i' y='%i'      font-size='%ipt'>"
+        % (x+border,     y+h-border, h-border2) )
+    if textBytes:
+        sys.stdout.buffer.write( textBytes )
+    print( "</text>" )
+    print( "</g>" )
 
 def colorFromPart( part ):
-	if part in parts:
-		return parts[part]
-	parts[part] = colors.pop()
-	return parts[part]
+    if part in parts:
+        return parts[part]
+    parts[part] = colors.pop()
+    return parts[part]
 
 
 filename = sys.argv[1]

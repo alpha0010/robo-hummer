@@ -36,7 +36,7 @@ class MediaController extends Controller
                 'incipit.json',
                 'master.musicxml',
             ]) ) {
-                $shell_path = $media->getAbsPath($media->originalFile);
+                $shell_path = $this->getSourcePath($media, $type);
                 $process = new Process([
                     "sudo", "-u", "python",
                     "/var/www/tools/convert.py", $shell_path, $type,
@@ -89,6 +89,26 @@ class MediaController extends Controller
     }
 
     /**
+     * @brief Get the absolute path for a source file (if it exists)
+     *  that should be used when converting to a given destination file.
+     * @param Media $media
+     * @param string $destinationType The file format that you want to convert to.
+     */
+    private function getSourcePath($media, $destinationType)
+    {
+        $destToSource = [
+            'dynamic.svg' => 'master.musicxml',
+        ];
+        // Default to using the original file.
+        $sourceType = $media->originalFile;
+        if (isset($destToSource[$destinationType])) {
+            $sourceType = $destToSource[$destinationType];
+            $this->checkExists($media->id, $sourceType);
+        }
+        return $media->getAbsPath($sourceType);
+    }
+
+    /**
      * @brief Get a file response.
      * @param Filename
      * @returns Either an object, if this is to be returned as json, or the file response.
@@ -98,10 +118,8 @@ class MediaController extends Controller
         if (substr($filepath, -5) == '.json') {
             return json_decode(Storage::get($filepath));
         }
-        if (substr($filepath, -4) == '.svg') {
-            return response(Storage::get($filepath), 200)
-                ->header('Content-Type', 'image/svg+xml');
-        }
+        // Note: musicxml and svg files should have their XML declaration,
+        // so Storage will automatically send them with Content-Type application/xml.
         return Storage::response($filepath);
     }
 

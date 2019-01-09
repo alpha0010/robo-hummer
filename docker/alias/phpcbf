@@ -1,0 +1,1 @@
+x - vendor/bin/phpcbf -p --standard=PSR12 app tests routes resources/views

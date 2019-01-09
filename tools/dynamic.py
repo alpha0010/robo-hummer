@@ -56,19 +56,23 @@ noteRange = highNote - lowNote + 1
 songWidth = songLength * xScale
 songHeight = noteRange * yScale
 
-beatsPerMeasure = 4
+measureLengths = {0: 0}
+measureOffsets = {0: 0}
 
 # Output notes in place
+print("<?xml version='1.0' encoding='utf-8'?>")
 ns='xmlns="http://www.w3.org/2000/svg"'
 print( "<svg width='%i' height='%i' %s>" % (songWidth, songHeight, ns) )
 for note in s.recurse().notes:
         if hasattr(note, 'midiTickStart'):
             xPos = note.midiTickStart/1024
         else:
-            # TODO: ensure that the measure numbers are sequential and distinct.
-            measureNum = note.measureNumber
+            # master.musicxml ensures that the measure numbers are sequential and distinct integers.
+            measureNum = int(note.measureNumber)
             beatsThisMeasure = note.getContextByClass("Measure").duration.quarterLength
-            xPos = ( measureNum * beatsThisMeasure ) + ( note.beat )
+            measureLengths[measureNum] = beatsThisMeasure
+            measureOffsets[measureNum] = measureOffsets[measureNum - 1] + measureLengths[measureNum - 1]
+            xPos = measureOffsets[measureNum] + ( note.beat ) - 1
 
         xLen = note.duration.quarterLength
 

@@ -9,14 +9,14 @@ filename = sys.argv[1]
 outputformat = sys.argv[2]
 
 if ( outputformat == 'harmony.musicxml' ) or ( outputformat == 'master.musicxml' ):
-	s = converter.parse(filename)
-	path = s.write( 'xml' )
-	if ( outputformat == 'master.musicxml' ):
-		# Note: It's important that this XML file is trusted.
-		# The XML parser in makeMasterMusicXML is not secure against maliciously constructed data.
-		makeMasterMusicXML( path )
-	sys.stdout.buffer.write( open( path, 'rb' ).read() )
-	os.remove( path )
+    s = converter.parse(filename)
+    path = s.write( 'xml' )
+    if ( outputformat == 'master.musicxml' ):
+        # Note: It's important that this XML file is trusted.
+        # The XML parser in makeMasterMusicXML is not secure against maliciously constructed data.
+        makeMasterMusicXML( path )
+    sys.stdout.buffer.write( open( path, 'rb' ).read() )
+    os.remove( path )
 elif( outputformat == 'harmony.midi' ):
     s = converter.parse(filename)
     # Creates a temporary file

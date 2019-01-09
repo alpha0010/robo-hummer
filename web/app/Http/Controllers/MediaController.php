@@ -24,118 +24,104 @@ class MediaController extends Controller
             return $this->getFileResponse($filepath);
         }
 
-		$media = Media::find( $number );
-		if ( $media )
-		{
-			$parts = explode( ".", $type, 2 );
-			$name = $parts[0];
-			$extension = $parts[1] ?? '';
-			if ( in_array( $type, [
-				'dynamic.svg',
-				'harmony.midi',
-				'harmony.musicxml',
-				'incipit.json',
-				'master.musicxml',
-			] ) )
-			{
-				$shell_path = $this->getSourcePath( $media, $type );
-				$process = new Process( [
-					"sudo", "-u", "python",
-					"/var/www/tools/convert.py", $shell_path, $type,
-				] );
-				$process->run();
-				if ( ! $process->isSuccessful() )
-				{
-					throw new ProcessFailedException($process);
-				}
-				Storage::put( $filepath, $process->getOutput() );
-				return $this->getFileResponse( $filepath );
-			}
-			else if ( $extension == 'premaster.wav' )
-			{
-				$this->checkExists( $number, "$name.midi" );
-				$process = new Process( [
-					"fluidsynth",
-					"-F", $media->getAbsPath( "$name.premaster.wav" ),
-					"/usr/share/sounds/sf2/TimGM6mb.sf2",
-					$media->getAbsPath( "$name.midi" )
-				] );
-				$process->run();
-				// fluidsynth doesn't return 1 when unsuccessful (such as invalid soundfont)
-				// TODO: Find a way to verify that fluidsynth created audio that you can hear.
-				if ( ! $process->isSuccessful() )
-				{
-					throw new ProcessFailedException($process);
-				}
-				if ( ! Storage::exists( $media->getPath( "$name.premaster.wav" ) ) )
-				{
-					abort( 500, "Unable to generate audio from midi." );
-				}
-				return TRUE;
-			}
-			else if ( in_array( $extension, [ 'ogg', 'mp3', 'wav' ] ) )
-			{
-				$this->checkExists( $number, "$name.premaster.wav" );
-				$process = new Process( [
-					'ffmpeg',
-					'-i', $media->getAbsPath( "$name.premaster.wav" ),
-					'-filter_complex',
-					"compand=attacks=0.3 0.3:decays=0.8 0.8:points=-80/-900|-45/-25|-10/-10",
-					// ffmpeg automatically converts to the file format that is requested.
-					$media->getAbsPath( $type )
-				] );
-				$process->run();
-				if ( ! $process->isSuccessful() )
-				{
-					throw new ProcessFailedException($process);
-				}
-				return $this->getFileResponse( $filepath );
-			}
-			else if ( $type == 'original' )
-			{
-				return redirect( "/media/$media->id/$media->originalFile" );
-			}
-		}
-		// Otherwise, the file wasn't found.
-		abort( 404 );
-	}
+        $media = Media::find($number);
+        if ($media) {
+            $parts = explode(".", $type, 2);
+            $name = $parts[0];
+            $extension = $parts[1] ?? '';
+            if (in_array($type, [
+                'dynamic.svg',
+                'harmony.midi',
+                'harmony.musicxml',
+                'incipit.json',
+                'master.musicxml',
+            ]) ) {
+                $shell_path = $this->getSourcePath($media, $type);
+                $process = new Process([
+                    "sudo", "-u", "python",
+                    "/var/www/tools/convert.py", $shell_path, $type,
+                ]);
+                $process->run();
+                if (! $process->isSuccessful()) {
+                    throw new ProcessFailedException($process);
+                }
+                Storage::put($filepath, $process->getOutput());
+                return $this->getFileResponse($filepath);
+            } elseif ($extension == 'premaster.wav') {
+                $this->checkExists($number, "$name.midi");
+                $process = new Process([
+                    "fluidsynth",
+                    "-F", $media->getAbsPath("$name.premaster.wav"),
+                    "/usr/share/sounds/sf2/TimGM6mb.sf2",
+                    $media->getAbsPath("$name.midi")
+                ]);
+                $process->run();
+                // fluidsynth doesn't return 1 when unsuccessful (such as invalid soundfont)
+                // TODO: Find a way to verify that fluidsynth created audio that you can hear.
+                if (! $process->isSuccessful()) {
+                    throw new ProcessFailedException($process);
+                }
+                if (! Storage::exists($media->getPath("$name.premaster.wav"))) {
+                    abort(500, "Unable to generate audio from midi.");
+                }
+                return true;
+            } elseif (in_array($extension, [ 'ogg', 'mp3', 'wav' ])) {
+                $this->checkExists($number, "$name.premaster.wav");
+                $process = new Process([
+                    'ffmpeg',
+                    '-i', $media->getAbsPath("$name.premaster.wav"),
+                    '-filter_complex',
+                    "compand=attacks=0.3 0.3:decays=0.8 0.8:points=-80/-900|-45/-25|-10/-10",
+                    // ffmpeg automatically converts to the file format that is requested.
+                    $media->getAbsPath($type)
+                ]);
+                $process->run();
+                if (! $process->isSuccessful()) {
+                    throw new ProcessFailedException($process);
+                }
+                return $this->getFileResponse($filepath);
+            } elseif ($type == 'original') {
+                return redirect("/media/$media->id/$media->originalFile");
+            }
+        }
+        // Otherwise, the file wasn't found.
+        abort(404);
+    }
 
-	/**
-	 * @brief Get the absolute path for a source file (if it exists)
-	 *  that should be used when converting to a given destination file.
-	 * @param Media $media
-	 * @param string $destinationType The file format that you want to convert to.
-	 */
-	private function getSourcePath( $media, $destinationType )
-	{
-		$destToSource = [
-			'dynamic.svg' => 'master.musicxml',
-		];
-		// Default to using the original file.
-		$sourceType = $media->originalFile;
-		if ( isset( $destToSource[$destinationType] ) )
-		{
-			$sourceType = $destToSource[$destinationType];
-			$this->checkExists( $media->id, $sourceType );
-		}
-		return $media->getAbsPath( $sourceType );
-	}
+    /**
+     * @brief Get the absolute path for a source file (if it exists)
+     *  that should be used when converting to a given destination file.
+     * @param Media $media
+     * @param string $destinationType The file format that you want to convert to.
+     */
+    private function getSourcePath($media, $destinationType)
+    {
+        $destToSource = [
+            'dynamic.svg' => 'master.musicxml',
+        ];
+        // Default to using the original file.
+        $sourceType = $media->originalFile;
+        if (isset($destToSource[$destinationType])) {
+            $sourceType = $destToSource[$destinationType];
+            $this->checkExists($media->id, $sourceType);
+        }
+        return $media->getAbsPath($sourceType);
+    }
 
-	/**
-	 * @brief Get a file response.
-	 * @param Filename
-	 * @returns Either an object, if this is to be returned as json, or the file response.
-	 */
-	private function getFileResponse( $filepath )
-	{
-		if ( substr( $filepath, -5 ) == '.json' )
-		{
-			return json_decode( Storage::get( $filepath ) );
-		}
-		// Note: musicxml and svg files should have their XML declaration,
-		// so Storage will automatically send them with Content-Type application/xml.
-		return Storage::response( $filepath );
-	}
+    /**
+     * @brief Get a file response.
+     * @param Filename
+     * @returns Either an object, if this is to be returned as json, or the file response.
+     */
+    private function getFileResponse($filepath)
+    {
+        if (substr($filepath, -5) == '.json') {
+            return json_decode(Storage::get($filepath));
+        }
+        // Note: musicxml and svg files should have their XML declaration,
+        // so Storage will automatically send them with Content-Type application/xml.
+        return Storage::response($filepath);
+    }
 
     /**
      * @brief Creates a media file if it doesn't exist, otherwise, aborts execution.

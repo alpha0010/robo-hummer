@@ -64,33 +64,33 @@ print("<?xml version='1.0' encoding='utf-8'?>")
 ns='xmlns="http://www.w3.org/2000/svg"'
 print( "<svg width='%i' height='%i' %s>" % (songWidth, songHeight, ns) )
 for note in s.recurse().notes:
-		if hasattr(note, 'midiTickStart'):
-			xPos = note.midiTickStart/1024
-		else:
-			# master.musicxml ensures that the measure numbers are sequential and distinct integers.
-			measureNum = int(note.measureNumber)
-			beatsThisMeasure = note.getContextByClass("Measure").duration.quarterLength
-			measureLengths[measureNum] = beatsThisMeasure
-			measureOffsets[measureNum] = measureOffsets[measureNum - 1] + measureLengths[measureNum - 1]
-			xPos = measureOffsets[measureNum] + ( note.beat ) - 1
+        if hasattr(note, 'midiTickStart'):
+            xPos = note.midiTickStart/1024
+        else:
+            # master.musicxml ensures that the measure numbers are sequential and distinct integers.
+            measureNum = int(note.measureNumber)
+            beatsThisMeasure = note.getContextByClass("Measure").duration.quarterLength
+            measureLengths[measureNum] = beatsThisMeasure
+            measureOffsets[measureNum] = measureOffsets[measureNum - 1] + measureLengths[measureNum - 1]
+            xPos = measureOffsets[measureNum] + ( note.beat ) - 1
 
-		xLen = note.duration.quarterLength
+        xLen = note.duration.quarterLength
 
-		for pitch in note.pitches:
-			yPos = highNote - pitch.midi
-			yLen = 1
-			# TODO: Consider using music_tokens.partify
-			color = colorFromPart( note.getContextByClass('Part').recurse().getElementsByClass('Instrument')[0] )
+        for pitch in note.pitches:
+            yPos = highNote - pitch.midi
+            yLen = 1
+            # TODO: Consider using music_tokens.partify
+            color = colorFromPart( note.getContextByClass('Part').recurse().getElementsByClass('Instrument')[0] )
 
-			string = False
-			if note.lyrics:
-				# TODO: use syllabic for something.
-				string = note.lyrics[0].rawText
-			if string:
-				string = XMLescape(string)
-				string = string.encode('utf-8').strip()
+            string = False
+            if note.lyrics:
+                # TODO: use syllabic for something.
+                string = note.lyrics[0].rawText
+            if string:
+                string = XMLescape(string)
+                string = string.encode('utf-8').strip()
 
-			rectangle( xPos, yPos, xLen, yLen, string, color)
+            rectangle( xPos, yPos, xLen, yLen, string, color)
 print( "</svg>" )
 
 # Output lyrics below the notes

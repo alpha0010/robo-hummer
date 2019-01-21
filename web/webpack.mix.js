@@ -19,6 +19,7 @@ mix.js('resources/js/app.js', 'public/js')
        'node_modules/reveal.js/css/reveal.css',
        'node_modules/reveal.js/css/theme/serif.css',
    ], 'public/css/reveal.css')
+   .copy('resources/css/dynamic.css', 'public/css/dynamic.css')
    .scripts([
        'node_modules/midi/inc/shim/Base64.js',
        'node_modules/midi/inc/shim/Base64binary.js',

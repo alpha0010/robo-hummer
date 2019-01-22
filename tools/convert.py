@@ -30,3 +30,5 @@ elif(outputformat == 'incipit.json'):
     import incipit
 elif(outputformat == 'dynamic.svg'):
     import dynamic
+elif(outputformat == 'dynamic.svg.info.json'):
+    import dynamicinfo

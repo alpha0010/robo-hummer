@@ -31,6 +31,7 @@ class MediaController extends Controller
             $extension = $parts[1] ?? '';
             if (in_array($type, [
                 'dynamic.svg',
+                'dynamic.svg.info.json',
                 'harmony.midi',
                 'harmony.musicxml',
                 'incipit.json',
@@ -98,6 +99,7 @@ class MediaController extends Controller
     {
         $destToSource = [
             'dynamic.svg' => 'master.musicxml',
+            'dynamic.svg.info.json' => 'dynamic.svg',
         ];
         // Default to using the original file.
         $sourceType = $media->originalFile;
@@ -116,7 +118,7 @@ class MediaController extends Controller
     private function getFileResponse($filepath)
     {
         if (substr($filepath, -5) == '.json') {
-            return json_decode(Storage::get($filepath));
+            return json_decode(Storage::get($filepath), TRUE);
         } elseif (substr($filepath, -4) == '.svg') {
             // It's required to send it as an image so that <img> tags will show it.
             return response(Storage::get($filepath), 200)

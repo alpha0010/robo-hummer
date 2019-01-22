@@ -9,6 +9,7 @@ tests:
     - export PATH=$PATH:/dart/bin
     - dart down || echo 'already down'
     - dart up --dev
+    - dart +pycodestyle
     - dart +phpcs
     - dart +phpunit --coverage-text | tee coverage.txt
     - echo Print out the coverage so gitlab\'s regex picks it up.

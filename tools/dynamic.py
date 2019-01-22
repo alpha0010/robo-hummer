@@ -9,30 +9,35 @@ xScale = 75
 yScale = 20
 
 border = 1
-colors = [ 'red', 'green', 'blue', 'yellow', 'cyan', 'magenta' ]
+colors = ['red', 'green', 'blue', 'yellow', 'cyan', 'magenta']
 parts = {}
 
-def print( x ):
-    sys.stdout.buffer.write( x.encode('utf-8') )
 
-def rectangle(x,y,w,h,textBytes,color):
+def print(x):
+    sys.stdout.buffer.write(x.encode('utf-8'))
+
+
+def rectangle(x, y, w, h, textBytes, color):
     x = x * xScale
     w = w * xScale
     y = y * yScale
     h = h * yScale
-    style = "fill:%s; stroke-width: %i; stroke:rgb(0,0,0); opacity: 0.5;" % (color,border)
+    style = "fill:%s; stroke-width: %i; stroke:rgb(0,0,0); opacity: 0.5;" \
+            % (color, border)
     border2 = border * 2
-    #text = XMLescape( text )
-    print( "<g>" )
-    print( "<rect x='%i' y='%i' width='%i' height='%i' style='%s'/>" % (x,y,w,h, style) )
-    print( "<text x='%i' y='%i'      font-size='%ipt'>"
-        % (x+border,     y+h-border, h-border2) )
-    if textBytes:
-        sys.stdout.buffer.write( textBytes )
-    print( "</text>" )
-    print( "</g>" )
 
-def colorFromPart( part ):
+    print("<g>")
+    print("<rect x='%i' y='%i' width='%i' height='%i' style='%s'/>"
+          % (x, y, w, h, style))
+    print("<text x='%i' y='%i' font-size='%ipt'>"
+          % (x + border, y + h - border, h - border2))
+    if textBytes:
+        sys.stdout.buffer.write(textBytes)
+    print("</text>")
+    print("</g>")
+
+
+def colorFromPart(part):
     if part in parts:
         return parts[part]
     parts[part] = colors.pop()
@@ -50,7 +55,7 @@ songLength = s.duration.quarterLength
 
 # Get the range of the notes
 lowNote = min(s.pitches).midi
-highNote  = max(s.pitches).midi
+highNote = max(s.pitches).midi
 noteRange = highNote - lowNote + 1
 
 songWidth = songLength * xScale
@@ -61,13 +66,14 @@ measureOffsets = {0: 0}
 
 # Output notes in place
 print("<?xml version='1.0' encoding='utf-8'?>")
-ns='xmlns="http://www.w3.org/2000/svg"'
-print( "<svg width='%i' height='%i' %s>" % (songWidth, songHeight, ns) )
+ns = 'xmlns="http://www.w3.org/2000/svg"'
+print("<svg width='%i' height='%i' %s>" % (songWidth, songHeight, ns))
 for note in s.recurse().notes:
         if hasattr(note, 'midiTickStart'):
-            xPos = note.midiTickStart/1024
+            xPos = note.midiTickStart / 1024
         else:
-            # master.musicxml ensures that the measure numbers are sequential and distinct integers.
+            # master.musicxml ensures that the measure numbers
+            # are sequential and distinct integers.
             measureNum = int(note.measureNumber)
             beatsThisMeasure = note.getContextByClass("Measure").duration.quarterLength
             measureLengths[measureNum] = beatsThisMeasure
@@ -80,7 +86,7 @@ for note in s.recurse().notes:
             yPos = highNote - pitch.midi
             yLen = 1
             # TODO: Consider using music_tokens.partify
-            color = colorFromPart( note.getContextByClass('Part').recurse().getElementsByClass('Instrument')[0] )
+            color = colorFromPart(note.getContextByClass('Part').recurse().getElementsByClass('Instrument')[0])
 
             string = False
             if note.lyrics:
@@ -90,9 +96,7 @@ for note in s.recurse().notes:
                 string = XMLescape(string)
                 string = string.encode('utf-8').strip()
 
-            rectangle( xPos, yPos, xLen, yLen, string, color)
-print( "</svg>" )
+            rectangle(xPos, yPos, xLen, yLen, string, color)
+print("</svg>")
 
 # Output lyrics below the notes
-
-

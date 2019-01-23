@@ -75,8 +75,12 @@ class DynamicController extends Controller
     }
 
     /**
-     * Render a slide.
-     *
+     * @brief Render a slide.
+     * @param string $slideName What the slide is called.
+     * @param string $file What image should be rendered here.
+     * @param int $offset The x-axis pixel offset for this slide to start at.
+     * @param int $nextOffset The x-axis pixel offset for this slide to end at.
+     * @param int $imageWidth The maximum width of the image.
      * @return array
      */
     private function render(

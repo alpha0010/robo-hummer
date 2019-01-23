@@ -37,6 +37,13 @@ def rectangle(x, y, w, h, textBytes, color):
     print("</g>")
 
 
+def line(x, h):
+    x = x * xScale
+    h = h * yScale
+    print("<rect x='%i' y='0' width='%i' height='%i'/>"
+          % (x, border, h))
+
+
 def colorFromPart(part):
     if part in parts:
         return parts[part]
@@ -97,6 +104,12 @@ for note in s.recurse().notes:
                 string = string.encode('utf-8').strip()
 
             rectangle(xPos, yPos, xLen, yLen, string, color)
+
+print("<g id='measureOffsets'>")
+for offset in measureOffsets.values():
+    line(offset, noteRange)
+print("</g>")
+
 print("</svg>")
 
 # Output lyrics below the notes

@@ -2,6 +2,7 @@
 
 import xml.etree.ElementTree as ElementTree
 
+
 def makeMasterMusicXML(path):
     tree = ElementTree.parse(path)
     root = tree.getroot()

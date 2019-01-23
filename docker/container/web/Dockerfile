@@ -7,15 +7,14 @@ COPY 000-default.conf /etc/apache2/sites-available/
 COPY node.tar.xz      /tmp
 
 RUN tar -xf /tmp/node.tar.xz -C /var/lib \
-	&& apt-get update \
-	&& apt-get install -y python pandoc texlive python-pip python-dev \
-	                      fluidsynth fluid-soundfont-gm timgm6mb-soundfont lame ffmpeg \
-	&& pip install pybind11 && pip install nmslib \
-	&& mv $(find /var/lib -maxdepth 1 -mindepth 1 -type d -name node-*) /var/lib/nodejs
-
-RUN apt-get update && apt-get install -y python3=3.5.3* python3-pip sudo \
-	&& yes | adduser -q --disabled-password python \
-	&& echo "www-data ALL=(python) NOPASSWD: ALL" > /etc/sudoers.d/www-data \
-	&& su python -c 'pip3 install music21==5.5.0' && su python -c 'pip3 install numpy'
+    && apt-get update \
+    && apt-get install -y python pandoc texlive python-pip python-dev \
+                          fluidsynth fluid-soundfont-gm timgm6mb-soundfont lame ffmpeg \
+    && pip install pybind11 && pip install nmslib && pip install pycodestyle \
+    && mv $(find /var/lib -maxdepth 1 -mindepth 1 -type d -name node-*) /var/lib/nodejs \
+    && apt-get install -y python3=3.5.3* python3-pip sudo \
+    && yes | adduser -q --disabled-password python \
+    && echo "www-data ALL=(python) NOPASSWD: ALL" > /etc/sudoers.d/www-data \
+    && su python -c 'pip3 install music21==5.5.0' && su python -c 'pip3 install numpy'
 
 ENV PATH="${PATH}:/var/lib/nodejs/bin"

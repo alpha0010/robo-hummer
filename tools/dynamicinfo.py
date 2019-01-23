@@ -14,4 +14,6 @@ measureOffsets = []
 for line in list(group):
     measureOffsets.append(int(line.attrib['x']))
 
-print(json.dumps({'measureOffsets': measureOffsets}))
+width = int(root.attrib['width'])
+
+print(json.dumps({'measureOffsets': measureOffsets, 'width': width}))

@@ -118,7 +118,7 @@ class MediaController extends Controller
     private function getFileResponse($filepath)
     {
         if (substr($filepath, -5) == '.json') {
-            return json_decode(Storage::get($filepath), TRUE);
+            return json_decode(Storage::get($filepath), true);
         } elseif (substr($filepath, -4) == '.svg') {
             // It's required to send it as an image so that <img> tags will show it.
             return response(Storage::get($filepath), 200)

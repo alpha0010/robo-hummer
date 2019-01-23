@@ -24,24 +24,29 @@ class DynamicController extends Controller
     {
         $slides = [[]];
 
-        $client = new HttpClient();
-        $resp = (string)$client->get(route("get media", [$id, "dynamic.svg.info.json"]))->getBody();
-        $jsonArray = json_decode($resp, true);
-
-        // 960px seems to be hard-coded into reveal.js as the 'screen width',
-        // even scaled down for smaller screens, so moving 960px forward will
-        // never skip too far forward, beyond what has already been seen.
-        $screenWidth = 960;
-        $offsetBreaks = $this->getOffsetBreaks($jsonArray['measureOffsets'], $screenWidth);
-
         // TODO: Load each verse into a different section.
-        $file = route("get media", [$id, "dynamic.svg"]);
-        $i = 0;
-        foreach ($offsetBreaks as $offset) {
-            $imageWidth = $jsonArray['width'];
-            $nextOffset = ($offsetBreaks[$i + 1] ?? $imageWidth);
-            $slides[0][] = $this->render("Verse 1 slide $i", $file, $offset, $nextOffset, $imageWidth);
-            $i++;
+        $verses = [
+            'master.dynamic.svg',
+            'melody.dynamic.svg',
+        ];
+        $client = new HttpClient();
+        foreach ($verses as $verseID => $verse) {
+            $resp = (string)$client->get(route("get media", [$id, "{$verse}.info.json"]))->getBody();
+            $jsonArray = json_decode($resp, true);
+
+            // 960px seems to be hard-coded into reveal.js as the 'screen width',
+            // even scaled down for smaller screens, so moving 960px forward will
+            // never skip too far forward, beyond what has already been seen.
+            $screenWidth = 960;
+            $offsetBreaks = $this->getOffsetBreaks($jsonArray['measureOffsets'], $screenWidth);
+
+            $file = route("get media", [$id, $verse]);
+            foreach ($offsetBreaks as $i => $offset) {
+                $imageWidth = $jsonArray['width'];
+                $nextOffset = ($offsetBreaks[$i + 1] ?? $imageWidth);
+                $slides[$verseID][] =
+                    $this->render("Verse $verseID slide $i", $file, $offset, $nextOffset, $imageWidth);
+            }
         }
 
         return view("slides", ["slides" => $slides]);

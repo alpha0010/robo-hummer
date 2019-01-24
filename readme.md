@@ -9,6 +9,9 @@ This project uses `/srv/robo-media` to store media.
 
 `dart up` to get the site going
 
+Symlink the git-hooks, as described by the header documentation in `git-hooks/*`,
+so the site will keep working with future updates.
+
 ### Melody Search
 
 ```

@@ -1,7 +1,6 @@
 #!/bin/bash
 
-( [[ $IS_PRODUCTION ]] || dart exec mysql mysql -e "CREATE DATABASE roboHummer CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" ) \
-	&& dart exec - composer install --no-suggest        \
+dart exec web composer install --no-suggest \
 	&& dart exec - ./artisan key:generate               \
 	&& dart exec - ./artisan migrate                    \
 	&& ( [[ $IS_PRODUCTION ]] || (                      \

@@ -38,7 +38,12 @@ class TrustUUID extends Command
      */
     public function handle()
     {
-        $tu = new TrustedUUID([ 'uuid' => $this->argument('uuid') ]);
-        $tu->save();
+        $uuid = $this->argument('uuid');
+        if (TrustedUUID::where('uuid', $uuid)->exists()) {
+            $this->line("UUID '$uuid' already trusted");
+        } else {
+            $tu = new TrustedUUID(['uuid' => $uuid]);
+            $tu->save();
+        }
     }
 }

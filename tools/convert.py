@@ -8,6 +8,8 @@ from masterMusicXML import makeMasterMusicXML
 filename = sys.argv[1]
 outputformat = sys.argv[2]
 
+extension = outputformat.split('.', 1)[1]
+
 if (outputformat == 'harmony.musicxml') or (outputformat == 'master.musicxml'):
     s = converter.parse(filename)
     path = s.write('xml')
@@ -16,6 +18,13 @@ if (outputformat == 'harmony.musicxml') or (outputformat == 'master.musicxml'):
         # The XML parser in makeMasterMusicXML is not secure against
         # maliciously constructed data.
         makeMasterMusicXML(path)
+    sys.stdout.buffer.write(open(path, 'rb').read())
+    os.remove(path)
+elif(outputformat == 'melody.musicxml'):
+    s = converter.parse(filename)
+    import music_tokens
+    parts = music_tokens.partify(s)
+    path = parts[0].write('xml')
     sys.stdout.buffer.write(open(path, 'rb').read())
     os.remove(path)
 elif(outputformat == 'harmony.midi'):
@@ -28,7 +37,7 @@ elif(outputformat == 'harmony.midi'):
     os.remove(path)
 elif(outputformat == 'incipit.json'):
     import incipit
-elif(outputformat == 'dynamic.svg'):
+elif(extension == 'dynamic.svg'):
     import dynamic
-elif(outputformat == 'dynamic.svg.info.json'):
+elif(extension == 'dynamic.svg.info.json'):
     import dynamicinfo

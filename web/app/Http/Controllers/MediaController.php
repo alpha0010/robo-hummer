@@ -26,17 +26,22 @@ class MediaController extends Controller
 
         $media = Media::find($number);
         if ($media) {
-            $parts = explode(".", $type, 2);
-            $name = $parts[0];
-            $extension = $parts[1] ?? '';
+            $nameParts = $this->getNameParts($type);
+
+            $name = $nameParts['name'];
+            $extension = $nameParts['extension'];
             if (in_array($type, [
-                'dynamic.svg',
-                'dynamic.svg.info.json',
                 'harmony.midi',
                 'harmony.musicxml',
                 'incipit.json',
                 'master.musicxml',
-            ]) ) {
+                'melody.musicxml',
+                ]) ||
+                in_array($extension, [
+                'dynamic.svg',
+                'dynamic.svg.info.json',
+                ])
+            ) {
                 $shell_path = $this->getSourcePath($media, $type);
                 $process = new Process([
                     "sudo", "-u", "python",
@@ -90,6 +95,21 @@ class MediaController extends Controller
     }
 
     /**
+     * @brief return array with keys 'name' and 'extension'.
+     * @param $type - the name of the type.
+     */
+    private function getNameParts($type)
+    {
+        $parts = explode(".", $type, 2);
+        $name = $parts[0];
+        $extension = $parts[1] ?? '';
+        return [
+            'name' => $name,
+            'extension' => $extension,
+        ];
+    }
+
+    /**
      * @brief Get the absolute path for a source file (if it exists)
      *  that should be used when converting to a given destination file.
      * @param Media $media
@@ -97,16 +117,24 @@ class MediaController extends Controller
      */
     private function getSourcePath($media, $destinationType)
     {
-        $destToSource = [
-            'dynamic.svg' => 'master.musicxml',
+        $destToSourceType = [
+            'melody.musicxml' => 'master.musicxml',
+        ];
+        $destToSourceExtensions = [
+            'dynamic.svg' => 'musicxml',
             'dynamic.svg.info.json' => 'dynamic.svg',
         ];
+        $destNameParts = $this->getNameParts($destinationType);
         // Default to using the original file.
         $sourceType = $media->originalFile;
-        if (isset($destToSource[$destinationType])) {
-            $sourceType = $destToSource[$destinationType];
-            $this->checkExists($media->id, $sourceType);
+
+        if (isset($destToSourceType[$destinationType])) {
+            $sourceType = $destToSourceType[$destinationType];
+        } elseif (isset($destToSourceExtensions[$destNameParts['extension']])) {
+            $sourceType = $destNameParts['name']
+                . '.' . $destToSourceExtensions[$destNameParts['extension']];
         }
+        $this->checkExists($media->id, $sourceType);
         return $media->getAbsPath($sourceType);
     }
 

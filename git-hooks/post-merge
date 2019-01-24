@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+#
+# Install this hook with:
+#   cd <repository_base_folder>
+#   ln -s `pwd`/git-hooks/post-merge `pwd`/.git/hooks/post-merge
+#
+# Make sure this git-hook runs with
+#   git checkout origin/master~1 && git checkout -B master && git pull
+#
+# This command can also be run directly if needed.
+
+SUBDIRECTORY_OK=1
+
+. "$(git --exec-path)/git-sh-setup"
+
+BASE_DIR="$GIT_DIR/.."
+
+if dart w &>/dev/null
+then
+    dart +composer install --no-progress
+    dart +artisan migrate
+    dart x web npm run dev
+else
+    echo "This site isn't running under dart. Doing nothing for post-merge."
+fi

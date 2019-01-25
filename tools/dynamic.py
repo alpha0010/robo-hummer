@@ -105,9 +105,11 @@ for note in s.recurse().notes:
 
             rectangle(xPos, yPos, xLen, yLen, string, color)
 
-print("<g id='measureOffsets'>")
+print("<g id='measureBarLines'>")
 for offset in measureOffsets.values():
     line(offset, noteRange)
+# Add a bar line at the end of the song.
+line(songLength, noteRange)
 print("</g>")
 
 print("</svg>")

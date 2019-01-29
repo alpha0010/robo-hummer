@@ -38,7 +38,8 @@ class DynamicController extends Controller
             // even scaled down for smaller screens, so moving 960px forward will
             // never skip too far forward, beyond what has already been seen.
             $screenWidth = 960;
-            $offsetBreaks = $this->getOffsetBreaks($jsonArray['measureOffsets'], $screenWidth);
+            $barLines = $jsonArray['measureBarLines'];
+            $offsetBreaks = $this->getOffsetBreaks($barLines, $screenWidth);
 
             $file = route("get media", [$id, $verse]);
             foreach ($offsetBreaks as $i => $offset) {
@@ -55,24 +56,25 @@ class DynamicController extends Controller
     /**
      * @brief Go through each of the $measureOffsets,
      *  and create breakpoints at the measures that are less than $screenWidth apart.
-     * @param array $measureOffsets An array of x positions where measure breaks are made.
+     * @param array $barLines An array of x positions where measure breaks are made.
      * @param int $screenWidth The maximum space between one breakpoint and another.
      * @return array Where the slides should break at.
      */
-    private function getOffsetBreaks($measureOffsets, $screenWidth)
+    private function getOffsetBreaks($barLines, $screenWidth)
     {
         // Where we should break each slide at.
         $offsetBreaks = [];
         $current = 0;
-        // Go through each of the measureOffsets,
+        // Go through each of the $barLines,
         // and use them as breaks that are less than $screenWidth apart.
-        foreach ($measureOffsets as $number => $measureOffset) {
+        foreach ($barLines as $blIndex => $barLine) {
             if ($current == 0) {
-                $offsetBreaks[] = $measureOffset;
+                $offsetBreaks[] = $barLine;
                 $current++;
-            } elseif ($offsetBreaks[$current - 1] + $screenWidth <= $measureOffset) {
-                // If the current offset is too far away, break at the previous offset.
-                $offsetBreaks[] = $measureOffsets[$number - 1];
+            } elseif ($offsetBreaks[$current - 1] + $screenWidth <= $barLine) {
+                // If the current line is off the screen,
+                // add a slide break at the previous bar line.
+                $offsetBreaks[] = $barLines[$blIndex - 1];
                 $current++;
             }
         }

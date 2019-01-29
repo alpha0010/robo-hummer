@@ -7,13 +7,13 @@ filename = sys.argv[1]
 
 tree = ElementTree.parse(filename)
 root = tree.getroot()
-group = root.find("{http://www.w3.org/2000/svg}g[@id='measureOffsets']")
+group = root.find("{http://www.w3.org/2000/svg}g[@id='measureBarLines']")
 
-measureOffsets = []
+barLines = []
 
 for line in list(group):
-    measureOffsets.append(int(line.attrib['x']))
+    barLines.append(int(line.attrib['x']))
 
 width = int(root.attrib['width'])
 
-print(json.dumps({'measureOffsets': measureOffsets, 'width': width}))
+print(json.dumps({'measureBarLines': barLines, 'width': width}))

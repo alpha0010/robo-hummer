@@ -17,7 +17,7 @@ def print(x):
     sys.stdout.buffer.write(x.encode('utf-8'))
 
 
-def rectangle(x, y, w, h, lyrics, color):
+def rectangle(x, y, w, h, lyrics, color, lyricLineY):
     x = x * xScale
     w = w * xScale
     y = y * yScale
@@ -34,8 +34,10 @@ def rectangle(x, y, w, h, lyrics, color):
         escapedText = lyric.rawText
         escapedText = XMLescape(escapedText, {"'": "&apos;"})
         dataVerses += "data-v" + str(lyric.number) + "='" + escapedText + "' "
-    print("<text x='%i' y='%i' font-size='%ipt' %s>"
-          % (x + border, y + h - border, h - border2, dataVerses))
+    lyricX = x + border
+    lyricY = y + h - border
+    print("<text x='%i' y='%i' data-y='%i' data-y-bottom='%i' font-size='%ipt' %s>"
+          % (lyricX, lyricY, lyricY, lyricLineY, h - border2, dataVerses))
     if lyrics:
         # TODO: use syllabic for something.
         text = XMLescape(lyrics[0].rawText)
@@ -74,7 +76,9 @@ highNote = max(s.pitches).midi
 noteRange = highNote - lowNote + 1
 
 songWidth = songLength * xScale
-songHeight = noteRange * yScale
+# If the lyrics are shown at the bottom, we need this much space to put them there.
+lyricLine = 1.5
+songHeight = (noteRange + lyricLine) * yScale
 
 measureLengths = {0: 0}
 measureOffsets = {0: 0}
@@ -107,7 +111,8 @@ for note in s.recurse().notes:
             if note.lyrics:
                 lyrics = note.lyrics
 
-            rectangle(xPos, yPos, xLen, yLen, lyrics, color)
+            lyricLineY = (noteRange + 1) * yScale
+            rectangle(xPos, yPos, xLen, yLen, lyrics, color, lyricLineY)
 
 print("<g id='measureBarLines'>")
 for offset in measureOffsets.values():

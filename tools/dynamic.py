@@ -29,21 +29,21 @@ def rectangle(x, y, w, h, lyrics, color, lyricLineY):
     print("<g>")
     print("<rect x='%i' y='%i' width='%i' height='%i' style='%s'/>"
           % (x, y, w, h, style))
-    dataVerses = ""
-    for lyric in lyrics:
-        escapedText = lyric.rawText
-        escapedText = XMLescape(escapedText, {"'": "&apos;"})
-        dataVerses += "data-v" + str(lyric.number) + "='" + escapedText + "' "
-    lyricX = x + border
-    lyricY = y + h - border
-    print("<text x='%i' y='%i' data-y='%i' data-y-bottom='%i' font-size='%ipt' %s>"
-          % (lyricX, lyricY, lyricY, lyricLineY, h - border2, dataVerses))
     if lyrics:
+        dataVerses = ""
+        for lyric in lyrics:
+            escapedText = lyric.rawText
+            escapedText = XMLescape(escapedText, {"'": "&apos;"})
+            dataVerses += "data-v" + str(lyric.number) + "='" + escapedText + "' "
+        lyricX = x + border
+        lyricY = y + h - border
+        print("<text x='%i' y='%i' data-y='%i' data-y-bottom='%i' font-size='%ipt' %s>"
+              % (lyricX, lyricY, lyricY, lyricLineY, h - border2, dataVerses))
         # TODO: use syllabic for something.
         text = XMLescape(lyrics[0].rawText)
         textBytes = text.encode('utf-8').strip()
         sys.stdout.buffer.write(textBytes)
-    print("</text>")
+        print("</text>")
     print("</g>")
 
 

@@ -22,7 +22,7 @@ class DynamicController extends Controller
      */
     public function index(string $id)
     {
-        $slides = [[]];
+        $slides = [];
 
         // TODO: Load each verse into a different section.
         $verses = [
@@ -45,8 +45,8 @@ class DynamicController extends Controller
             foreach ($offsetBreaks as $i => $offset) {
                 $imageWidth = $jsonArray['width'];
                 $nextOffset = ($offsetBreaks[$i + 1] ?? $imageWidth);
-                $slides[$verseID][] =
-                    $this->render("Verse $verseID slide $i", $file, $offset, $nextOffset, $imageWidth);
+                $slides["v{$verseID}"][] =
+                    $this->render("v{$verseID}s{$i}", $file, $offset, $nextOffset, $imageWidth);
             }
         }
 

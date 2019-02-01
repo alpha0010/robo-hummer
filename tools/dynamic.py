@@ -18,6 +18,12 @@ def print(x):
 
 
 def rectangle(x, y, w, h, lyrics, color, lyricLineY):
+    """Output an SVG group containing a rectangle and optionally including text for that rectangle.
+        lyrics is a list containing the text for multiple lines.
+            Additional lyrics will be stored as `data-vX` attributes, where X is an integer.
+        lyricLineY is an alternate Y value placement for the lyrics rather than on the rectangle.
+            `data-y` is the Y value for being on the rectangle, `data-y-bottom` is the alternate placement.
+    """
     x = x * xScale
     w = w * xScale
     y = y * yScale

@@ -22,12 +22,14 @@ class DynamicController extends Controller
      */
     public function index(string $id)
     {
-        $slides = [[]];
+        $slides = [];
 
-        // TODO: Load each verse into a different section.
+        // TODO: Give all versification responsibilities to javascript.
         $verses = [
             'master.dynamic.svg',
             'melody.dynamic.svg',
+            'master.dynamic.svg',
+            'master.dynamic.svg',
         ];
         $client = new HttpClient();
         foreach ($verses as $verseID => $verse) {
@@ -45,8 +47,8 @@ class DynamicController extends Controller
             foreach ($offsetBreaks as $i => $offset) {
                 $imageWidth = $jsonArray['width'];
                 $nextOffset = ($offsetBreaks[$i + 1] ?? $imageWidth);
-                $slides[$verseID][] =
-                    $this->render("Verse $verseID slide $i", $file, $offset, $nextOffset, $imageWidth);
+                $slides["v{$verseID}"][] =
+                    $this->render("v{$verseID}s{$i}", $file, $offset, $nextOffset, $imageWidth);
             }
         }
 
@@ -103,10 +105,14 @@ class DynamicController extends Controller
         $style = "margin-left:{$negOffset}px;
             box-shadow: inset {$offset}px 0px 0 rgba(127, 127, 127, 0.5),
                         inset {$rightNegOffset}px 0px 0 rgba(127, 127, 127, 0.5);
+            width: {$imageWidth}px;
         ";
+        // TODO: Give SVG loading responisibilities to javascript.
+        $svg = file_get_contents($file);
         return [
             "name"    => $slideName,
-            "content" => "<img class='dynamic' style='{$style}' src='{$file}'/>",
+            // src='{$file}' data-inline-svg
+            "content" => "<div class='dynamic' style='{$style}'>$svg</div>",
         ];
     }
 }

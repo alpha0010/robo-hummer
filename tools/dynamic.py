@@ -4,7 +4,7 @@ import sys
 from xml.sax.saxutils import escape as XMLescape
 
 # How wide a quarter note is.
-xScale = 75
+xScale = 84
 # How tall a semitone is.
 yScale = 20
 

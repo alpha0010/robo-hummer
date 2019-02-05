@@ -27,6 +27,15 @@ elif(outputformat == 'melody.musicxml'):
     path = parts[0].write('xml')
     sys.stdout.buffer.write(open(path, 'rb').read())
     os.remove(path)
+elif(outputformat == 'partify.musicxml'):
+    s = converter.parse(filename)
+    import music_tokens
+    parts = music_tokens.partify(s)
+    sc = stream.Score()
+    sc.elements = parts
+    path = sc.write('xml')
+    sys.stdout.buffer.write(open(path, 'rb').read())
+    os.remove(path)
 elif(outputformat == 'harmony.midi'):
     s = converter.parse(filename)
     # Creates a temporary file

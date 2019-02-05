@@ -36,6 +36,7 @@ class MediaController extends Controller
                 'incipit.json',
                 'master.musicxml',
                 'melody.musicxml',
+                'partify.musicxml',
                 ]) ||
                 in_array($extension, [
                 'dynamic.svg',
@@ -117,22 +118,20 @@ class MediaController extends Controller
      */
     private function getSourcePath($media, $destinationType)
     {
+        $destNameParts = $this->getNameParts($destinationType);
+        $name = $destNameParts['name'];
+
         $destToSourceType = [
             'melody.musicxml' => 'master.musicxml',
+            'partify.musicxml' => 'master.musicxml',
+            "{$name}.dynamic.svg" => "{$name}.musicxml",
+            "{$name}.dynamic.svg.info.json" => "{$name}.dynamic.svg",
         ];
-        $destToSourceExtensions = [
-            'dynamic.svg' => 'musicxml',
-            'dynamic.svg.info.json' => 'dynamic.svg',
-        ];
-        $destNameParts = $this->getNameParts($destinationType);
         // Default to using the original file.
         $sourceType = $media->originalFile;
 
         if (isset($destToSourceType[$destinationType])) {
             $sourceType = $destToSourceType[$destinationType];
-        } elseif (isset($destToSourceExtensions[$destNameParts['extension']])) {
-            $sourceType = $destNameParts['name']
-                . '.' . $destToSourceExtensions[$destNameParts['extension']];
         }
         $this->checkExists($media->id, $sourceType);
         return $media->getAbsPath($sourceType);

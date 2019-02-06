@@ -29,7 +29,7 @@ class DynamicController extends Controller
             'master.dynamic.svg',
             'melody.dynamic.svg',
             'master.dynamic.svg',
-            'master.dynamic.svg',
+            'partify.dynamic.svg',
         ];
         $client = new HttpClient();
         foreach ($verses as $verseID => $verse) {

@@ -14,8 +14,10 @@ let mix = require('laravel-mix');
 mix.js('resources/js/app.js', 'public/js')
    .js('resources/js/welcome.js', 'public/js')
    .js('resources/js/keyboard.js', 'public/js')
-   .js('resources/js/slides.js', 'public/js')
-   .js('resources/js/dynamic.js', 'public/js')
+   .js([
+        'resources/js/slides.js',
+        'resources/js/dynamic.js',
+    ],'public/js/slides.js')
    .styles([
        'node_modules/reveal.js/css/reveal.css',
        'node_modules/reveal.js/css/theme/serif.css',

@@ -4,7 +4,7 @@ import sys
 from xml.sax.saxutils import escape as XMLescape
 
 # How wide a quarter note is.
-xScale = 75
+xScale = 84
 # How tall a semitone is.
 yScale = 20
 
@@ -43,8 +43,8 @@ def rectangle(x, y, w, h, lyrics, color, lyricLineY):
             dataVerses += "data-v" + str(lyric.number) + "='" + escapedText + "' "
         lyricX = x + border
         lyricY = y + h - border
-        print("<text x='%i' y='%i' data-y='%i' data-y-bottom='%i' font-size='%ipt' %s>"
-              % (lyricX, lyricY, lyricY, lyricLineY, h - border2, dataVerses))
+        print("<text x='%i' data-textlength='%i' lengthAdjust='spacingAndGlyphs' y='%i' data-y='%i' data-y-bottom='%i' font-size='%ipt' %s>"
+              % (lyricX, w, lyricY, lyricY, lyricLineY, h - border2, dataVerses))
         # TODO: use syllabic for something.
         text = XMLescape(lyrics[0].rawText)
         textBytes = text.encode('utf-8').strip()

@@ -161,6 +161,7 @@ def partify(s):
                 n1 = note.Note(p)
                 n1.offset = n.offset
                 n1.duration.quarterLength = n.duration.quarterLength
+                n1.lyric = n.lyric
                 notes.append(n1)
     notes = sorted(notes, key=lambda n: (n.offset, 100-n.pitch.midi))
     log ("\n-------after sort-------\n", 2)

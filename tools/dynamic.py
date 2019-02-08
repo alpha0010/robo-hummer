@@ -53,11 +53,10 @@ def rectangle(x, y, w, h, lyrics, color, lyricLineY):
     print("</g>")
 
 
-def line(x, h):
+def verticalLine(x):
     x = x * xScale
-    h = h * yScale
-    print("<rect x='%i' y='0' width='%i' height='%i'/>"
-          % (x, border, h))
+    print("<rect x='%i' y='0' width='%i' height='100%%'/>"
+          % (x, border))
 
 
 def colorFromPart(part):
@@ -122,9 +121,9 @@ for note in s.recurse().notes:
 
 print("<g id='measureBarLines'>")
 for offset in measureOffsets.values():
-    line(offset, noteRange)
+    verticalLine(offset)
 # Add a bar line at the end of the song.
-line(songLength, noteRange)
+verticalLine(songLength)
 print("</g>")
 
 print("</svg>")

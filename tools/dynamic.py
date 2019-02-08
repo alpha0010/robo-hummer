@@ -18,12 +18,10 @@ def print(x):
     sys.stdout.buffer.write(x.encode('utf-8'))
 
 
-def rectangle(x, y, w, h, lyrics, color, lyricLineY):
+def rectangle(x, y, w, h, lyrics, color):
     """Output an SVG group containing a rectangle and optionally including text for that rectangle.
         lyrics is a list containing the text for multiple lines.
             Additional lyrics will be stored as `data-vX` attributes, where X is an integer.
-        lyricLineY is an alternate Y value placement for the lyrics rather than on the rectangle.
-            `data-y` is the Y value for being on the rectangle, `data-y-bottom` is the alternate placement.
     """
     # Create "scaled" versions of each of the variables. The file will be rendered with data that allows
     # different parts to be scaled.
@@ -53,8 +51,8 @@ def rectangle(x, y, w, h, lyrics, color, lyricLineY):
         lyricY = sy + sh - border
         print("<text x='%i' data-textlength='%i' lengthAdjust='spacingAndGlyphs' "
               % (lyricX, sw) +
-              "y='%i' data-y='%i' data-y-bottom='%i' font-size='%ipt' %s>"
-              % (lyricY, lyricY, lyricLineY, defaultFontSize, dataVerses))
+              "y='100%%' dy='%i' data-y='%i' data-y-bottom='100%%' font-size='%ipt' %s>"
+              % (defaultFontSize * -1/3, lyricY, defaultFontSize, dataVerses))
 
         # TODO: use syllabic for something.
         text = XMLescape(lyrics[0].rawText)
@@ -129,8 +127,7 @@ for note in s.recurse().notes:
         if note.lyrics:
             lyrics = note.lyrics
 
-        lyricLineY = (noteRange + 1) * defaultYScale
-        rectangle(xPos, yPos, xLen, yLen, lyrics, color, lyricLineY)
+        rectangle(xPos, yPos, xLen, yLen, lyrics, color)
 
 print("<g id='measureBarLines'>")
 for offset in measureOffsets.values():

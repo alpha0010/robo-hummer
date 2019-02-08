@@ -100,7 +100,11 @@ measureOffsets = {0: 0}
 # Output notes in place
 print("<?xml version='1.0' encoding='utf-8'?>")
 ns = 'xmlns="http://www.w3.org/2000/svg"'
-print("<svg width='%i' height='%i' %s>" % (songWidth, songHeight, ns))
+print("<svg width='%i' height='%i'"
+      % (songWidth, songHeight) +
+      " data-songlength='%f' data-noterange='%i' %s>"
+      % (songLength, noteRange, ns)
+)
 for note in s.recurse().notes:
     if hasattr(note, 'midiTickStart'):
         xPos = note.midiTickStart / 1024

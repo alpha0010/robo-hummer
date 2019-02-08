@@ -35,12 +35,11 @@ def rectangle(x, y, w, h, lyrics, color):
     print("\n")
     print("<g>")
     print("<rect x='%i' y='%i' width='%i' height='%i'"
-          % (sx, sy, sw, sh) +
-          " data-x='%f' data-y='%f' data-width='%f' data-height='%f'"
-          % (x, y, w, h) +
-          " style='%s'/>"
-          % (style)
-    )
+          % (sx, sy, sw, sh)
+          + " data-x='%f' data-y='%f' data-width='%f' data-height='%f'"
+          % (x, y, w, h)
+          + " style='%s'/>"
+          % (style))
     if lyrics:
         dataVerses = ""
         for lyric in lyrics:
@@ -50,9 +49,9 @@ def rectangle(x, y, w, h, lyrics, color):
         lyricX = sx + border
         lyricY = sy + sh - border
         print("<text x='%i' data-textlength='%i' lengthAdjust='spacingAndGlyphs' "
-              % (lyricX, sw) +
-              "y='100%%' dy='%i' data-y='%i' data-y-bottom='100%%' font-size='%ipt' %s>"
-              % (defaultFontSize * -1/3, lyricY, defaultFontSize, dataVerses))
+              % (lyricX, sw)
+              + "y='100%%' dy='%i' data-y='%i' data-y-bottom='100%%' font-size='%ipt' %s>"
+              % (defaultFontSize * (-1 / 3), lyricY, defaultFontSize, dataVerses))
 
         # TODO: use syllabic for something.
         text = XMLescape(lyrics[0].rawText)
@@ -99,10 +98,9 @@ measureOffsets = {0: 0}
 print("<?xml version='1.0' encoding='utf-8'?>")
 ns = 'xmlns="http://www.w3.org/2000/svg"'
 print("<svg width='%i' height='%i'"
-      % (songWidth, songHeight) +
-      " data-songlength='%f' data-noterange='%i' %s>"
-      % (songLength, noteRange, ns)
-)
+      % (songWidth, songHeight)
+      + " data-songlength='%f' data-noterange='%i' %s>"
+      % (songLength, noteRange, ns))
 for note in s.recurse().notes:
     if hasattr(note, 'midiTickStart'):
         xPos = note.midiTickStart / 1024

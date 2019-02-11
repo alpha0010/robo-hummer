@@ -26,10 +26,10 @@ class DynamicController extends Controller
 
         // TODO: Give all versification responsibilities to javascript.
         $verses = [
-            'master.dynamic.svg',
-            'melody.dynamic.svg',
-            'master.dynamic.svg',
-            'partify.dynamic.svg',
+            1 => 'master.dynamic.svg',
+            2 => 'melody.dynamic.svg',
+            3 => 'master.dynamic.svg',
+            4 => 'partify.dynamic.svg',
         ];
         $client = new HttpClient();
         foreach ($verses as $verseID => $verse) {

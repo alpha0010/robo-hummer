@@ -6,7 +6,8 @@ from xml.sax.saxutils import escape as XMLescape
 # How wide a quarter note is.
 xScale = 84
 # How tall a semitone is.
-yScale = 20
+defaultYScale = 20
+defaultFontSize = 18
 
 border = 1
 colors = ['red', 'green', 'blue', 'yellow', 'cyan', 'magenta']
@@ -17,34 +18,41 @@ def print(x):
     sys.stdout.buffer.write(x.encode('utf-8'))
 
 
-def rectangle(x, y, w, h, lyrics, color, lyricLineY):
+def rectangle(x, y, w, h, lyrics, color):
     """Output an SVG group containing a rectangle and optionally including text for that rectangle.
         lyrics is a list containing the text for multiple lines.
             Additional lyrics will be stored as `data-vX` attributes, where X is an integer.
-        lyricLineY is an alternate Y value placement for the lyrics rather than on the rectangle.
-            `data-y` is the Y value for being on the rectangle, `data-y-bottom` is the alternate placement.
     """
-    x = x * xScale
-    w = w * xScale
-    y = y * yScale
-    h = h * yScale
+    # Create "scaled" versions of each of the variables. The file will be rendered with data that allows
+    # different parts to be scaled.
+    sx = x * xScale
+    sw = w * xScale
+    sy = y * defaultYScale
+    sh = h * defaultYScale
     style = "fill:%s; stroke-width: %i; stroke:rgb(0,0,0); opacity: 0.5;" \
             % (color, border)
     border2 = border * 2
     print("\n")
     print("<g>")
-    print("<rect x='%i' y='%i' width='%i' height='%i' style='%s'/>"
-          % (x, y, w, h, style))
+    print("<rect x='%i' y='%i' width='%i' height='%i'"
+          % (sx, sy, sw, sh)
+          + " data-x='%f' data-y='%f' data-width='%f' data-height='%f'"
+          % (x, y, w, h)
+          + " style='%s'/>"
+          % (style))
     if lyrics:
         dataVerses = ""
         for lyric in lyrics:
             escapedText = lyric.rawText
             escapedText = XMLescape(escapedText, {"'": "&apos;"})
             dataVerses += "data-v" + str(lyric.number) + "='" + escapedText + "' "
-        lyricX = x + border
-        lyricY = y + h - border
-        print("<text x='%i' data-textlength='%i' lengthAdjust='spacingAndGlyphs' y='%i' data-y='%i' data-y-bottom='%i' font-size='%ipt' %s>"
-              % (lyricX, w, lyricY, lyricY, lyricLineY, h - border2, dataVerses))
+        lyricX = sx + border
+        lyricY = sy + sh - border
+        print("<text x='%i' data-textlength='%i' lengthAdjust='spacingAndGlyphs' "
+              % (lyricX, sw)
+              + "y='100%%' dy='%i' data-y='%i' data-y-bottom='100%%' font-size='%ipt' %s>"
+              % (defaultFontSize * (-1 / 3), lyricY, defaultFontSize, dataVerses))
+
         # TODO: use syllabic for something.
         text = XMLescape(lyrics[0].rawText)
         textBytes = text.encode('utf-8').strip()
@@ -53,11 +61,10 @@ def rectangle(x, y, w, h, lyrics, color, lyricLineY):
     print("</g>")
 
 
-def line(x, h):
+def verticalLine(x):
     x = x * xScale
-    h = h * yScale
-    print("<rect x='%i' y='0' width='%i' height='%i'/>"
-          % (x, border, h))
+    print("<rect x='%i' y='0' width='%i' height='100%%'/>"
+          % (x, border))
 
 
 def colorFromPart(part):
@@ -82,9 +89,7 @@ highNote = max(s.pitches).midi
 noteRange = highNote - lowNote + 1
 
 songWidth = songLength * xScale
-# If the lyrics are shown at the bottom, we need this much space to put them there.
-lyricLine = 1.5
-songHeight = (noteRange + lyricLine) * yScale
+songHeight = (noteRange * defaultYScale) + (1.5 * defaultFontSize)
 
 measureLengths = {0: 0}
 measureOffsets = {0: 0}
@@ -92,7 +97,10 @@ measureOffsets = {0: 0}
 # Output notes in place
 print("<?xml version='1.0' encoding='utf-8'?>")
 ns = 'xmlns="http://www.w3.org/2000/svg"'
-print("<svg width='%i' height='%i' %s>" % (songWidth, songHeight, ns))
+print("<svg width='%i' height='%i'"
+      % (songWidth, songHeight)
+      + " data-songlength='%f' data-noterange='%i' %s>"
+      % (songLength, noteRange, ns))
 for note in s.recurse().notes:
     if hasattr(note, 'midiTickStart'):
         xPos = note.midiTickStart / 1024
@@ -117,14 +125,13 @@ for note in s.recurse().notes:
         if note.lyrics:
             lyrics = note.lyrics
 
-        lyricLineY = (noteRange + 1) * yScale
-        rectangle(xPos, yPos, xLen, yLen, lyrics, color, lyricLineY)
+        rectangle(xPos, yPos, xLen, yLen, lyrics, color)
 
 print("<g id='measureBarLines'>")
 for offset in measureOffsets.values():
-    line(offset, noteRange)
+    verticalLine(offset)
 # Add a bar line at the end of the song.
-line(songLength, noteRange)
+verticalLine(songLength)
 print("</g>")
 
 print("</svg>")

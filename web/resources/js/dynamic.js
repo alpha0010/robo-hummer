@@ -2,14 +2,26 @@ var $ = window.jQuery;
 
 $(document).ready(function(){
     // TODO: Switch these automatically
-    switchVerse('v0', 'data-v1')
-    switchVerse('v1', 'data-v2')
-    switchVerse('v2', 'data-v3')
-    switchVerse('v3', 'data-v4')
-    textYPosition('v0', 'data-y-bottom');
-    textYPosition('v1', 'data-y-bottom');
+    switchVerse('v1', 'data-v1')
+    switchVerse('v2', 'data-v2')
+    switchVerse('v3', 'data-v3')
+    switchVerse('v4', 'data-v4')
     fillDynamicOptions();
 });
+
+/**
+ * @brief Change the size of a notes.
+ */
+function setNoteHeight(h) {
+    $('svg g rect[data-y]').each(function(){
+        var y = parseFloat(this.attributes['data-y']['value']) * h;
+        this.setAttribute('y', y);
+        var height = parseFloat(this.attributes['data-height']['value']) * h;
+        this.setAttribute('height', height);
+    });
+    // TODO: Move the lyrics.
+    resizeSVGHeight();
+}
 
 /**
  * @brief Change the lyrics in a dynamic.svg to a different verse.
@@ -27,7 +39,7 @@ function switchVerse(id, verseAttr) {
 
         // Setting a specific letter width isn't perfect since "One" is wider than "ly,"
         // TODO: Consider using a monospace font for the lyrics.
-        var widthPerLetter = 13;
+        var widthPerLetter = getFontPixelSize() * .6;
         var boxWidth = $(els[i]).attr('data-textlength');
 
         if (text.length * widthPerLetter >= boxWidth) {
@@ -52,6 +64,8 @@ function switchVerse(id, verseAttr) {
  * @param string yPositionAttr 'data-y-bottom' or 'data-y' (see tools/dynamic.py).
  */
 function textYPosition(id, yPositionAttr) {
+    // TODO: Change this to be affected by new note heights
+    // (no longer require attributes to be set here).
     var els = $('#' + id + ' svg g text[' + yPositionAttr + ']');
     for (var i = 0; i < els.length; i++) {
         $(els[i]).attr('y', $(els[i]).attr(yPositionAttr));
@@ -69,6 +83,7 @@ function toggleDynamicOptions() {
     }
 }
 
+window.setNoteHeight = setNoteHeight;
 window.switchVerse = switchVerse;
 window.textYPosition = textYPosition;
 window.toggleDynamicOptions = toggleDynamicOptions;
@@ -105,4 +120,41 @@ function fillDynamicOptions() {
         option += "</div><br/>";
         $('#dynamicOptions .viewport-inner').append(option);
     }
+}
+
+/**
+ * @brief Return the current font size of the lyrics, or 0 if there are no lyrics.
+ */
+function getFontPixelSize() {
+    var size = $('svg text[data-v1]').attr('font-size');
+    if (size == undefined) {
+        return 0;
+    } else if (size.indexOf("pt") != -1) {
+        return parseFloat(size.replace("pt", "")) * (4/3)
+    } else if (size.indexOf("px") != -1) {
+        return parseFloat(size.replace("px", ""))
+    }
+    return 0;
+}
+
+/**
+ * @brief Return the current pixel value for the note height.
+ */
+function getNoteHeight() {
+    var denominator = parseFloat($('svg g rect[data-height]').attr('data-height'));
+    var numerator = parseInt($('svg g rect[data-height]').attr('height'));
+    return numerator/denominator;
+}
+
+/**
+ * @brief Resize all SVGs based on the current note height and font size.
+ */
+function resizeSVGHeight() {
+    var nh = getNoteHeight();
+    var fs = getFontPixelSize();
+    $('svg').each(function(){
+        var noteRange = parseFloat(this.attributes['data-noterange']['value']);
+        var h = (noteRange * nh) + fs;
+        this.setAttribute('height', h);
+    });
 }

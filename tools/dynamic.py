@@ -50,13 +50,11 @@ def rectangle(x, y, w, h, lyrics, color):
             escapedText = XMLescape(escapedText, {"'": "&apos;"})
             dataVerses += "data-v" + str(lyric.number) + "='" + escapedText + "' "
         lyricX = sx + border
-        lyricY = sy + sh - border
         print("<text x='%i' data-textlength='%i' lengthAdjust='spacingAndGlyphs' "
               % (lyricX, sw)
-              + "y='100%%' dy='%i' data-y='%i' data-y-bottom='100%%' font-size='%ipt' %s>"
-              % (defaultFontSize * (-1 / 3), lyricY, defaultFontSize, dataVerses))
+              + "y='100%%' dy='%i' font-size='%ipt' %s>"
+              % (defaultFontSize * (-1 / 3), defaultFontSize, dataVerses))
 
-        # TODO: use syllabic for something.
         text = XMLescape(lyrics[0].rawText)
         textBytes = text.encode('utf-8').strip()
         sys.stdout.buffer.write(textBytes)
@@ -135,7 +133,6 @@ for note in s.recurse().notes:
     for pitch in note.pitches:
         yPos = highNote - pitch.midi
         yLen = 1
-        # TODO: Consider using music_tokens.partify
         part = id(note.getContextByClass('Part'))
         color = colorFromPart(part)
         trackLowHighPos(part, yPos)
@@ -163,5 +160,3 @@ for key, value in parts.items():
 print("</g>")
 
 print("</svg>")
-
-# Output lyrics below the notes

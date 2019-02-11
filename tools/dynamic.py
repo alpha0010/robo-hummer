@@ -158,7 +158,7 @@ i = -1
 for key, value in parts.items():
     # Visually, these show the range of each part.
     # We set the x position as negative so it's not seen.
-    rectangle(i, lowPos[key], 1, highPos[key] - lowPos[key], '', value)
+    rectangle(i, lowPos[key], 1, highPos[key] - lowPos[key] + 1, '', value)
     i = i - 1
 print("</g>")
 

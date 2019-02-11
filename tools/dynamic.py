@@ -15,6 +15,7 @@ parts = {}
 highPos = {}
 lowPos = {}
 
+
 def print(x):
     sys.stdout.buffer.write(x.encode('utf-8'))
 
@@ -66,6 +67,7 @@ def verticalLine(x):
     x = x * xScale
     print("<rect x='%i' y='0' width='%i' height='100%%'/>"
           % (x, border))
+
 
 def trackLowHighPos(part, pitch):
     if part in lowPos:

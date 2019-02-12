@@ -10,8 +10,10 @@ defaultYScale = 20
 defaultFontSize = 18
 
 border = 1
-colors = ['red', 'green', 'blue', 'yellow', 'cyan', 'magenta']
+colors = ['yellow', 'cyan', 'red', '#e500ff', '#ff5a00', '#00ff5b', '#005fff']
 parts = {}
+highPos = {}
+lowPos = {}
 
 
 def print(x):
@@ -29,8 +31,8 @@ def rectangle(x, y, w, h, lyrics, color):
     sw = w * xScale
     sy = y * defaultYScale
     sh = h * defaultYScale
-    style = "fill:%s; stroke-width: %i; stroke:rgb(0,0,0); opacity: 0.5;" \
-            % (color, border)
+    style = "stroke-width: %i; stroke:rgb(0,0,0); opacity: 0.5;" \
+            % (border)
     border2 = border * 2
     print("\n")
     print("<g>")
@@ -38,6 +40,8 @@ def rectangle(x, y, w, h, lyrics, color):
           % (sx, sy, sw, sh)
           + " data-x='%f' data-y='%f' data-width='%f' data-height='%f'"
           % (x, y, w, h)
+          + " fill='%s'"
+          % (color)
           + " style='%s'/>"
           % (style))
     if lyrics:
@@ -47,13 +51,11 @@ def rectangle(x, y, w, h, lyrics, color):
             escapedText = XMLescape(escapedText, {"'": "&apos;"})
             dataVerses += "data-v" + str(lyric.number) + "='" + escapedText + "' "
         lyricX = sx + border
-        lyricY = sy + sh - border
         print("<text x='%i' data-textlength='%i' lengthAdjust='spacingAndGlyphs' "
               % (lyricX, sw)
-              + "y='100%%' dy='%i' data-y='%i' data-y-bottom='100%%' font-size='%ipt' %s>"
-              % (defaultFontSize * (-1 / 3), lyricY, defaultFontSize, dataVerses))
+              + "y='100%%' dy='%i' font-size='%ipt' %s>"
+              % (defaultFontSize * (-1 / 3), defaultFontSize, dataVerses))
 
-        # TODO: use syllabic for something.
         text = XMLescape(lyrics[0].rawText)
         textBytes = text.encode('utf-8').strip()
         sys.stdout.buffer.write(textBytes)
@@ -67,6 +69,19 @@ def verticalLine(x):
           % (x, border))
 
 
+def trackLowHighPos(part, pitch):
+    if part in lowPos:
+        if pitch < lowPos[part]:
+            lowPos[part] = pitch
+    else:
+        lowPos[part] = pitch
+    if part in highPos:
+        if pitch > highPos[part]:
+            highPos[part] = pitch
+    else:
+        highPos[part] = pitch
+
+
 def colorFromPart(part):
     if part in parts:
         return parts[part]
@@ -78,7 +93,9 @@ filename = sys.argv[1]
 outputformat = sys.argv[2]
 
 
-s = music21.converter.parse(filename)
+so = music21.converter.parse(filename)
+
+s = so.voicesToParts()
 
 # Get the length of the song
 songLength = s.duration.quarterLength
@@ -118,8 +135,9 @@ for note in s.recurse().notes:
     for pitch in note.pitches:
         yPos = highNote - pitch.midi
         yLen = 1
-        # TODO: Consider using music_tokens.partify
-        color = colorFromPart(note.getContextByClass('Part').recurse().getElementsByClass('Instrument')[0])
+        part = id(note.getContextByClass('Part'))
+        color = colorFromPart(part)
+        trackLowHighPos(part, yPos)
 
         lyrics = []
         if note.lyrics:
@@ -134,6 +152,13 @@ for offset in measureOffsets.values():
 verticalLine(songLength)
 print("</g>")
 
-print("</svg>")
+print("<g id='parts'>")
+i = -1
+for key, value in parts.items():
+    # Visually, these show the range of each part.
+    # We set the x position as negative so it's not seen.
+    rectangle(i, lowPos[key], 1, highPos[key] - lowPos[key] + 1, '', value)
+    i = i - 1
+print("</g>")
 
-# Output lyrics below the notes
+print("</svg>")

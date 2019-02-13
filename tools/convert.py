@@ -53,7 +53,7 @@ elif(extension == 'dynamic.svg.info.json'):
     import dynamicinfo
 elif(extension == 'ly'):
     fh, tmpLY = tempfile.mkstemp('.ly')
-    os.system('musicxml2ly ' + filename + ' -o ' + tmpLY);
+    os.system('musicxml2ly ' + filename + ' -o ' + tmpLY)
     # Read file as bytes, write as buffer
     # so python's io.TextIOBase doesn't try to decode these bytes into ASCII.
     sys.stdout.buffer.write(open(tmpLY, 'rb').read())
@@ -61,7 +61,7 @@ elif(extension == 'ly'):
 elif(extension == 'pdf'):
     fh, tmpPDF = tempfile.mkstemp('.pdf')
     # Lilypond automatically adds '.pdf' to the output file name.
-    os.system('lilypond --pdf -o ' + tmpPDF[0:-4] + ' ' + filename);
+    os.system('lilypond --pdf -o ' + tmpPDF[0:-4] + ' ' + filename)
     # Read file as bytes, write as buffer
     # so python's io.TextIOBase doesn't try to decode these bytes into ASCII.
     sys.stdout.buffer.write(open(tmpPDF, 'rb').read())

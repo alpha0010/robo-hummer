@@ -132,18 +132,19 @@ for note in s.recurse().notes:
 
     xLen = note.duration.quarterLength
 
-    for pitch in note.pitches:
-        yPos = highNote - pitch.midi
-        yLen = 1
-        part = id(note.getContextByClass('Part'))
-        color = colorFromPart(part)
-        trackLowHighPos(part, yPos)
+    if xLen != 0:
+        for pitch in note.pitches:
+            yPos = highNote - pitch.midi
+            yLen = 1
+            part = id(note.getContextByClass('Part'))
+            color = colorFromPart(part)
+            trackLowHighPos(part, yPos)
 
-        lyrics = []
-        if note.lyrics:
-            lyrics = note.lyrics
+            lyrics = []
+            if note.lyrics:
+                lyrics = note.lyrics
 
-        rectangle(xPos, yPos, xLen, yLen, lyrics, color)
+            rectangle(xPos, yPos, xLen, yLen, lyrics, color)
 
 print("<g id='measureBarLines'>")
 for offset in measureOffsets.values():

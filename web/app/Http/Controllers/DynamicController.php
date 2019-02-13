@@ -107,6 +107,7 @@ class DynamicController extends Controller
                         inset {$rightNegOffset}px 0px 0 rgba(127, 127, 127, 0.5);
             width: {$imageWidth}px;
         ";
+        $style = '';
         // TODO: Give SVG loading responisibilities to javascript.
         $svg = file_get_contents($file);
         return [

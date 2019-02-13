@@ -6,8 +6,8 @@ from xml.sax.saxutils import escape as XMLescape
 # How wide a quarter note is.
 xScale = 84
 # How tall a semitone is.
-defaultYScale = 20
-defaultFontSize = 18
+defaultYScale = 10
+defaultFontSize = 20
 
 border = 1
 colors = ['yellow', 'cyan', 'red', '#e500ff', '#ff5a00', '#00ff5b', '#005fff']
@@ -51,9 +51,8 @@ def rectangle(x, y, w, h, lyrics, color):
             escapedText = lyric.rawText
             escapedText = XMLescape(escapedText, {"'": "&apos;"})
             dataVerses += "data-v" + str(lyric.number) + "='" + escapedText + "' "
-        lyricX = sx + border
-        print("<text x='%i' data-textlength='%i' lengthAdjust='spacingAndGlyphs' "
-              % (lyricX, sw)
+        print("<text x='%i' data-x='%f' data-textlength='%i' data-tl='%f' lengthAdjust='spacingAndGlyphs' "
+              % (sx, x, sw, w)
               + "y='100%%' dy='%i' font-size='%ipt' %s>"
               % (defaultFontSize * (-1 / 3), defaultFontSize, dataVerses))
 
@@ -65,9 +64,9 @@ def rectangle(x, y, w, h, lyrics, color):
 
 
 def verticalLine(x):
-    x = x * xScale
-    print("<rect x='%i' y='0' width='%i' height='100%%'/>"
-          % (x, border))
+    sx = x * xScale
+    print("<rect x='%i' data-x='%f' y='0' width='%i' height='100%%'/>"
+          % (sx, x, border))
 
 
 def trackLowHighPos(part, pitch):

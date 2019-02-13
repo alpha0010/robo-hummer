@@ -17,4 +17,7 @@ RUN tar -xf /tmp/node.tar.xz -C /var/lib \
     && echo "www-data ALL=(python) NOPASSWD: ALL" > /etc/sudoers.d/www-data \
     && su python -c 'pip3 install music21==5.5.0' && su python -c 'pip3 install numpy'
 
+RUN curl http://lilypond.org/download/binaries/linux-64/lilypond-2.18.2-1.linux-64.sh > lilypondinstall.sh \
+    && sh lilypondinstall.sh
+
 ENV PATH="${PATH}:/var/lib/nodejs/bin"

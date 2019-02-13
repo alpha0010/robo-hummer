@@ -51,8 +51,8 @@ class DynamicController extends Controller
                     $this->render("v{$verseID}s{$i}", $file, $offset, $nextOffset, $imageWidth);
             }
         }
-
-        return view("slides", ["slides" => $slides]);
+        $audio = route("get media", [$id, "harmony.mp3"]);
+        return view("slides", ["slides" => $slides, 'audio' => $audio]);
     }
 
     /**

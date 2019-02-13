@@ -35,7 +35,8 @@ def rectangle(x, y, w, h, lyrics, color):
             % (border)
     border2 = border * 2
     print("\n")
-    print("<g>")
+    if lyrics:
+        print("<g>")
     print("<rect x='%i' y='%i' width='%i' height='%i'"
           % (sx, sy, sw, sh)
           + " data-x='%f' data-y='%f' data-width='%f' data-height='%f'"
@@ -60,7 +61,7 @@ def rectangle(x, y, w, h, lyrics, color):
         textBytes = text.encode('utf-8').strip()
         sys.stdout.buffer.write(textBytes)
         print("</text>")
-    print("</g>")
+        print("</g>")
 
 
 def verticalLine(x):

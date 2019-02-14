@@ -41,6 +41,8 @@ class MediaController extends Controller
                 in_array($extension, [
                 'dynamic.svg',
                 'dynamic.svg.info.json',
+                'ly',
+                'pdf',
                 ])
             ) {
                 $shell_path = $this->getSourcePath($media, $type);
@@ -126,6 +128,8 @@ class MediaController extends Controller
             'partify.musicxml' => 'master.musicxml',
             "{$name}.dynamic.svg" => "{$name}.musicxml",
             "{$name}.dynamic.svg.info.json" => "{$name}.dynamic.svg",
+            "{$name}.ly" => "{$name}.musicxml",
+            "{$name}.pdf" => "{$name}.ly",
         ];
         // Default to using the original file.
         $sourceType = $media->originalFile;

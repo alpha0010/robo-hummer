@@ -3,8 +3,8 @@ import music21
 import sys
 from xml.sax.saxutils import escape as XMLescape
 
-# How wide a quarter note is.
-xScale = 84
+# How wide a quarter note is. Best to use divisors of 960.
+xScale = 80
 # How tall a semitone is.
 defaultYScale = 10
 defaultFontSize = 20

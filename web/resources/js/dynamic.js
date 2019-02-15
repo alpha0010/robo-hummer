@@ -12,7 +12,6 @@ $(document).ready(function(){
     switchVerse('v4', 'data-v4')
     fillDynamicOptions();
     setupPages();
-    setViewBoxes();
 });
 
 /**
@@ -26,6 +25,13 @@ function setFontSize(s) {
         squishText(this);
     });
     resizeSVGHeight();
+}
+
+/**
+ * @brief Set the number of quarter notes to display per line.
+ */
+function setNotesPerLine(n) {
+    setNoteWidth(revealWidth/n);
 }
 
 /**
@@ -102,6 +108,7 @@ function togglePart(id, partColor) {
 }
 
 window.setFontSize = setFontSize;
+window.setNotesPerLine = setNotesPerLine;
 window.setNoteHeight = setNoteHeight;
 window.setNoteWidth = setNoteWidth;
 window.switchVerse = switchVerse;
@@ -207,6 +214,14 @@ function getPartsToggler(id) {
 }
 
 /**
+ * @brief Reset RevealJS so it detects the changes we've made to the DOM.
+ */
+function resetReveal() {
+    // TODO: Stay on the roughly same slide (or the same verse).
+    window.Reveal.slide(0,0);
+}
+
+/**
  * @brief Resize all SVGs based on the current note height and font size.
  */
 function resizeSVGHeight() {
@@ -218,6 +233,7 @@ function resizeSVGHeight() {
         this.setAttribute('height', h);
     });
     setViewBoxes();
+    resetReveal();
 }
 /**
  * @brief Resize all SVGs based on the current note width.
@@ -228,15 +244,32 @@ function resizeSVGWidth() {
         var songLength = getSVGSongLength(this);
         this.setAttribute('width', songLength * nw);
     });
-    setViewBoxes();
+    setupPages();
 }
 
+/**
+ * @brief Create different pages for each verse. Fill them with multiple svg "lines".
+ *  Note: This function is a little slow. We should only run it when needed.
+ */
 function setupPages() {
+    var unoriginal = $('.dynamic:not(.original)');
+    // Do this syncronously so we don't have a race condition for item.parentElement.children.length.
+    for (var i = 0; i < unoriginal.length; i++) {
+        var item = unoriginal[i];
+        if (item.parentElement.children.length == 1) {
+            item.parentElement.remove();
+        } else {
+            item.remove();
+    }
+
+    }
     $('.dynamic.original svg').each(function(){
         var slideGroup = $(this).closest('section.stack');
         var slide = $(this).closest('section');
-        // TODO: Count the number of pages that we'll need.
-        for (var i = 1; i < 10; i++) {
+
+        var numPages = Math.ceil($(this).attr('width') / revealWidth);
+        // Start at 1 because page 0 already exists.
+        for (var i = 1; i < numPages; i++) {
             if (setupPageSlideIsFull(slide)) {
                 slide = setupPageNewSlide(slide);
             }
@@ -245,24 +278,35 @@ function setupPages() {
             $(slide).find('[data-page="' + i + '"]')[0].innerHTML = this.outerHTML;
         }
     });
+    setViewBoxes();
+    resetReveal();
 }
 
-function setupPageNewSlide(slide) {
-    var slideGroup = $(slide).closest('section.stack');
+/**
+ * @brief Create and return a new slide after currentSlide.
+ */
+function setupPageNewSlide(currentSlide) {
+    var slideGroup = $(currentSlide).closest('section.stack');
     slideGroup.append($("<section>"));
     return slideGroup.find('section:last-of-type');
-    window.Reveal.sync();
 }
 
+/**
+ * @brief return TRUE if slide cannot hold another svg "line" in it.
+ */
 function setupPageSlideIsFull(slide) {
-    // TODO: Change this to allow multiple lines per slide.
-    return true;
+    var svgHeight = parseInt($(slide).find('.dynamic svg').attr('height'));
+    var canHold = Math.floor(revealHeight / svgHeight);
+    var numberOfChildren = $(slide).find('.dynamic svg').length;
+    return (numberOfChildren >= canHold);
 }
 
+/**
+ * @brief Set the view boxes for each svg "line" so they start at the correct x value.
+ */
 function setViewBoxes() {
     $('.dynamic svg').each(function(){
-        var peakahead = 84;
-        var x = $(this).closest('[data-page]').attr('data-page') * (revealWidth - peakahead);
+        var x = $(this).closest('[data-page]').attr('data-page') * (revealWidth);
         var height = $(this).attr('height');
         var width = $(this).attr('width');
         this.setAttribute('viewBox', x + ' 0 ' + width + ' ' + height);
@@ -280,7 +324,6 @@ function squishText(el) {
     if (typeof el.childNodes[0] == "undefined") return;
     var text = el.childNodes[0].nodeValue;
     // Setting a specific letter width isn't perfect since "One" is wider than "ly,"
-    // TODO: Consider using a monospace font for the lyrics.
     var widthPerLetter = getFontPixelSize() * .7;
     var boxWidth = $(el).attr('data-textlength');
 

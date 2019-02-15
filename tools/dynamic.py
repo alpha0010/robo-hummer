@@ -128,7 +128,8 @@ for note in s.recurse().notes:
         beatsThisMeasure = note.getContextByClass("Measure").duration.quarterLength
         measureLengths[measureNum] = beatsThisMeasure
         measureOffsets[measureNum] = measureOffsets[measureNum - 1] + measureLengths[measureNum - 1]
-        xPos = measureOffsets[measureNum] + ((note.beat - 1) * note.beatDuration.quarterLength)
+        # Using note.offset because it starts at zero and corresponds with the duration.quarterLength
+        xPos = measureOffsets[measureNum] + note.offset
 
     xLen = note.duration.quarterLength
 

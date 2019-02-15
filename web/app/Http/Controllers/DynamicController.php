@@ -33,23 +33,9 @@ class DynamicController extends Controller
         ];
         $client = new HttpClient();
         foreach ($verses as $verseID => $verse) {
-            $resp = (string)$client->get(route("get media", [$id, "{$verse}.info.json"]))->getBody();
-            $jsonArray = json_decode($resp, true);
-
-            // 960px seems to be hard-coded into reveal.js as the 'screen width',
-            // even scaled down for smaller screens, so moving 960px forward will
-            // never skip too far forward, beyond what has already been seen.
-            $screenWidth = 960;
-            $barLines = $jsonArray['measureBarLines'];
-            $offsetBreaks = $this->getOffsetBreaks($barLines, $screenWidth);
-
             $file = route("get media", [$id, $verse]);
-            foreach ($offsetBreaks as $i => $offset) {
-                $imageWidth = $jsonArray['width'];
-                $nextOffset = ($offsetBreaks[$i + 1] ?? $imageWidth);
-                $slides["v{$verseID}"][] =
-                    $this->render("v{$verseID}s{$i}", $file, $offset, $nextOffset, $imageWidth);
-            }
+            $slides["v{$verseID}"][] =
+                $this->render("v{$verseID}s0", $file);
         }
         $audio = route("get media", [$id, "harmony.mp3"]);
         return view("slides", ["slides" => $slides, 'audio' => $audio]);
@@ -64,6 +50,7 @@ class DynamicController extends Controller
      */
     private function getOffsetBreaks($barLines, $screenWidth)
     {
+        // TODO: Implement measure-based breaks in javascript.
         // Where we should break each slide at.
         $offsetBreaks = [];
         $current = 0;
@@ -87,32 +74,18 @@ class DynamicController extends Controller
      * @brief Render a slide.
      * @param string $slideName What the slide is called.
      * @param string $file What image should be rendered here.
-     * @param int $offset The x-axis pixel offset for this slide to start at.
-     * @param int $nextOffset The x-axis pixel offset for this slide to end at.
-     * @param int $imageWidth The maximum width of the image.
      * @return array
      */
     private function render(
         string $slideName,
-        string $file,
-        int $offset,
-        int $nextOffset,
-        int $imageWidth
+        string $file
     ) {
-        $negOffset = 0 - $offset;
-        // Shade in the part of the image that the next slide will show.
-        $rightNegOffset = $nextOffset - $imageWidth;
-        $style = "margin-left:{$negOffset}px;
-            box-shadow: inset {$offset}px 0px 0 rgba(127, 127, 127, 0.5),
-                        inset {$rightNegOffset}px 0px 0 rgba(127, 127, 127, 0.5);
-            width: {$imageWidth}px;
-        ";
         // TODO: Give SVG loading responisibilities to javascript.
         $svg = file_get_contents($file);
         return [
             "name"    => $slideName,
             // src='{$file}' data-inline-svg
-            "content" => "<div class='dynamic' style='{$style}'>$svg</div>",
+            "content" => "<div class='dynamic original' data-page='0'>$svg</div>",
         ];
     }
 }

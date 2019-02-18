@@ -63,10 +63,10 @@ def rectangle(x, y, w, h, lyrics=[], color=''):
         print("</g>")
 
 
-def verticalLine(x, classy=''):
+def verticalLine(x):
     sx = x * xScale
-    print("<rect x='%i' data-x='%f' y='0' width='%i' height='100%%' class='%s'/>"
-          % (sx, x, border, classy))
+    print("<rect x='%i' data-x='%f' y='0' width='%i' height='100%%'/>"
+          % (sx, x, border))
 
 
 def trackLowHighPos(part, pitch):
@@ -136,8 +136,9 @@ for note in s.recurse().notes:
     xLen = note.duration.quarterLength
 
     # Breath marks in the score denote phrase breaks to break a line at.
-    for art in note.articulations:
-        if isinstance(art, music21.articulations.BreathMark):
+    for articulation in note.articulations:
+        # If this articulation is a breath mark, mark it down.
+        if isinstance(articulation, music21.articulations.BreathMark):
             i = len(breathMarks)
             breathMarks.append(xPos + xLen)
             breathLengths[i - 1] = breathMarks[i] - breathMarks[i - 1]

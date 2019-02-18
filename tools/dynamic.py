@@ -20,7 +20,7 @@ def print(x):
     sys.stdout.buffer.write(x.encode('utf-8'))
 
 
-def rectangle(x, y, w, h, lyrics, color):
+def rectangle(x, y, w, h, lyrics=[], color=''):
     """Output an SVG group containing a rectangle and optionally including text for that rectangle.
         lyrics is a list containing the text for multiple lines.
             Additional lyrics will be stored as `data-vX` attributes, where X is an integer.
@@ -31,7 +31,7 @@ def rectangle(x, y, w, h, lyrics, color):
     sw = w * xScale
     sy = y * defaultYScale
     sh = h * defaultYScale
-    style = "stroke-width: %i; stroke:rgb(0,0,0); opacity: 0.5;" \
+    style = "stroke-width: %i; stroke:rgb(0,0,0); opacity: 0.75;" \
             % (border)
     border2 = border * 2
     print("\n")
@@ -110,6 +110,8 @@ songHeight = (noteRange * defaultYScale) + (1.5 * defaultFontSize)
 
 measureLengths = {0: 0}
 measureOffsets = {0: 0}
+breathMarks = [0]
+breathLengths = [0]
 
 # Output notes in place
 print("<?xml version='1.0' encoding='utf-8'?>")
@@ -133,6 +135,15 @@ for note in s.recurse().notes:
 
     xLen = note.duration.quarterLength
 
+    # Breath marks in the score denote phrase breaks to break a line at.
+    for articulation in note.articulations:
+        # If this articulation is a breath mark, mark it down.
+        if isinstance(articulation, music21.articulations.BreathMark):
+            i = len(breathMarks)
+            breathMarks.append(xPos + xLen)
+            breathLengths[i - 1] = breathMarks[i] - breathMarks[i - 1]
+            breathLengths.append(songLength - breathMarks[i])
+
     if xLen != 0:
         for pitch in note.pitches:
             yPos = highNote - pitch.midi
@@ -154,13 +165,17 @@ for offset in measureOffsets.values():
 verticalLine(songLength)
 print("</g>")
 
+print("<g id='breathSections'>")
+for key, offset in enumerate(breathMarks):
+    # Set the y position as negative so it's not seen.
+    rectangle(offset, -2, breathLengths[key], 1)
+print("</g>")
+
 print("<g id='parts'>")
-i = -1
 for key, value in parts.items():
     # Visually, these show the range of each part.
     # We set the x position as negative so it's not seen.
-    rectangle(i, lowPos[key], 1, highPos[key] - lowPos[key] + 1, '', value)
-    i = i - 1
+    rectangle(-2, lowPos[key], 1, highPos[key] - lowPos[key] + 1, '', value)
 print("</g>")
 
 print("</svg>")

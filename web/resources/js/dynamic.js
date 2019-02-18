@@ -11,8 +11,28 @@ $(document).ready(function(){
     switchVerse('v3', 'data-v3')
     switchVerse('v4', 'data-v4')
     fillDynamicOptions();
-    setupPages();
+    autosetNotesPerLine();
 });
+
+/**
+ * @brief Set the notes per line automatically based on the breathSections.
+ */
+function autosetNotesPerLine() {
+    var breathSections = $('.dynamic.original svg:first #breathSections rect');
+    var maxNPL = 0;
+    if (breathSections.length) {
+        for (var i = 0; i < breathSections.length; i++) {
+            var npl = parseInt(breathSections[i].attributes['data-width'].value);
+            if (npl > maxNPL) {
+                maxNPL = npl;
+            }
+        }
+        if (maxNPL >= 1) {
+            return setNotesPerLine(maxNPL);
+        }
+    }
+    return setNotesPerLine(12);
+}
 
 /**
  * @brief Change the size of the font for the lyrics.
@@ -31,7 +51,9 @@ function setFontSize(s) {
  * @brief Set the number of quarter notes to display per line.
  */
 function setNotesPerLine(n) {
-    setNoteWidth(revealWidth/n);
+    if (n >= 1){
+        setNoteWidth(revealWidth/n);
+    }
 }
 
 /**
@@ -107,6 +129,7 @@ function togglePart(id, partColor) {
     resizeSVGHeight();
 }
 
+window.autosetNotesPerLine = autosetNotesPerLine;
 window.setFontSize = setFontSize;
 window.setNotesPerLine = setNotesPerLine;
 window.setNoteHeight = setNoteHeight;
@@ -268,7 +291,12 @@ function setupPages() {
         var slideGroup = $(this).closest('section.stack');
         var slide = $(this).closest('section');
 
-        var numPages = Math.ceil($(this).attr('width') / revealWidth);
+        var numPages = 0;
+        if ($(this).find('#breathSections rect').length > 1) {
+            numPages = $(this).find('#breathSections rect').length;
+        } else {
+            numPages = Math.ceil($(this).attr('width') / revealWidth);
+        }
         // Start at 1 because page 0 already exists.
         for (var i = 1; i < numPages; i++) {
             if (setupPageSlideIsFull(slide)) {
@@ -311,8 +339,19 @@ function setupPageSlideIsFull(slide) {
  * @brief Set the view boxes for each svg "line" so they start at the correct x value.
  */
 function setViewBoxes() {
+    var sections = $('.dynamic.original svg:first #breathSections rect');
+
     $('.dynamic svg').each(function(){
-        var x = $(this).closest('[data-page]').attr('data-page') * (revealWidth);
+        var x = 0;
+        var pageNum = $(this).closest('[data-page]').attr('data-page');
+        if (sections.length > pageNum && $(sections[pageNum]).attr('width') > 0) {
+            console.log(sections.length)
+            x = sections[pageNum].attributes['x']['value'];
+            $(this).attr('width', sections[pageNum].attributes['width']['value']);
+        } else {
+            x = pageNum * (revealWidth);
+        }
+
         var height = $(this).attr('height');
         var width = $(this).attr('width');
         this.setAttribute('viewBox', x + ' 0 ' + width + ' ' + height);

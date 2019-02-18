@@ -19,6 +19,12 @@ class MediaController extends Controller
 {
     public function get(string $number, string $type)
     {
+        // Allow negative numbers to get you to newer media entries.
+        if ($number < 0) {
+            // -1 gets you the newest media item, -2 gets you the second newest...
+            $id = Media::orderBy('id', 'desc')->skip(($number * -1) - 1)->first()->id;
+            return redirect("/media/$id/$type");
+        }
         $filepath = Media::getDir() . "/$number/$type";
         if (Storage::exists($filepath)) {
             return $this->getFileResponse($filepath);

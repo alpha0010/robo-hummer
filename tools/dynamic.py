@@ -20,7 +20,7 @@ def print(x):
     sys.stdout.buffer.write(x.encode('utf-8'))
 
 
-def rectangle(x, y, w, h, lyrics = [], color = ''):
+def rectangle(x, y, w, h, lyrics=[], color=''):
     """Output an SVG group containing a rectangle and optionally including text for that rectangle.
         lyrics is a list containing the text for multiple lines.
             Additional lyrics will be stored as `data-vX` attributes, where X is an integer.

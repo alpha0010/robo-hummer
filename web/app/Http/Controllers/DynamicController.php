@@ -93,7 +93,7 @@ class DynamicController extends Controller
         return [
             "name"    => $slideName,
             // src='{$file}' data-inline-svg
-            "content" => "<div class='dynamic original' data-page='0'>$svg</div>",
+            "content" => "<div class='dynamic original' style='opacity: 0;' data-page='0'>$svg</div>",
         ];
     }
 }

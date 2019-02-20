@@ -241,8 +241,8 @@ function getPartsToggler(id, section) {
  * @brief Reset RevealJS so it detects the changes we've made to the DOM.
  */
 function resetReveal() {
-    // TODO: Stay on the roughly same slide (or the same verse).
-    window.Reveal.slide(0,0);
+    var indices = window.Reveal.getIndices();
+    window.Reveal.slide(indices.h, indices.v);
 }
 
 /**
@@ -304,6 +304,7 @@ function setupPages() {
             }
             var child = $('<div>');
             $(child).addClass('dynamic');
+            $(child).css('opacity', 0);
             $(child).attr('data-page', i);
             if (i % 2 == 1) {
                 $(child).addClass('odd');
@@ -356,6 +357,7 @@ function setViewBoxes() {
         var width = $(this).attr('width');
         this.setAttribute('viewBox', x + ' 0 ' + width + ' ' + height);
     });
+    $('.dynamic').css('opacity', 1);
 }
 
 /**

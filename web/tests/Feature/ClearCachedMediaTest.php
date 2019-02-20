@@ -22,6 +22,10 @@ class ClearCachedMediaTest extends TestCase
         $exitCode = Artisan::call("media:clear-cache");
         $this->assertEquals(0, $exitCode);
 
+        // TODO: Figure out why this isn't working.
+        //$output = Artisan::output();
+        //$this->assertContains("Deleted 2 files", $output);
+
         $this->assertNotDeleted("/1/harmony.midi");
         $this->assertNotDeleted("/2/harmony.musicxml");
         $this->assertDeleted("/1/harmony.musicxml");
@@ -34,6 +38,9 @@ class ClearCachedMediaTest extends TestCase
         $this->setupFiles();
         $exitCode = Artisan::call("media:clear-cache", ['--type' => "harmony.musicxml" ]);
         $this->assertEquals(0, $exitCode);
+
+        $output = Artisan::output();
+        $this->assertContains("Deleted 1 file", $output);
 
         $this->assertNotDeleted("/1/harmony.midi");
         $this->assertNotDeleted("/2/harmony.musicxml");
@@ -48,6 +55,9 @@ class ClearCachedMediaTest extends TestCase
         $exitCode = Artisan::call("media:clear-cache", [ 'media' => "2" ]);
         $this->assertEquals(0, $exitCode);
 
+        $output = Artisan::output();
+        $this->assertContains("Deleted 1 file", $output);
+
         $this->assertNotDeleted("/1/harmony.midi");
         $this->assertNotDeleted("/2/harmony.musicxml");
         $this->assertNotDeleted("/1/harmony.musicxml");
@@ -59,6 +69,7 @@ class ClearCachedMediaTest extends TestCase
         $this->setupFiles();
         $exitCode = Artisan::call("media:clear-cache", [ 'media' => "3" ]);
         $this->assertEquals(1, $exitCode);
+
         $output = Artisan::output();
         $this->assertContains("Could not find media entry", $output);
         $this->assertContains("media:delete untracked", $output);
@@ -76,7 +87,7 @@ class ClearCachedMediaTest extends TestCase
         $this->assertEquals(0, $exitCode);
         $output = Artisan::output();
 
-        //$this->assertContains("Deleted 1 file", $output);
+        $this->assertContains("Deleted 1 file", $output);
 
         $this->assertNotDeleted("/1/harmony.midi");
         $this->assertNotDeleted("/2/harmony.musicxml");
@@ -89,12 +100,27 @@ class ClearCachedMediaTest extends TestCase
         $this->setupFiles();
         $exitCode = Artisan::call("media:clear-cache", ['media' => "2", '--type' => "harmony.musicxml"]);
         $this->assertEquals(1, $exitCode);
-        $output = Artisan::output();
 
+        $output = Artisan::output();
         $this->assertContains("Could not find media entry", $output);
         $this->assertContains("The media ID is '2'", $output);
         $this->assertContains("The original file is not 'harmony.musicxml'", $output);
         $this->assertContains("media:delete untracked", $output);
+
+        $this->assertNotDeleted("/1/harmony.midi");
+        $this->assertNotDeleted("/2/harmony.musicxml");
+        $this->assertNotDeleted("/1/harmony.musicxml");
+        $this->assertNotDeleted("/2/harmony.midi");
+        $this->assertNotDeleted("/3/harmony.musicxml");
+    }
+    public function testClearIDandTypeNonexistent()
+    {
+        $this->setupFiles();
+        $exitCode = Artisan::call("media:clear-cache", ['media' => "2", '--type' => "filenotfound.txt"]);
+        $this->assertEquals(0, $exitCode);
+
+        $output = Artisan::output();
+        $this->assertContains("Deleted 0 files", $output);
 
         $this->assertNotDeleted("/1/harmony.midi");
         $this->assertNotDeleted("/2/harmony.musicxml");

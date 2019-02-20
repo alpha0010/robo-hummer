@@ -60,6 +60,8 @@ class ClearCachedMedia extends Command
         }
 
 
+        $count = 0;
+
         foreach ($media as $entry) {
             $files = [];
             if ($type) {
@@ -68,9 +70,12 @@ class ClearCachedMedia extends Command
                 $files = Storage::allFiles(Media::getDir() . "/" . $entry->id);
             }
             foreach ($files as $file) {
-                if ($file != Media::getDir() . "/" . $entry->id . "/" . $entry->originalFile)
-                Storage::delete($file);
+                if ($file != Media::getDir() . "/" . $entry->id . "/" . $entry->originalFile) {
+                    $count += Storage::delete($file);
+                }
             }
         }
+        $fileS = str_plural('file', $count);
+        $this->line("Deleted $count $fileS.");
     }
 }

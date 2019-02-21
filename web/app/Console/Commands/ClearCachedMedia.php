@@ -32,37 +32,50 @@ class ClearCachedMedia extends Command
      */
     public function handle()
     {
+        $mediaQuery = new Media();
+        $constraints = [];
+        $type = $this->option('type');
+        if ($type) {
+            $mediaQuery = $mediaQuery->where('originalFile', '!=', $type);
+            $constraints[] = "The original file is not '$type'";
+        }
         $media = Media::all();
         $mediaArg = $this->argument('media');
         if ($this->argument('media')) {
-            $media = [ Media::find($mediaArg) ];
-            if (! $media[ 0 ]) {
-                $this->error("Could not find media entry '$mediaArg'.");
-                $this->line("Consider using <info>media:delete untracked</info> "
-                    . "to delete untracked files.");
-                return 1;
-            }
+            $mediaQuery = $mediaQuery->where('id', $mediaArg);
+            $constraints[] = "The media ID is '$mediaArg'";
         }
+
+        $media = $mediaQuery->get();
+        if ($media->count() === 0) {
+            if ($constraints) {
+                $this->error("Could not find media entry with constraints: ");
+                $this->error(implode(' and ', $constraints));
+            } else {
+                $this->error("Could not find any media entries.");
+            }
+            $this->line("Consider using <info>media:delete untracked</info> "
+                . "to delete untracked files.");
+            return 1;
+        }
+
+
+        $count = 0;
+
         foreach ($media as $entry) {
-            $files = Storage::allFiles(Media::getDir() . "/" . $entry->id);
-            // Only delete cached files if the original file is still there.
-            $originalFile = Media::getDir() . "/$entry->id/$entry->originalFile";
-            if (in_array($originalFile, $files)) {
-                foreach ($files as $file) {
-                    // Don't delete the original file.
-                    if ($file != $originalFile) {
-                        $typePath = Media::getDir() . "/$entry->id/" . $this->option('type');
-                        // If the --type option is used, delete only the matching file,
-                        // otherwise, delete all other cached files.
-                        if (! $this->option('type') || $typePath == $file) {
-                            Storage::delete($file);
-                            if ($this->option('verbose')) {
-                                $this->line("Deleted <info>$file</info>");
-                            }
-                        }
-                    }
+            $files = [];
+            if ($type) {
+                $files = [ Media::getDir() . "/" . $entry->id . "/" . $type ];
+            } else {
+                $files = Storage::allFiles(Media::getDir() . "/" . $entry->id);
+            }
+            foreach ($files as $file) {
+                if ($file != Media::getDir() . "/" . $entry->id . "/" . $entry->originalFile) {
+                    $count += Storage::delete($file);
                 }
             }
         }
+        $fileS = str_plural('file', $count);
+        $this->line("Deleted $count $fileS.");
     }
 }

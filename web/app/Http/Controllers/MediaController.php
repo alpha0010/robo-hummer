@@ -159,7 +159,17 @@ class MediaController extends Controller
     {
         if (Storage::getVisibility($filepath) == 'private') {
             if (env('APP_DEBUG')) {
-                return response(Storage::get($filepath), 404);
+                $parts = explode("/", $filepath);
+                $type = array_pop($parts);
+                $id = array_pop($parts);
+                $date = date('r', Storage::getTimestamp($filepath));
+                $message = "An error was caught generating this file on $date. "
+                    . "Use `artisan media:clear-cache $id --type={$type}` and reload to retry.";
+
+                return view('errors.404', [
+                    'message' => $message,
+                    'file' => Storage::get($filepath),
+                ]);
             } else {
                 abort(404);
             }

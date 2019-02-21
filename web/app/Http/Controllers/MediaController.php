@@ -165,11 +165,7 @@ class MediaController extends Controller
                 $date = date('r', Storage::getTimestamp($filepath));
                 $message = "An error was caught generating this file on $date. "
                     . "Use `artisan media:clear-cache $id --type={$type}` and reload to retry.";
-
-                return view('errors.404', [
-                    'message' => $message,
-                    'file' => Storage::get($filepath),
-                ]);
+                abort(404, json_encode([$message, Storage::get($filepath)]));
             } else {
                 abort(404);
             }

@@ -58,9 +58,12 @@ class MediaController extends Controller
                 ]);
                 $process->run();
                 if (! $process->isSuccessful()) {
-                    throw new ProcessFailedException($process);
+                    Storage::put($filepath, $process->getErrorOutput());
+                    // Private files denote an error, they will only be shown in development.
+                    Storage::setVisibility($filepath, 'private');
+                } else {
+                    Storage::put($filepath, $process->getOutput());
                 }
-                Storage::put($filepath, $process->getOutput());
                 return $this->getFileResponse($filepath);
             } elseif ($extension == 'premaster.wav') {
                 $this->checkExists($number, "$name.midi");
@@ -154,6 +157,13 @@ class MediaController extends Controller
      */
     private function getFileResponse($filepath)
     {
+        if (Storage::getVisibility($filepath) == 'private') {
+            if (env('APP_DEBUG')) {
+                return response(Storage::get($filepath), 404);
+            } else {
+                abort(404);
+            }
+        }
         if (substr($filepath, -5) == '.json') {
             return json_decode(Storage::get($filepath), true);
         } elseif (substr($filepath, -4) == '.svg') {

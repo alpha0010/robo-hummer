@@ -158,7 +158,7 @@ class MediaController extends Controller
     private function getFileResponse($filepath)
     {
         if (Storage::getVisibility($filepath) == 'private') {
-            if (env('APP_DEBUG')) {
+            if (config('app.debug')) {
                 $parts = explode("/", $filepath);
                 $type = array_pop($parts);
                 $id = array_pop($parts);

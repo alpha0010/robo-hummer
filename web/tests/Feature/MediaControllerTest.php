@@ -69,6 +69,6 @@ class MediaControllerTest extends TestCase
 
         // TODO: Change when we have a way to generate incipit from an audio file.
         $response = $this->get('/media/1/incipit.json');
-        $response->assertStatus(500);
+        $response->assertStatus(404);
     }
 }

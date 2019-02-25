@@ -45,6 +45,7 @@ class CacheMedia extends Command
         $count = 0;
 
         $bar = $this->output->createProgressBar(count($media));
+        $bar->setFormat(' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s%');
         $bar->start();
 
         foreach ($media as $entry) {

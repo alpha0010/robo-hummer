@@ -44,7 +44,7 @@ class Media extends Model
         try {
             $mc->get($this->id, $type);
             return true;
-        } catch(NotFoundHttpException $e) {
+        } catch (NotFoundHttpException $e) {
             return false;
         }
     }

@@ -26,7 +26,7 @@ class Media extends Model
     public function scopeCanGenerate($query, $type)
     {
         $requires = [
-            'incipit.json' => ['harmony.midi', 'harmony.musicxml'],
+            'incipit.json' => ['harmony.musicxml'],
         ];
         if (! isset($requires[$type])) {
             $requires[$type] = [];

@@ -135,6 +135,8 @@ def get_incipit(s):
 num_parts = 1
 
 def partify(s):
+    if len(s.recurse().notes) >= 10000:
+        raise Exception("Song has too many notes, estimated this will perform poorly.")
     global num_parts
     myKey  = get_first(s, key.Key)
     myTime = get_first(s, meter.TimeSignature)

@@ -12,7 +12,7 @@ services:
     volumes:
       - ..:/var/www/
       - $ENV_FILE:/var/www/web/.env
-      - ${DART_OVERLAY_ROBO_MEDIA}:/var/www/web/storage/app/media
+      - ${DART_OVERLAY_ROBO_MEDIA}:/srv/robo-media-dart
       - /etc/hostname:/etc/host-hostname:ro # Provide the container with the host's hostname
     networks:
       - def

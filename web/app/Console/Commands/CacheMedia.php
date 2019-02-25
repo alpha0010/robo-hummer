@@ -48,6 +48,7 @@ class CacheMedia extends Command
         $bar->start();
 
         foreach ($media as $entry) {
+            // TODO: Add options to delete error files and/or generated files so they're re-cached.
             $count += $entry->cache($type);
             $bar->advance();
         }

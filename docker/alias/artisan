@@ -1,1 +1,1 @@
-x web ./artisan
+x web sudo -u www-data ./artisan

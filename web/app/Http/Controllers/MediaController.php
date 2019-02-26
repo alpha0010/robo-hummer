@@ -153,6 +153,9 @@ class MediaController extends Controller
         if (isset($destToSourceType[$destinationType])) {
             $sourceType = $destToSourceType[$destinationType];
         }
+        if ($sourceType == $destinationType) {
+            abort(404);
+        }
         $this->checkExists($media->id, $sourceType);
         return $media->getAbsPath($sourceType);
     }

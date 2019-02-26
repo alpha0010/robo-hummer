@@ -15,6 +15,7 @@ class CacheMedia extends Command
      */
     protected $signature = 'media:cache '
         . '{--type= : Specific type of media to clear cache for}'
+        . '{--recache= : "all", "errors", or "successes" Remove certain files before caching them.}'
     ;
 
     /**
@@ -43,13 +44,27 @@ class CacheMedia extends Command
             ->get();
 
         $count = 0;
+        $deleted = 0;
+        $errorsDeleted = 0;
 
         $bar = $this->output->createProgressBar(count($media));
         $bar->setFormat(' %current%/%max% [%bar%] %percent:3s%% %elapsed:6s%/%estimated:-6s%');
         $bar->start();
 
+        $recache = $this->option('recache');
+
         foreach ($media as $entry) {
-            // TODO: Add options to delete error files and/or generated files so they're re-cached.
+            if ($recache) {
+                $path = $entry->getPath($type);
+                $visibility = Storage::getVisibility($path);
+                // Cached errors are files saved with 'private' visibility.
+                if ($visibility == 'private' && in_array($recache, ['all', 'errors'])) {
+                    $errorsDeleted += Storage::delete($path);
+                } elseif ($visibility == 'public' && in_array($recache, ['all', 'successes'])) {
+                    $deleted += Storage::delete($path);
+                }
+            }
+
             $count += $entry->cache($type);
             $bar->advance();
         }
@@ -57,6 +72,8 @@ class CacheMedia extends Command
         $bar->finish();
         $this->line("");
 
+        $this->message($deleted, "properly generated file", ["was", "were"], "deleted");
+        $this->message($errorsDeleted, "error", ["was", "were"], "deleted");
         $this->message($count, "properly generated file", ["is", "are"], "cached");
         $this->message(count($media) - $count, "error", ["is", "are"], "cached");
     }

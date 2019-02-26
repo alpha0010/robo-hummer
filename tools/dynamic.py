@@ -54,7 +54,7 @@ def rectangle(x, y, w, h, lyrics=[], color=''):
         print("<text x='%i' data-x='%f' data-textlength='%i' data-tl='%f' lengthAdjust='spacingAndGlyphs' "
               % (sx, x, sw, w)
               + "y='100%%' dy='%i' font-size='%ipt' %s>"
-              % (defaultFontSize * (-1 / 3), defaultFontSize, dataVerses))
+              % (defaultFontSize * (-1 / 2), defaultFontSize, dataVerses))
 
         text = XMLescape(lyrics[0].rawText)
         textBytes = text.encode('utf-8').strip()
@@ -106,7 +106,7 @@ highNote = max(s.pitches).midi
 noteRange = highNote - lowNote + 1
 
 songWidth = songLength * xScale
-songHeight = (noteRange * defaultYScale) + (1.5 * defaultFontSize)
+songHeight = (noteRange * defaultYScale) + (2.0 * defaultFontSize)
 
 measureLengths = {0: 0}
 measureOffsets = {0: 0}

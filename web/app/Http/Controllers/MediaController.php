@@ -154,6 +154,8 @@ class MediaController extends Controller
             $sourceType = $destToSourceType[$destinationType];
         }
         if ($sourceType == $destinationType) {
+            // You can't create a file from itself. It doesn't exist.
+            // Abort to prevent infinite loop.
             abort(404);
         }
         $this->checkExists($media->id, $sourceType);

@@ -66,13 +66,13 @@ class CacheMedia extends Command
      * @param int $count The plural number describing $thing.
      * @param string $thing The subject of the sentence.
      * @param array $predVerb An array containing verbs of the form [0 => 'singular verb', 1 => 'plural verb'].
-     * @param string $predNom The predicate nominative comes after the Predicate Verb.
+     * @param string $predicative The Predicative Expression comes after the Predicate Verb.
      */
-    private function message(int $count, string $subject, array $predVerb, string $predNom)
+    private function message(int $count, string $subject, array $predVerb, string $predicative)
     {
         $subjectS = str_plural($subject, $count);
         $verb = $count != 1 ? $predVerb[1] : $predVerb[0];
 
-        $this->line("$count $subjectS $verb $predNom.");
+        $this->line("$count $subjectS $verb $predicative.");
     }
 }

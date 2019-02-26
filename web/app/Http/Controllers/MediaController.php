@@ -92,11 +92,30 @@ class MediaController extends Controller
                 return true;
             } elseif (in_array($extension, [ 'ogg', 'mp3', 'wav' ])) {
                 $this->checkExists($number, "$name.premaster.wav");
+                // FFmpeg's recommended way to increase volume:
+                // Detect the peak audio rate, then increase the volume.
+                // https://trac.ffmpeg.org/wiki/AudioVolume
+                $process = new Process([
+                    "ffmpeg",
+                    "-i", $media->getAbsPath("$name.premaster.wav"),
+                    "-filter:a", "volumedetect",
+                    "-f", "null", "/dev/null"
+                ]);
+                $process->run();
+                $matches = [];
+                preg_match("/max_volume: (-?[0-9.]+) dB/", $process->getErrorOutput(), $matches);
+                // Fallback: If max_volume wasn't found, just do no boosting.
+                $vol = 0;
+                if (isset($matches[1]) && is_numeric($matches[1])) {
+                    // If the maximum volume is -8dB, we want to boost up 8.
+                    $vol = -1 * $matches[1];
+                    // But subtract a little, to reduce risk of clipping.
+                    $vol -= 1;
+                }
                 $process = new Process([
                     'ffmpeg',
                     '-i', $media->getAbsPath("$name.premaster.wav"),
-                    '-filter_complex',
-                    "compand=attacks=0.3 0.3:decays=0.8 0.8:points=-80/-900|-45/-25|-10/-10",
+                    '-filter:a', "volume={$vol}dB",
                     // ffmpeg automatically converts to the file format that is requested.
                     $media->getAbsPath($type)
                 ]);

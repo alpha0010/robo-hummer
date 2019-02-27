@@ -7,6 +7,7 @@ dart exec web composer install --no-suggest \
 		# Run these commands in development only.       \
 		dart exec - chgrp www-data -R storage bootstrap \
 		&& dart exec - chmod g+w   -R storage bootstrap \
+		&& dart x - chown www-data -R /srv/robo-media-dart \
 		&& dart +artisan media:delete untracked         \
 	) )                                                 \
 	&& dart x - npm install --unsafe-perm               \

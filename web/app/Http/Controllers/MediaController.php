@@ -13,6 +13,7 @@ use Lcobucci\JWT\Signer\Keychain;
 use Lcobucci\JWT\Signer\Rsa\Sha256;
 use Lcobucci\JWT\ValidationData;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Process;
 
 class MediaController extends Controller
@@ -52,13 +53,19 @@ class MediaController extends Controller
                 ])
             ) {
                 $shell_path = $this->getSourcePath($media, $type);
+                // An alternate error message to print in case there was no error output.
+                $altError = "Process could not complete.";
                 $process = new Process([
                     "sudo", "-u", "python",
                     "/var/www/tools/convert.py", $shell_path, $type,
                 ]);
-                $process->run();
+                try {
+                    $process->run();
+                } catch (ProcessTimedOutException $e) {
+                    $altError = "Process took too much time.";
+                }
                 if (! $process->isSuccessful()) {
-                    Storage::put($filepath, $process->getErrorOutput());
+                    Storage::put($filepath, $process->getErrorOutput() ?: $altError);
                     // Private files denote an error, they will only be shown in development.
                     Storage::setVisibility($filepath, 'private');
                 } else {
@@ -145,6 +152,11 @@ class MediaController extends Controller
 
         if (isset($destToSourceType[$destinationType])) {
             $sourceType = $destToSourceType[$destinationType];
+        }
+        if ($sourceType == $destinationType) {
+            // You can't create a file from itself. It doesn't exist.
+            // Abort to prevent infinite loop.
+            abort(404);
         }
         $this->checkExists($media->id, $sourceType);
         return $media->getAbsPath($sourceType);

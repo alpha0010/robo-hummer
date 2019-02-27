@@ -3,8 +3,10 @@
 namespace App;
 
 use App;
+use App\Http\Controllers\MediaController;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class Media extends Model
 {
@@ -16,6 +18,36 @@ class Media extends Model
     protected $fillable = [
         "originalFile", "textID", "tuneID",
     ];
+
+    /**
+     * @brief Eloquent Dynamic Scope to constrain media
+     *  that is able to generate a certain type of file.
+     */
+    public function scopeCanGenerate($query, $type)
+    {
+        $requires = [
+            'incipit.json' => ['harmony.musicxml'],
+        ];
+        if (! isset($requires[$type])) {
+            $requires[$type] = [];
+        }
+        return $query->whereIn('originalFile', $requires[$type]);
+    }
+
+    /**
+     * @brief Create a file if it does not exist.
+     * @return true if there is a file, false if there was an error, or it is not found.
+     */
+    public function cache($type)
+    {
+        $mc = new MediaController();
+        try {
+            $mc->get($this->id, $type);
+            return true;
+        } catch (NotFoundHttpException $e) {
+            return false;
+        }
+    }
 
     /**
      * @brief Attempt to detect the filetype, rename the file if successful.

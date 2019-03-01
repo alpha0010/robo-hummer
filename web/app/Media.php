@@ -27,6 +27,8 @@ class Media extends Model
     {
         $requires = [
             'incipit.json' => ['harmony.musicxml'],
+            '6.tuples.json' => ['harmony.musicxml', 'harmony.midi'],
+            '8.tuples.json' => ['harmony.musicxml', 'harmony.midi'],
         ];
         if (! isset($requires[$type])) {
             $requires[$type] = [];

@@ -4,7 +4,7 @@ import json
 from namedb import NameDB
 import nmslib
 import sys
-import urllib2
+import urllib
 
 # Generate lists of size 'window' starting at each value of 'iterable'.
 def windowItr(iterable, window):
@@ -77,11 +77,11 @@ def main(argv):
     for IDs, diffs in results:
         featureIDs += list(IDs)
 
-    print json.dumps(
+    print(json.dumps(
         nameDB.summarizeHits(featureIDs)[:10],
         indent=4,
         sort_keys=True
-    )
+    ))
 
     return 0
 

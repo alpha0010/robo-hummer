@@ -20,7 +20,7 @@ noteNumbers = {
 # Extract the sequence of notes from a music XML file.
 def musicXmlToNotes(fileName):
     root = ET.parse(fileName).getroot()
-    for note in root.findall("part[@id='P1']/measure/note"):
+    for note in root.find("part").findall("measure/note"):
         # Skip rests.
         if note.find("rest") is not None:
             continue

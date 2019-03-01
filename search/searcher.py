@@ -6,17 +6,20 @@ import nmslib
 import sys
 import urllib
 
-# Generate lists of size 'window' starting at each value of 'iterable'.
+
 def windowItr(iterable, window):
+    """ Generate lists of size 'window' starting at each value of 'iterable'. """
     buf = deque(maxlen=window)
     for val in iterable:
         buf.append(val)
         if len(buf) == window:
             yield list(buf)
 
-# Compute relative changes in frequency and length, as compared to the first
-# element.
+
 def computeFeatures(segment):
+    """ Compute relative changes in frequency and length, as compared to the first
+        element.
+    """
     features = []
 
     refFreq = segment[0]["freq"]
@@ -27,13 +30,15 @@ def computeFeatures(segment):
 
     return features
 
-# Extract all feature points from the notes.
+
 def extractAllFeatures(notes, contextLen):
+    """ Extract all feature points from the notes. """
     for segment in windowItr(notes, contextLen):
         yield computeFeatures(segment)
 
-# Search.
+
 def main(argv):
+    """ Search. """
     contextLen = 4
 
     # Load the search index.
@@ -84,6 +89,7 @@ def main(argv):
     ))
 
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))

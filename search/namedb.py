@@ -1,8 +1,9 @@
 import os.path
 import sqlite3
 
-# Map file names to stable integer IDs.
+
 class NameDB:
+    """ Map file names to stable integer IDs. """
     def __init__(self, fileName):
         self.conn = sqlite3.connect(fileName)
 

@@ -17,8 +17,9 @@ noteNumbers = {
     "B": 11
 }
 
-# Extract the sequence of notes from a music XML file.
+
 def musicXmlToNotes(fileName):
+    """ Extract the sequence of notes from a musicXML file. """
     root = ET.parse(fileName).getroot()
     for note in root.find("part").findall("measure/note"):
         # Skip rests.
@@ -29,9 +30,9 @@ def musicXmlToNotes(fileName):
         if note.find("grace") is not None:
             continue
 
-        step     = note.find("pitch/step").text
-        octave   = int(note.find("pitch/octave").text)
-        alter_q  = note.find("pitch/alter")
+        step = note.find("pitch/step").text
+        octave = int(note.find("pitch/octave").text)
+        alter_q = note.find("pitch/alter")
         duration = int(note.find("duration").text)
 
         # Sanity check.
@@ -46,11 +47,12 @@ def musicXmlToNotes(fileName):
 
         yield {
             "freq": midinote,
-            "len":  duration
+            "len": duration
         }
 
+
 class ProgressBar:
-    def __init__(self, count, width = 40):
+    def __init__(self, count, width=40):
         self.step = 0
         self.count = count
         self.width = width
@@ -96,8 +98,9 @@ class ProgressBar:
         sys.stdout.flush()
         self.lastRender = curTime
 
-# Create the search index.
+
 def main(argv):
+    """ Create the search index. """
     if len(argv) < 2:
         sys.stderr.write("Usage: %s music-xml-files...\n" % (argv[0],))
         return 1
@@ -137,6 +140,7 @@ def main(argv):
     searchIndex.saveIndex("notes.index")
 
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))

@@ -1,8 +1,8 @@
 var Vex = require('vexflow');
 
-$(document).ready(function() {
+$(document).ready(function () {
   updateStave();
-  $('#bpmSlider').change(function(val) {
+  $('#bpmSlider').change(function (val) {
     updateStave($(this).val() / 0.06);
     $('#bpmArea').text('bpm: ' + $(this).val());
   });
@@ -11,7 +11,7 @@ $(document).ready(function() {
 /**
  * @brief Make the stave match the state of the csv.
  */
-function updateStave(wholeLength = 2000) {
+function updateStave (wholeLength = 2000) {
   var notes = '';
   var totalTime = 0;
 
@@ -64,7 +64,7 @@ function updateStave(wholeLength = 2000) {
 /**
  * @brief take in milliseconds and return fractions of a beat.
  */
-function getLength(milliseconds, wholeLength = 2000) {
+function getLength (milliseconds, wholeLength = 2000) {
   // BPM = 120bpm, 500ms is a quarter note, 2s is a whole note.
   var fraction = milliseconds / wholeLength;
   if (fraction >= 1) return 1;

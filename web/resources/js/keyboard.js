@@ -8,10 +8,10 @@ var csv = '';
 var current = { note: -1, date: Date.now() };
 var previous = { note: -1, date: Date.now() };
 
-function onButton(note) {
+function onButton (note) {
   console.log(note);
   current.note = note;
-  current.date = Date.now(); //gives time in milliseconds since epoch.
+  current.date = Date.now(); // gives time in milliseconds since epoch.
   length = current.date - previous.date;
   var csv = previous.note + ',' + length + '\n';
 
@@ -48,8 +48,8 @@ var codes = {
   Quote: 77
 };
 
-$(document).ready(function() {
-  $('.keyboard').keydown(function(e) {
+$(document).ready(function () {
+  $('.keyboard').keydown(function (e) {
     /* Use codes since they are layout agnostic */
     if (codes[e.originalEvent.code] != undefined) {
       onButton(codes[e.originalEvent.code]);
@@ -57,16 +57,16 @@ $(document).ready(function() {
     }
   });
 
-  $('.keyboard > a').click(function(e) {
+  $('.keyboard > a').click(function (e) {
     onButton($(e.currentTarget).data('midi'));
   });
 
-  $('#searchCSV').click(function(e) {
+  $('#searchCSV').click(function (e) {
     $.post('/api/uploadCSV', $('#csv').text(), showResults);
   });
 });
 
-function showResults(results) {
+function showResults (results) {
   $('#results').text('');
   for (i = 0; i < results.length; i++) {
     var reslink =
@@ -75,14 +75,14 @@ function showResults(results) {
   }
 }
 
-window.onload = function() {
+window.onload = function () {
   MIDI.loadPlugin({
     soundfontUrl: '/soundfont/',
     instrument: 'acoustic_grand_piano',
-    onprogress: function(state, progress) {
+    onprogress: function (state, progress) {
       console.log(state, progress);
     },
-    onsuccess: function() {
+    onsuccess: function () {
       // play the note
       MIDI.setVolume(0, 127);
     }

@@ -1,14 +1,14 @@
 var MediaStreamRecorder = require('msr');
 
 Welcome = {
-  init: function() {
+  init: function () {
     Welcome.mediaRecorder = null;
 
     jQuery('#record').click(Welcome.onRecord);
     jQuery('#save').click(Welcome.onSave);
   },
 
-  onRecord: function() {
+  onRecord: function () {
     navigator.getUserMedia(
       { audio: true },
       Welcome.onMediaSuccess,
@@ -16,13 +16,13 @@ Welcome = {
     );
   },
 
-  onSave: function() {
+  onSave: function () {
     if (Welcome.mediaRecorder) {
       Welcome.mediaRecorder.stop();
     }
   },
 
-  onMediaSuccess: function(stream) {
+  onMediaSuccess: function (stream) {
     var mediaRecorder = new MediaStreamRecorder(stream);
     mediaRecorder.mimeType = 'audio/wav';
     mediaRecorder.ondataavailable = Welcome.uploadFile;
@@ -31,11 +31,11 @@ Welcome = {
     Welcome.mediaRecorder = mediaRecorder;
   },
 
-  onMediaError: function(e) {
+  onMediaError: function (e) {
     console.error('Media error', e);
   },
 
-  uploadFile: function(blob) {
+  uploadFile: function (blob) {
     var fd = new FormData();
     fd.append('audio', blob);
 
@@ -47,11 +47,11 @@ Welcome = {
         processData: false,
         contentType: false
       })
-      .done(function(data) {
+      .done(function (data) {
         console.log('Post success');
         console.log(data);
       })
-      .fail(function() {
+      .fail(function () {
         console.log('Post fail');
       });
   }

@@ -53,6 +53,7 @@ def rectangle(x, y, w, h, lyrics=[], color=''):
             dataVerses += "data-v" + str(lyric.number) + "='" + escapedText + "' "
         print("<text x='%i' data-x='%f' data-textlength='%i' data-tl='%f' lengthAdjust='spacingAndGlyphs' "
               % (sx, x, sw, w)
+              + "dx='1' "
               + "y='100%%' dy='%i' font-size='%ipt' %s>"
               % (defaultFontSize * (-1 / 2), defaultFontSize, dataVerses))
 

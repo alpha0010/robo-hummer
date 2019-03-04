@@ -10,6 +10,7 @@ tests:
     - dart down || echo 'already down'
     - dart up --dev
     - dart +pycodestyle
+    - dart +npm run semistandard
     - dart +phpcs
     - dart +phpunit --coverage-text | tee coverage.txt
     - echo Print out the coverage so gitlab\'s regex picks it up.

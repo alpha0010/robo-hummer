@@ -1,4 +1,7 @@
+/* global MIDI */
+// TODO: Don't load MIDI into the global namespace.
 var Vex = require('vexflow');
+var $ = window.jQuery;
 
 $(document).ready(function () {
   updateStave();
@@ -31,7 +34,7 @@ function updateStave (wholeLength = 2000) {
     .split('\n');
   for (var i = 0; i < lines.length; i++) {
     var note = lines[i].split(',');
-    if (MIDI.noteToKey[note[0]] != undefined) {
+    if (MIDI.noteToKey[note[0]] !== undefined) {
       var gamut = MIDI.noteToKey[note[0]];
       var time = getLength(parseInt(note[1]), wholeLength);
       var length = ln[time];

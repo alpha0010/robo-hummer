@@ -1,6 +1,7 @@
 var MediaStreamRecorder = require('msr');
+var jQuery = window.jQuery;
 
-Welcome = {
+var Welcome = {
   init: function () {
     Welcome.mediaRecorder = null;
 
@@ -36,7 +37,7 @@ Welcome = {
   },
 
   uploadFile: function (blob) {
-    var fd = new FormData();
+    var fd = new FormData(); // eslint-disable-line
     fd.append('audio', blob);
 
     jQuery

@@ -1,21 +1,24 @@
+/* global MIDI, updateStave */
+// TODO: Don't load MIDI into the global namespace.
+
 /**
  * keyboard.js operates the keyboard using the interface.
  */
 
 require('./keyboard-vexflow');
 
-var csv = '';
 var current = { note: -1, date: Date.now() };
 var previous = { note: -1, date: Date.now() };
+var $ = window.jQuery;
 
 function onButton (note) {
   console.log(note);
   current.note = note;
   current.date = Date.now(); // gives time in milliseconds since epoch.
-  length = current.date - previous.date;
+  var length = current.date - previous.date;
   var csv = previous.note + ',' + length + '\n';
 
-  if (previous.note != -1) {
+  if (previous.note !== -1) {
     MIDI.noteOff(0, previous.note, 0, 0);
   }
   MIDI.noteOn(0, current.note, 100, 0);
@@ -51,7 +54,7 @@ var codes = {
 $(document).ready(function () {
   $('.keyboard').keydown(function (e) {
     /* Use codes since they are layout agnostic */
-    if (codes[e.originalEvent.code] != undefined) {
+    if (codes[e.originalEvent.code] !== undefined) {
       onButton(codes[e.originalEvent.code]);
       e.preventDefault();
     }
@@ -68,7 +71,7 @@ $(document).ready(function () {
 
 function showResults (results) {
   $('#results').text('');
-  for (i = 0; i < results.length; i++) {
+  for (var i = 0; i < results.length; i++) {
     var reslink =
       "<a href='" + results[i]['url'] + "'>" + results[i]['title'] + '</a>';
     $('#results').append(reslink);

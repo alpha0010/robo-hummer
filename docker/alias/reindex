@@ -1,0 +1,1 @@
+x - bash -c "ls /srv/robo-media-dart/*/6.tuples.json | sudo -u python ../tools/indexer.py"

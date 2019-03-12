@@ -55,10 +55,9 @@ class SearchController extends Controller
     public function searchCSV(Request $request)
     {
         $csv      = $request->getContent();
-        $searcher = base_path("../search/searcher2.sh");
         $process  = new Process([
-            $searcher,
-            config("search.virtualenv"),
+            "sudo", "-u", "python",
+            "/var/www/tools/searcher.py", "--csv",
         ]);
         $process->setInput($csv);
 
@@ -77,15 +76,17 @@ class SearchController extends Controller
     }
 
     /**
-     * @brief Adds title and url for search results.
+     * @brief Adds title and path for search results.
      */
     private function addTitles($results)
     {
         foreach ($results as &$result) {
             // TODO: Lookup media file's title and URL.
             $result->title = $result->name;
-            // TODO: store base-site in a variable
-            $result->url   = "https://hymnary.org/";
+            $parts = explode("/", $result->name);
+            array_pop($parts);
+            $id = end($parts);
+            $result->path = "/media/$id/harmony.mp3";
         }
         return $results;
     }

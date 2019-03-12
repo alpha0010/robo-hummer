@@ -6,7 +6,8 @@ dart exec web composer install --no-suggest \
 	&& ( [[ $IS_PRODUCTION ]] || (                      \
 		# Run these commands in development only.       \
 		dart exec - chgrp www-data -R storage bootstrap \
-		&& dart exec - chmod g+w   -R storage bootstrap \
+		&& dart x - chgrp python   -R ../melodyindex \
+		&& dart exec - chmod g+w   -R storage bootstrap ../melodyindex \
 		&& dart x - chown www-data -R /srv/robo-media-dart \
 		&& dart +artisan media:delete untracked         \
 	) )                                                 \

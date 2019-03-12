@@ -1,4 +1,6 @@
+#!/usr/bin/env python3
 from datetime import timedelta
+import json
 from namedb import NameDB
 import nmslib
 import os
@@ -101,16 +103,14 @@ class ProgressBar:
 
 def main(argv):
     """ Create the search index. """
-    if len(argv) < 2:
-        sys.stderr.write("Usage: %s music-xml-files...\n" % (argv[0],))
-        return 1
 
     # TODO: Is this context length optimal?
     contextLen = 4
-    sqliteDbName = "file-index.sqlite"
+    sqliteDbName = "../melodyindex/file-index.sqlite"
 
     # Clear the file-to-id database.
     try:
+        # TODO: Rotate the index.
         os.remove(sqliteDbName)
     except OSError:
         pass
@@ -118,15 +118,18 @@ def main(argv):
     nameDB = NameDB(sqliteDbName)
     searchIndex = nmslib.init()
 
-    files = argv[1:]
-
-    bar = ProgressBar(len(files))
+    # TODO: Consider reading stdin beforehand to know many files there will be.
+    bar = ProgressBar(8000)
     bar.start()
 
-    # Process the data.
-    for fileName in files:
-        notes = musicXmlToNotes(fileName)
-        features = list(searcher.extractAllFeatures(notes, contextLen))
+    # Each filename is passed into stdin
+    for fileName in sys.stdin:
+        fileName = fileName.strip()
+        if fileName.split('.', 1)[1] == 'musicxml':
+            notes = musicXmlToNotes(fileName)
+            features = list(searcher.extractAllFeatures(notes, contextLen))
+        else:
+            features = json.load(open(fileName))
         featureIDs = nameDB.generateIDs(nameDB[fileName], len(features))
         searchIndex.addDataPointBatch(data=features, ids=featureIDs)
         bar.advance()
@@ -137,7 +140,7 @@ def main(argv):
     # https://github.com/searchivarius/nmslib/blob/master/similarity_search/src/method/hnsw.cc#L157
     searchIndex.createIndex()
 
-    searchIndex.saveIndex("notes.index")
+    searchIndex.saveIndex("../melodyindex/notes.index")
 
     return 0
 

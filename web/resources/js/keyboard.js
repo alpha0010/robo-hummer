@@ -78,7 +78,7 @@ function showResults( results )
 	$('#results').text("");
 	for( i = 0; i < results.length; i++ )
 	{
-		var reslink = "<a href='" + results[i]['url'] + "'>" + results[i]['title'] + "</a>";
+		var reslink = "<a href='" + results[i]['path'] + "'>" + results[i]['title'] + "</a><br/>";
 		$('#results').append( reslink );
 	}
 }

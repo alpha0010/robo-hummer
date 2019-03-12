@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import csv
 from collections import deque
 import json
@@ -42,9 +43,9 @@ def main(argv):
     contextLen = 4
 
     # Load the search index.
-    nameDB = NameDB("file-index.sqlite")
+    nameDB = NameDB("/var/www/melodyindex/file-index.sqlite")
     searchIndex = nmslib.init()
-    searchIndex.loadIndex("notes.index")
+    searchIndex.loadIndex("/var/www/melodyindex/notes.index")
 
     notes = []
 

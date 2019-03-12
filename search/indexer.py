@@ -23,6 +23,7 @@ noteNumbers = {
 def musicXmlToNotes(fileName):
     """ Extract the sequence of notes from a musicXML file. """
     root = ET.parse(fileName).getroot()
+    duration = 0
     for note in root.find("part").findall("measure/note"):
         # Skip rests.
         if note.find("rest") is not None:
@@ -35,7 +36,7 @@ def musicXmlToNotes(fileName):
         step = note.find("pitch/step").text
         octave = int(note.find("pitch/octave").text)
         alter_q = note.find("pitch/alter")
-        duration = int(note.find("duration").text)
+        duration += int(note.find("duration").text)
 
         # Sanity check.
         if duration <= 0:
@@ -47,10 +48,13 @@ def musicXmlToNotes(fileName):
 
         midinote = 12 * (octave + 2) + noteNumbers[step] + alter
 
-        yield {
-            "freq": midinote,
-            "len": duration
-        }
+        # If the note starts a tie, it should continue.
+        if note.find("tie[@type='start']") == None:
+            yield {
+                "freq": midinote,
+                "len": duration
+            }
+            duration = 0
 
 
 class ProgressBar:

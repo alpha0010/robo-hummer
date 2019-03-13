@@ -13,7 +13,10 @@ function onButton(note){
 	current.note = note;
 	current.date = Date.now();//gives time in milliseconds since epoch.
 	length = current.date - previous.date;
-	var csv = previous.note + "," + length + "\n";
+	var csv = "";
+	if (previous.note !== -1) {
+        csv = previous.note + "," + length + "\n";
+	}
 
 	if ( previous.note != -1 )
 	{

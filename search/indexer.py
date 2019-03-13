@@ -49,7 +49,7 @@ def musicXmlToNotes(fileName):
         midinote = 12 * (octave + 2) + noteNumbers[step] + alter
 
         # If the note starts a tie, it should continue.
-        if note.find("tie[@type='start']") == None:
+        if note.find("tie[@type='start']") is None:
             yield {
                 "freq": midinote,
                 "len": duration

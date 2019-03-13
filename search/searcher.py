@@ -42,14 +42,16 @@ def main(argv):
     """ Search. """
     contextLen = 4
 
+    indexpath = argv[1]
+
     # Load the search index.
-    nameDB = NameDB("/var/www/melodyindex/file-index.sqlite")
+    nameDB = NameDB(indexpath + "/file-index.sqlite")
     searchIndex = nmslib.init()
-    searchIndex.loadIndex("/var/www/melodyindex/notes.index")
+    searchIndex.loadIndex(indexpath + "/notes.index")
 
     notes = []
 
-    if argv[1] == '--csv':
+    if argv[2] == '--csv':
         # Input is a list of notes.
         reader = csv.reader(sys.stdin)
         for row in reader:

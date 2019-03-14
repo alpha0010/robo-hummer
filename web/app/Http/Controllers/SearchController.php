@@ -33,7 +33,7 @@ class SearchController extends Controller
         $process = new Process([
             $searcher,
             config("search.virtualenv"),
-            $this->getIndexPath(),
+            SearchController::getIndexPath(),
             $recording,
         ]);
         $exitCode = $process->run();
@@ -60,7 +60,7 @@ class SearchController extends Controller
         $process  = new Process([
             "sudo", "-u", "python",
             "/var/www/tools/searcher.py",
-            $this->getIndexPath(),
+            SearchController::getIndexPath(),
             "--csv",
         ]);
         $process->setInput($csv);
@@ -98,7 +98,7 @@ class SearchController extends Controller
     /**
      * @brief return the path used for storing the melody index.
      */
-    private function getIndexPath()
+    public static function getIndexPath()
     {
         if (App::environment("testing")) {
             return "/tmp";

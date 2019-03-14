@@ -80,22 +80,26 @@ class Media extends Model
      */
     public function getPath($filename = "", $absolute = false)
     {
-        $abs = "";
-        if ($absolute) {
-            $abs = "/var/www/web/storage/app/";
-        }
-        return $abs . Media::getDir() . "/" . $this->id . "/" . $filename;
+        return Media::getDir($absolute) . "/" . $this->id . "/" . $filename;
     }
     public function getAbsPath($filename = "")
     {
         return $this->getPath($filename, true);
     }
 
-    public static function getDir()
+    public static function getDir($absolute = false)
     {
-        if (App::environment("testing")) {
-            return "testmedia";
+        $abs = "";
+        if ($absolute) {
+            $abs = "/var/www/web/storage/app/";
         }
-        return "media";
+        if (App::environment("testing")) {
+            return $abs . "testmedia";
+        }
+        return $abs . "media";
+    }
+    public static function getAbsDir()
+    {
+        return Media::getDir(true);
     }
 }

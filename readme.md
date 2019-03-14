@@ -15,9 +15,7 @@ so the site will keep working with future updates.
 ### Melody Search
 
 ```
-dart x web
-cd ../search
-python indexer.py /srv/robo-media/*/melody.xml
+dart +reindex
 ```
 
 ## Traditional Setup
@@ -59,13 +57,3 @@ Edit `MARSYAS_INSTALL` path in `analyzer/makefile` to match intall location of
     ./analyzer
 
 To send it to the background, press `Ctrl-Z`, then execute `bg`.
-
---------------------------------------
-
-### Search index
-
-    apt-get install python-pip python-dev virtualenv
-    source venv/bin/activate
-    pip install nmslib
-    cd search
-    python indexer.py /path/to/music-xml/*.xml

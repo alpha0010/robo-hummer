@@ -1,0 +1,1 @@
+x - bash -c "find /srv/robo-media-dart -perm /o+r -name 6.tuples.json | sudo -u python ../tools/indexer.py /var/www/melodyindex"

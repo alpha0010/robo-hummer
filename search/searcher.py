@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import csv
 from collections import deque
 import json
@@ -41,14 +42,16 @@ def main(argv):
     """ Search. """
     contextLen = 4
 
+    indexpath = argv[1]
+
     # Load the search index.
-    nameDB = NameDB("file-index.sqlite")
+    nameDB = NameDB(indexpath + "/file-index.sqlite")
     searchIndex = nmslib.init()
-    searchIndex.loadIndex("notes.index")
+    searchIndex.loadIndex(indexpath + "/notes.index")
 
     notes = []
 
-    if argv[1] == '--csv':
+    if argv[2] == '--csv':
         # Input is a list of notes.
         reader = csv.reader(sys.stdin)
         for row in reader:

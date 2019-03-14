@@ -16,7 +16,10 @@ function onButton (note) {
   current.note = note;
   current.date = Date.now(); // gives time in milliseconds since epoch.
   var length = current.date - previous.date;
-  var csv = previous.note + ',' + length + '\n';
+  var csv = '';
+  if (previous.note !== -1) {
+    csv = previous.note + ',' + length + '\n';
+  }
 
   if (previous.note !== -1) {
     MIDI.noteOff(0, previous.note, 0, 0);
@@ -73,7 +76,11 @@ function showResults (results) {
   $('#results').text('');
   for (var i = 0; i < results.length; i++) {
     var reslink =
-      "<a href='" + results[i]['url'] + "'>" + results[i]['title'] + '</a>';
+      "<a href='" +
+      results[i]['path'] +
+      "'>" +
+      results[i]['title'] +
+      '</a><br/>';
     $('#results').append(reslink);
   }
 }

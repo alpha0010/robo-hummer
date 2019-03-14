@@ -10,12 +10,14 @@ RUN tar -xf /tmp/node.tar.xz -C /var/lib \
     && apt-get update \
     && apt-get install -y python pandoc texlive python-pip python-dev \
                           fluidsynth fluid-soundfont-gm timgm6mb-soundfont lame ffmpeg \
-    && pip install pybind11 && pip install nmslib && pip install pycodestyle \
+    && pip install pycodestyle \
     && mv $(find /var/lib -maxdepth 1 -mindepth 1 -type d -name node-*) /var/lib/nodejs \
     && apt-get install -y python3=3.5.3* python3-pip sudo \
     && yes | adduser -q --disabled-password python \
     && echo "www-data ALL=(python) NOPASSWD: ALL" > /etc/sudoers.d/www-data \
-    && su python -c 'pip3 install music21==5.5.0' && su python -c 'pip3 install numpy'
+    && su python -c 'pip3 install music21==5.5.0' && su python -c 'pip3 install numpy' \
+    && su python -c 'pip3 install pybind11' && su python -c 'pip3 install nmslib' \
+    && su python -c 'pip3 install simplejson'
 
 RUN curl http://lilypond.org/download/binaries/linux-64/lilypond-2.18.2-1.linux-64.sh > lilypondinstall.sh \
     && sh lilypondinstall.sh

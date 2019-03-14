@@ -50,6 +50,7 @@ class MediaController extends Controller
                 'dynamic.svg.info.json',
                 'ly',
                 'pdf',
+                'tuples.json',
                 ])
             ) {
                 $shell_path = $this->getSourcePath($media, $type);
@@ -165,6 +166,7 @@ class MediaController extends Controller
             "{$name}.dynamic.svg.info.json" => "{$name}.dynamic.svg",
             "{$name}.ly" => "{$name}.musicxml",
             "{$name}.pdf" => "{$name}.ly",
+            "{$name}.tuples.json" => "melody.musicxml",
         ];
         // Default to using the original file.
         $sourceType = $media->originalFile;

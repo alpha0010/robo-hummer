@@ -4,6 +4,8 @@ from music21 import *
 import os
 import sys
 import tempfile
+
+import melodyTupler
 from masterMusicXML import makeMasterMusicXML
 
 filename = sys.argv[1]
@@ -66,3 +68,6 @@ elif(extension == 'pdf'):
     # so python's io.TextIOBase doesn't try to decode these bytes into ASCII.
     sys.stdout.buffer.write(open(tmpPDF, 'rb').read())
     os.remove(tmpPDF)
+elif(extension == 'tuples.json'):
+    n = outputformat.split('.', 1)[0]
+    melodyTupler.main([sys.argv[0], sys.argv[1], n])

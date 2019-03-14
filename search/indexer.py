@@ -1,4 +1,6 @@
+#!/usr/bin/env python3
 from datetime import timedelta
+import json
 from namedb import NameDB
 import nmslib
 import os
@@ -17,10 +19,12 @@ noteNumbers = {
     "B": 11
 }
 
-# Extract the sequence of notes from a music XML file.
+
 def musicXmlToNotes(fileName):
+    """ Extract the sequence of notes from a musicXML file. """
     root = ET.parse(fileName).getroot()
-    for note in root.findall("part[@id='P1']/measure/note"):
+    duration = 0
+    for note in root.find("part").findall("measure/note"):
         # Skip rests.
         if note.find("rest") is not None:
             continue
@@ -29,10 +33,10 @@ def musicXmlToNotes(fileName):
         if note.find("grace") is not None:
             continue
 
-        step     = note.find("pitch/step").text
-        octave   = int(note.find("pitch/octave").text)
-        alter_q  = note.find("pitch/alter")
-        duration = int(note.find("duration").text)
+        step = note.find("pitch/step").text
+        octave = int(note.find("pitch/octave").text)
+        alter_q = note.find("pitch/alter")
+        duration += int(note.find("duration").text)
 
         # Sanity check.
         if duration <= 0:
@@ -44,13 +48,17 @@ def musicXmlToNotes(fileName):
 
         midinote = 12 * (octave + 2) + noteNumbers[step] + alter
 
-        yield {
-            "freq": midinote,
-            "len":  duration
-        }
+        # If the note starts a tie, it should continue.
+        if note.find("tie[@type='start']") is None:
+            yield {
+                "freq": midinote,
+                "len": duration
+            }
+            duration = 0
+
 
 class ProgressBar:
-    def __init__(self, count, width = 40):
+    def __init__(self, count, width=40):
         self.step = 0
         self.count = count
         self.width = width
@@ -96,34 +104,31 @@ class ProgressBar:
         sys.stdout.flush()
         self.lastRender = curTime
 
-# Create the search index.
+
 def main(argv):
-    if len(argv) < 2:
-        sys.stderr.write("Usage: %s music-xml-files...\n" % (argv[0],))
-        return 1
+    """ Create the search index. """
+
+    indexpath = argv[1]
 
     # TODO: Is this context length optimal?
     contextLen = 4
-    sqliteDbName = "file-index.sqlite"
-
-    # Clear the file-to-id database.
-    try:
-        os.remove(sqliteDbName)
-    except OSError:
-        pass
+    sqliteDbName = indexpath + "/file-index-new.sqlite"
 
     nameDB = NameDB(sqliteDbName)
     searchIndex = nmslib.init()
 
-    files = argv[1:]
-
-    bar = ProgressBar(len(files))
+    # TODO: Consider reading stdin beforehand to know many files there will be.
+    bar = ProgressBar(8000)
     bar.start()
 
-    # Process the data.
-    for fileName in files:
-        notes = musicXmlToNotes(fileName)
-        features = list(searcher.extractAllFeatures(notes, contextLen))
+    # Each filename is passed into stdin
+    for fileName in sys.stdin:
+        fileName = fileName.strip()
+        if fileName.split('.', 1)[1] == 'musicxml':
+            notes = musicXmlToNotes(fileName)
+            features = list(searcher.extractAllFeatures(notes, contextLen))
+        else:
+            features = json.load(open(fileName))
         featureIDs = nameDB.generateIDs(nameDB[fileName], len(features))
         searchIndex.addDataPointBatch(data=features, ids=featureIDs)
         bar.advance()
@@ -134,9 +139,11 @@ def main(argv):
     # https://github.com/searchivarius/nmslib/blob/master/similarity_search/src/method/hnsw.cc#L157
     searchIndex.createIndex()
 
-    searchIndex.saveIndex("notes.index")
+    searchIndex.saveIndex(indexpath + "/notes.index")
+    os.rename(sqliteDbName, indexpath + "/file-index.sqlite")
 
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main(sys.argv))

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App;
 use Illuminate\Http\File;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -32,6 +33,7 @@ class SearchController extends Controller
         $process = new Process([
             $searcher,
             config("search.virtualenv"),
+            $this->getIndexPath(),
             $recording,
         ]);
         $exitCode = $process->run();
@@ -57,7 +59,9 @@ class SearchController extends Controller
         $csv      = $request->getContent();
         $process  = new Process([
             "sudo", "-u", "python",
-            "/var/www/tools/searcher.py", "--csv",
+            "/var/www/tools/searcher.py",
+            $this->getIndexPath(),
+            "--csv",
         ]);
         $process->setInput($csv);
 
@@ -89,5 +93,16 @@ class SearchController extends Controller
             $result->path = "/media/$id/harmony.mp3";
         }
         return $results;
+    }
+
+    /**
+     * @brief return the path used for storing the melody index.
+     */
+    private function getIndexPath()
+    {
+        if (App::environment("testing")) {
+            return "/tmp";
+        }
+        return "/var/www/melodyindex";
     }
 }

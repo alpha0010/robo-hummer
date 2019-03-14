@@ -108,16 +108,11 @@ class ProgressBar:
 def main(argv):
     """ Create the search index. """
 
+    indexpath = argv[1]
+
     # TODO: Is this context length optimal?
     contextLen = 4
-    sqliteDbName = "../melodyindex/file-index.sqlite"
-
-    # Clear the file-to-id database.
-    try:
-        # TODO: Rotate the index.
-        os.remove(sqliteDbName)
-    except OSError:
-        pass
+    sqliteDbName = indexpath + "/file-index-new.sqlite"
 
     nameDB = NameDB(sqliteDbName)
     searchIndex = nmslib.init()
@@ -144,7 +139,8 @@ def main(argv):
     # https://github.com/searchivarius/nmslib/blob/master/similarity_search/src/method/hnsw.cc#L157
     searchIndex.createIndex()
 
-    searchIndex.saveIndex("../melodyindex/notes.index")
+    searchIndex.saveIndex(indexpath + "/notes.index")
+    os.rename(sqliteDbName, indexpath + "/file-index.sqlite")
 
     return 0
 

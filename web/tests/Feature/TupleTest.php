@@ -27,9 +27,28 @@ class TupleTest extends TestCase
             //-ng     grace    how
             [-4, 1.0, 0, 4.00, -2, 2.0],
         ];
+
+        $tuples = array_map([self::class, 'transformTuple'], $tuples);
+
         $response = $this->get('/media/1/6.tuples.json');
         $response
             ->assertJson($tuples)
             ->assertOk();
+    }
+
+    /**
+     * @brief Apply transformations to tuple.
+     * These are documented in `searcher.computeFeatures`.
+     */
+    private static function transformTuple($tuple)
+    {
+        $logBase = 4;
+        $multiplier = 7;
+        foreach ($tuple as $key => &$value) {
+            if ($key % 2 == 1) {
+                $value = (log($value) / log($logBase)) * $multiplier;
+            }
+        }
+        return $tuple;
     }
 }

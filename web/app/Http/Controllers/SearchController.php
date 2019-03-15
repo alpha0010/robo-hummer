@@ -76,20 +76,21 @@ class SearchController extends Controller
         }
 
         $results = json_decode($process->getOutput());
-        return $this->addTitles($results);
+        return $this->addData($results);
     }
 
     /**
-     * @brief Adds title and path for search results.
+     * @brief Add additional data for search results.
      */
-    private function addTitles($results)
+    private function addData($results)
     {
         foreach ($results as &$result) {
             // TODO: Lookup media file's title and URL.
-            $result->title = $result->name;
+            $result->title = "$result->name ({$result->score})";
             $parts = explode("/", $result->name);
             array_pop($parts);
             $id = end($parts);
+            $result->robohummer_media_id = $id;
             $result->path = "/media/$id/harmony.mp3";
         }
         return $results;

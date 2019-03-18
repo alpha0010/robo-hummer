@@ -33,7 +33,7 @@ class SearchController extends Controller
         $process = new Process([
             $searcher,
             config("search.virtualenv"),
-            $this->getIndexPath(),
+            SearchController::getIndexPath(),
             $recording,
         ]);
         $exitCode = $process->run();
@@ -60,7 +60,7 @@ class SearchController extends Controller
         $process  = new Process([
             "sudo", "-u", "python",
             "/var/www/tools/searcher.py",
-            $this->getIndexPath(),
+            SearchController::getIndexPath(),
             "--csv",
         ]);
         $process->setInput($csv);
@@ -76,20 +76,21 @@ class SearchController extends Controller
         }
 
         $results = json_decode($process->getOutput());
-        return $this->addTitles($results);
+        return $this->addData($results);
     }
 
     /**
-     * @brief Adds title and path for search results.
+     * @brief Add additional data for search results.
      */
-    private function addTitles($results)
+    private function addData($results)
     {
         foreach ($results as &$result) {
             // TODO: Lookup media file's title and URL.
-            $result->title = $result->name;
+            $result->title = "$result->name ({$result->score})";
             $parts = explode("/", $result->name);
             array_pop($parts);
             $id = end($parts);
+            $result->robohummer_media_id = $id;
             $result->path = "/media/$id/harmony.mp3";
         }
         return $results;
@@ -98,7 +99,7 @@ class SearchController extends Controller
     /**
      * @brief return the path used for storing the melody index.
      */
-    private function getIndexPath()
+    public static function getIndexPath()
     {
         if (App::environment("testing")) {
             return "/tmp";

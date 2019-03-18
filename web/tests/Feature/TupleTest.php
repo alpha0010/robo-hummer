@@ -43,7 +43,7 @@ class TupleTest extends TestCase
     private static function transformTuple($tuple)
     {
         $logBase = 4;
-        $multiplier = 7;
+        $multiplier = 8;
         foreach ($tuple as $key => &$value) {
             if ($key % 2 == 1) {
                 $value = (log($value) / log($logBase)) * $multiplier;

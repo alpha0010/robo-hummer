@@ -22,8 +22,9 @@ def print(x):
 
 def rectangle(x, y, w, h, lyrics=[], color=''):
     """Output an SVG group containing a rectangle and optionally including text for that rectangle.
-        lyrics is a list containing the text for multiple lines.
-            Additional lyrics will be stored as `data-vX` attributes, where X is an integer.
+        lyrics is a lyrics object from music21.
+            Additional lyrics will be stored as `data-vX` attributes, where X is an integer,
+            unless the lyric has a 'name' attribute specified, then X will be that attribute.
     """
     # Create "scaled" versions of each of the variables. The file will be rendered with data that allows
     # different parts to be scaled.
@@ -50,7 +51,7 @@ def rectangle(x, y, w, h, lyrics=[], color=''):
         for lyric in lyrics:
             escapedText = lyric.rawText
             escapedText = XMLescape(escapedText, {"'": "&apos;"})
-            dataVerses += "data-v" + str(lyric.number) + "='" + escapedText + "' "
+            dataVerses += "data-v" + str(lyric.identifier) + "='" + escapedText + "' "
         print("<text x='%i' data-x='%f' data-textlength='%i' data-tl='%f' lengthAdjust='spacingAndGlyphs' "
               % (sx, x, sw, w)
               + "dx='1' "

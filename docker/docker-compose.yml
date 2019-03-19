@@ -42,7 +42,8 @@ services:
       target: cron
     volumes:
       - ..:/var/www/
-      - $ENV_FILE:/var/www/htdocs/api/.env
+      - $ENV_FILE:/var/www/web/.env
+      - ${DART_OVERLAY_ROBO_MEDIA}:/srv/robo-media-dart
     networks:
       - def
 

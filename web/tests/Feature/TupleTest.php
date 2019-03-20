@@ -45,8 +45,9 @@ class TupleTest extends TestCase
         $logBase = 4;
         $multiplier = 8;
         foreach ($tuple as $key => &$value) {
+            // Every odd value is the relative length.
             if ($key % 2 == 1) {
-                $value = (log($value) / log($logBase)) * $multiplier;
+                $value = log($value, $logBase) * $multiplier;
             }
         }
         return $tuple;

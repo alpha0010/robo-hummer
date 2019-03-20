@@ -26,12 +26,11 @@ ENV PATH="${PATH}:/var/lib/nodejs/bin"
 
 FROM web AS cron
 
-RUN apt-get update                                             \
-    && apt-get install --no-install-recommends -y cron rsyslog
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y cron rsyslog \
+    && echo 'EXTRA_OPTS="-L 4"' >> /etc/default/cron \
+    && echo "* * * * * /usr/local/bin/php /var/www/web/artisan schedule:run >> /dev/null 2>&1" | crontab -
 
 COPY cronmain.sh /
-
-RUN echo 'EXTRA_OPTS="-L 4"' >> /etc/default/cron \
-    && echo "* * * * * /usr/local/bin/php /var/www/web/artisan schedule:run >> /dev/null 2>&1" | crontab -
 
 CMD [ "/cronmain.sh" ]

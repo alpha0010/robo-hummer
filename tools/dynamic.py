@@ -22,8 +22,9 @@ def print(x):
 
 def rectangle(x, y, w, h, lyrics=[], color=''):
     """Output an SVG group containing a rectangle and optionally including text for that rectangle.
-        lyrics is a list containing the text for multiple lines.
-            Additional lyrics will be stored as `data-vX` attributes, where X is an integer.
+        lyrics is a lyrics object from music21.
+            Additional lyrics will be stored as `data-vX` attributes, where X is an integer,
+            unless the lyric has a 'name' attribute specified, then X will be that attribute.
     """
     # Create "scaled" versions of each of the variables. The file will be rendered with data that allows
     # different parts to be scaled.
@@ -50,7 +51,7 @@ def rectangle(x, y, w, h, lyrics=[], color=''):
         for lyric in lyrics:
             escapedText = lyric.rawText
             escapedText = XMLescape(escapedText, {"'": "&apos;"})
-            dataVerses += "data-v" + str(lyric.number) + "='" + escapedText + "' "
+            dataVerses += "data-v" + str(lyric.identifier) + "='" + escapedText + "' "
         print("<text x='%i' data-x='%f' data-textlength='%i' data-tl='%f' lengthAdjust='spacingAndGlyphs' "
               % (sx, x, sw, w)
               + "dx='1' "
@@ -112,7 +113,6 @@ songHeight = (noteRange * defaultYScale) + (2.0 * defaultFontSize)
 measureLengths = {0: 0}
 measureOffsets = {0: 0}
 breathMarks = [0]
-breathLengths = [0]
 
 # Output notes in place
 print("<?xml version='1.0' encoding='utf-8'?>")
@@ -128,11 +128,15 @@ for note in s.recurse().notes:
         # master.musicxml ensures that the measure numbers
         # are sequential and distinct integers.
         measureNum = int(note.measureNumber)
-        beatsThisMeasure = note.getContextByClass("Measure").duration.quarterLength
+        measure = note.getContextByClass("Measure")
+        beatsThisMeasure = measure.duration.quarterLength
         measureLengths[measureNum] = beatsThisMeasure
         measureOffsets[measureNum] = measureOffsets[measureNum - 1] + measureLengths[measureNum - 1]
         # Using note.offset because it starts at zero and corresponds with the duration.quarterLength
         xPos = measureOffsets[measureNum] + note.offset
+        if measure.rightBarline is not None:
+            if measure.rightBarline.style == 'dashed' or measure.rightBarline.style == 'dotted':
+                breathMarks.append(measureOffsets[measureNum] + beatsThisMeasure)
 
     xLen = note.duration.quarterLength
 
@@ -140,10 +144,10 @@ for note in s.recurse().notes:
     for articulation in note.articulations:
         # If this articulation is a breath mark, mark it down.
         if isinstance(articulation, music21.articulations.BreathMark):
-            i = len(breathMarks)
             breathMarks.append(xPos + xLen)
-            breathLengths[i - 1] = breathMarks[i] - breathMarks[i - 1]
-            breathLengths.append(songLength - breathMarks[i])
+        elif isinstance(articulation, music21.articulations.UpBow):
+            # UpBow articulation means that this note starts a line.
+            breathMarks.append(xPos)
 
     if xLen != 0:
         for pitch in note.pitches:
@@ -167,9 +171,13 @@ verticalLine(songLength)
 print("</g>")
 
 print("<g id='breathSections'>")
-for key, offset in enumerate(breathMarks):
+breathMarks.append(songLength)
+# Get unique items, sorted.
+phraseBreaks = sorted(set(breathMarks))
+# Go through all of these except the last
+for key, offset in enumerate(phraseBreaks[0:-1]):
     # Set the y position as negative so it's not seen.
-    rectangle(offset, -2, breathLengths[key], 1)
+    rectangle(offset, -2, phraseBreaks[key + 1] - offset, 1)
 print("</g>")
 
 print("<g id='parts'>")

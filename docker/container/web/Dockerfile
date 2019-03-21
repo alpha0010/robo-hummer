@@ -1,5 +1,5 @@
 ARG IMG_TAG=$IMG_TAG
-FROM docker-registry.internal.ccel.org:5443/php7:${IMG_TAG}
+FROM docker-registry.internal.ccel.org:5443/php7:${IMG_TAG} AS web
 
 WORKDIR /var/www/web
 
@@ -23,3 +23,14 @@ RUN curl http://lilypond.org/download/binaries/linux-64/lilypond-2.18.2-1.linux-
     && sh lilypondinstall.sh
 
 ENV PATH="${PATH}:/var/lib/nodejs/bin"
+
+FROM web AS cron
+
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y cron rsyslog \
+    && echo 'EXTRA_OPTS="-L 4"' >> /etc/default/cron \
+    && echo "* * * * * /usr/local/bin/php /var/www/web/artisan schedule:run >> /dev/null 2>&1" | crontab -
+
+COPY cronmain.sh /
+
+CMD [ "/cronmain.sh" ]

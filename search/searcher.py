@@ -2,6 +2,7 @@
 import csv
 from collections import deque
 import json
+import math
 from namedb import NameDB
 import nmslib
 import sys
@@ -27,7 +28,16 @@ def computeFeatures(segment):
     refLen = float(segment[0]["len"])
     for val in segment[1:]:
         features.append(val["freq"] - refFreq)
-        features.append(val["len"] / refLen)
+        relativeLength = val["len"] / refLen
+        # Testing about 26000 media files,
+        # 95% of the pitch differences were between -9 and 8 semitones.
+        # 95% of the relative lengths were between 0 and 4.
+        # The following transformation brings the relative length into
+        # a similar domain as the pitch offset,
+        # so that nmslib distances are more meaningful.
+        logBase = 4
+        multiplier = 8
+        features.append(math.log(relativeLength, logBase) * multiplier)
 
     return features
 

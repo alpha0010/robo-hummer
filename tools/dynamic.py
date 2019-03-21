@@ -134,9 +134,6 @@ for note in s.recurse().notes:
         measureOffsets[measureNum] = measureOffsets[measureNum - 1] + measureLengths[measureNum - 1]
         # Using note.offset because it starts at zero and corresponds with the duration.quarterLength
         xPos = measureOffsets[measureNum] + note.offset
-        if measure.rightBarline is not None:
-            if measure.rightBarline.style == 'dashed' or measure.rightBarline.style == 'dotted':
-                breathMarks.append(measureOffsets[measureNum] + beatsThisMeasure)
 
     xLen = note.duration.quarterLength
 
@@ -162,6 +159,14 @@ for note in s.recurse().notes:
                 lyrics = note.lyrics
 
             rectangle(xPos, yPos, xLen, yLen, lyrics, color)
+
+
+for measure in so.semiFlat.getElementsByClass("Measure"):
+    if measure.rightBarline is not None:
+        if measure.rightBarline.style == 'dashed' or measure.rightBarline.style == 'dotted':
+            measureNum = int(measure.number)
+            beatsThisMeasure = measure.duration.quarterLength
+            breathMarks.append(measureOffsets[measureNum] + beatsThisMeasure)
 
 print("<g id='measureBarLines'>")
 for offset in measureOffsets.values():

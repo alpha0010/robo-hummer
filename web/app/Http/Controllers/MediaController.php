@@ -18,6 +18,10 @@ use Symfony\Component\Process\Process;
 
 class MediaController extends Controller
 {
+    public function getInfo(string $number)
+    {
+        return Media::findOrFail($number);
+    }
     public function get(string $number, string $type)
     {
         // Allow negative numbers to get you to newer media entries.

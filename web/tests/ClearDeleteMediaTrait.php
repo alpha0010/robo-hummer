@@ -34,16 +34,24 @@ trait ClearDeleteMediaTrait
 
     private function assertDeleted($file)
     {
-        $this->assertFalse(
-            Storage::exists(Media::getDir() . $file),
-            "File '$file' was not deleted."
-        );
+        return $this->assertNotExists($file, "was not deleted");
     }
     private function assertNotDeleted($file)
     {
+        return $this->assertExists($file, "should not have been deleted");
+    }
+    private function assertExists($file, $failMessage = "does not exist")
+    {
         $this->assertTrue(
             Storage::exists(Media::getDir() . $file),
-            "File '$file' should not have been deleted."
+            "File '$file' $failMessage."
+        );
+    }
+    private function assertNotExists($file, $failMessage = "should not have been created")
+    {
+        $this->assertFalse(
+            Storage::exists(Media::getDir() . $file),
+            "File '$file' $failMessage."
         );
     }
 }

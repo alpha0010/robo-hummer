@@ -3,11 +3,12 @@
 dart exec web composer install --no-suggest \
 	&& dart exec - ./artisan key:generate               \
 	&& dart exec - ./artisan migrate                    \
+	&& dart x - chgrp python -R ../melodyindex \
+	&& dart x - chmod g+w    -R ../melodyindex \
 	&& ( [[ $IS_PRODUCTION ]] || (                      \
 		# Run these commands in development only.       \
 		dart exec - chgrp www-data -R storage bootstrap \
-		&& dart x - chgrp python   -R ../melodyindex \
-		&& dart exec - chmod g+w   -R storage bootstrap ../melodyindex \
+		&& dart exec - chmod g+w   -R storage bootstrap \
 		&& dart x - chown www-data -R /srv/robo-media-dart \
 		&& dart +artisan media:delete untracked         \
 	) )                                                 \

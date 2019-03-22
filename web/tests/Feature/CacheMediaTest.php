@@ -121,27 +121,35 @@ class CacheMediaTest extends TestCase
 
     private function assertErrant($file)
     {
-        $this->assertEquals('private', Storage::getVisibility(Media::getDir() . $file),
+        $this->assertEquals(
+            'private',
+            Storage::getVisibility(Media::getDir() . $file),
             "file '$file' should have been an error."
         );
     }
     private function assertInerrant($file)
     {
-        $this->assertEquals('public', Storage::getVisibility(Media::getDir() . $file),
+        $this->assertEquals(
+            'public',
+            Storage::getVisibility(Media::getDir() . $file),
             "file '$file' should not have been an error."
         );
     }
     private function assertNewer($file, DateTime $d)
     {
         $diff = Storage::lastModified(Media::getDir() . $file) - $d->getTimestamp();
-        $this->assertGreaterThan(0, $diff,
+        $this->assertGreaterThan(
+            0,
+            $diff,
             "file '$file' was not updated recently ($diff)."
         );
     }
     private function assertOlder($file, DateTime $d)
     {
         $diff = Storage::lastModified(Media::getDir() . $file) - $d->getTimestamp();
-        $this->assertLessThan(0, $diff,
+        $this->assertLessThan(
+            0,
+            $diff,
             "file '$file' should not have been updated recently ($diff)."
         );
     }
@@ -149,11 +157,14 @@ class CacheMediaTest extends TestCase
     {
         $this->setupFiles();
 
+        // Create media entries 3-5.
         Artisan::call("media:create", [ 'file' => "../examplemedia/3/melody.ogg" ]);
         Artisan::call("media:create", [ 'file' => "../examplemedia/4/harmony.musicxml" ]);
         Artisan::call("media:create", [ 'file' => "../examplemedia/4/harmony.musicxml" ]);
+
         // Simulate there being an errant file by copying a ogg over a musicxml file.
         Storage::delete(Media::getDir() . "/4/harmony.musicxml");
+        // Since ogg types are not recognized, we currently save them as "original".
         Storage::copy(Media::getDir() . "/3/original", Media::getDir() . "/4/harmony.musicxml");
 
         $this->assertExists("/3/original");

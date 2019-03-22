@@ -41,8 +41,11 @@ elif(outputformat == 'partify.musicxml'):
     os.remove(path)
 elif(outputformat == 'harmony.midi'):
     s = converter.parse(filename)
+    # Make sure that chord symbols (being converted to midi notes) terminate properly.
+    sc = harmony.realizeChordSymbolDurations(s)
+
     # Creates a temporary file
-    path = s.write('midi')
+    path = sc.write('midi')
     # Read file as bytes, write as buffer
     # so python's io.TextIOBase doesn't try to decode these bytes into ASCII.
     sys.stdout.buffer.write(open(path, 'rb').read())

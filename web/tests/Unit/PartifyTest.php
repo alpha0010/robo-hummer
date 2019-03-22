@@ -247,7 +247,7 @@ class PartifyTest extends TestCase
     {
         $this->fileTest("71a-Chordnames.xml", 25);
         $this->fileTest("71c-ChordsFrets.xml", 25);
-        $this->fileTest("71d-ChordsFrets-Multistaff.xml", 37);
+        $this->fileTest("71d-ChordsFrets-Multistaff.xml", 21);
         $this->fileTest("71e-TabStaves.xml", 51);
         $this->fileTest("71f-AllChordTypes.xml", 13);
         $this->fileTest("71g-MultipleChordnames.xml", 32);

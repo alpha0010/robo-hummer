@@ -30,7 +30,6 @@
 #dynamicOptions.overlay .viewport {
     color: #fff;
     text-align: center;
-    width: 600px;
     margin: auto;
     padding: 20px 20px 80px 20px;
     font-size: 20px;
@@ -41,6 +40,24 @@
     font-family: monospace;
 }
 
+<<<<<<< HEAD
+a#openDynamicOptions {
+    float: right;
+    z-index: 1;
+    padding: 0 10px;
+}
+
+#dynamicOptions {
+    font-family: monospace;
+}
+
+#dynamicOptions .url {
+    word-wrap: anywhere;
+}
+
+#dynamicOptions input.url {
+    width: 10px;
+}
 section > section {
     flex-direction: column !important;
     display: flex !important;

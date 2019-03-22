@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Media;
 use GuzzleHttp\Client as HttpClient;
+use Illuminate\Http\Request;
 
 class DynamicController extends Controller
 {
@@ -21,13 +22,15 @@ class DynamicController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(string $id)
+    public function index(string $id, Request $request)
     {
         // Allow negative numbers to get you to newer media entries.
         if ($id < 0) {
             // -1 gets you the newest media item, -2 gets you the second newest...
             $id2 = Media::orderBy('id', 'desc')->skip(($id * -1) - 1)->first()->id;
-            return redirect("/dynamic/$id2");
+            $path = $request->fullUrlWithQuery($request->query->all());
+            $path = str_replace("/dynamic/$id", "/dynamic/$id2", $path);
+            return redirect($path);
         }
 
         $slides = [];

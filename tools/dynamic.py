@@ -163,7 +163,7 @@ for note in s.recurse().notes:
 
 for measure in so.semiFlat.getElementsByClass("Measure"):
     if measure.rightBarline is not None:
-        if measure.rightBarline.style == 'dashed' or measure.rightBarline.style == 'dotted':
+        if measure.rightBarline.style in ['dashed', 'dotted']:
             measureNum = int(measure.number)
             beatsThisMeasure = measure.duration.quarterLength
             breathMarks.append(measureOffsets[measureNum] + beatsThisMeasure)

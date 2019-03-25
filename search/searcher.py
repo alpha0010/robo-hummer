@@ -56,7 +56,7 @@ def main(argv):
 
     # Load the search index.
     nameDB = NameDB(indexpath + "/file-index.sqlite")
-    searchIndex = nmslib.init()
+    searchIndex = nmslib.init(space='l2')
     searchIndex.loadIndex(indexpath + "/notes.index")
 
     notes = []

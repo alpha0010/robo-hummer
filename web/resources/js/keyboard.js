@@ -10,15 +10,15 @@ require('./keyboard-vexflow');
 var current = { note: -1, date: Date.now() };
 var previous = { note: -1, date: Date.now() };
 var $ = window.jQuery;
+var list = [];
+window.list = list;
 
 function onButton (note) {
-  console.log(note);
   current.note = note;
   current.date = Date.now(); // gives time in milliseconds since epoch.
   var length = current.date - previous.date;
-  var csv = '';
-  if (previous.note !== -1) {
-    csv = previous.note + ',' + length + '\n';
+  if (list.length > 0 && list[list.length - 1][1] === 0) {
+    list[list.length - 1][1] = length;
   }
 
   if (previous.note !== -1) {
@@ -28,9 +28,26 @@ function onButton (note) {
 
   previous.note = note;
   previous.date = current.date;
+  list.push([note, 0]);
   /* Store it in the DOM */
-  $('#csv').append(csv);
   updateStave();
+}
+
+function deleteNote () {
+  current = { note: -1, date: Date.now() };
+  previous = { note: -1, date: Date.now() };
+  list.pop();
+  updateStave();
+}
+
+function listToCSV (list) {
+  var csv = '';
+  for (let i = 0; i < list.length; i++) {
+    if (list[i][1] !== 0) {
+      csv += list[i][0] + ',' + list[i][1] + '\n';
+    }
+  }
+  return csv;
 }
 
 var codes = {
@@ -60,6 +77,8 @@ $(document).ready(function () {
     if (codes[e.originalEvent.code] !== undefined) {
       onButton(codes[e.originalEvent.code]);
       e.preventDefault();
+    } else if (e.originalEvent.code === 'Backspace') {
+      deleteNote();
     }
   });
 
@@ -68,7 +87,7 @@ $(document).ready(function () {
   });
 
   $('#searchCSV').click(function (e) {
-    $.post('/api/uploadCSV', $('#csv').text(), showResults);
+    $.post('/api/uploadCSV', listToCSV(window.list), showResults);
   });
 });
 

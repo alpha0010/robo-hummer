@@ -56,7 +56,7 @@ def main(argv):
 
     # Load the search index.
     nameDB = NameDB(indexpath + "/file-index.sqlite")
-    searchIndex = nmslib.init()
+    searchIndex = nmslib.init(space='l2')
     searchIndex.loadIndex(indexpath + "/notes.index")
 
     notes = []
@@ -87,16 +87,22 @@ def main(argv):
     #
     # TODO: 30 nearest-neighbors may or may not be optimal. This might also
     #       depend on index size.
-    features = list(extractAllFeatures(notes, contextLen))
-    results = searchIndex.knnQueryBatch(queries=features, k=30)
+    k = 30
+    qFeatures = list(extractAllFeatures(notes, contextLen))
+    results = searchIndex.knnQueryBatch(queries=qFeatures, k=k)
 
-    # Process results.
-    featureIDs = []
-    for IDs, diffs in results:
-        featureIDs += list(IDs)
+    # Store information that will be used to summarize results.
+    threeples = []
+
+    # There are (up to) k results for each of the query features.
+    for i in range(0, len(qFeatures)):
+        IDs = results[i][0]
+        distances = results[i][1]
+        for j in range(0, len(IDs)):
+            threeples.append((IDs[j], distances[j], i))
 
     print(json.dumps(
-        nameDB.summarizeHits(featureIDs)[:10],
+        nameDB.summarizeHits(threeples)[:10],
         indent=4,
         sort_keys=True
     ))

@@ -82,9 +82,11 @@ $(document).ready(function () {
     }
   });
 
-  $('.keyboard > a').click(function (e) {
+  $('.keyboard > a[data-midi]').click(function (e) {
     onButton($(e.currentTarget).data('midi'));
   });
+
+  $('.keyboard > a.Backspace').click(deleteNote);
 
   $('#searchCSV').click(function (e) {
     $.post('/api/uploadCSV', listToCSV(window.list), showResults);

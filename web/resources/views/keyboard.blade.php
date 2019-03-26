@@ -15,6 +15,7 @@
 	</p>
 
 	<div class='keyboard'>
+    <a class="Backspace" href='#'><span>&#x232B;</span></a>
 	<a href='#' data-midi='60' class='WhiteKey'><span>A</span></a>
 	<a href='#' data-midi='61' class='BlackKey cs'>W</a>
 	<a href='#' data-midi='62' class='WhiteKey'><span>S</span></a>

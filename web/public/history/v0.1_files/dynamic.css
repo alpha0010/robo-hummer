@@ -52,6 +52,7 @@ a#openDynamicOptions {
 
 #dynamicOptions .url {
     word-wrap: anywhere;
+    font-size: 0.5em;
 }
 
 #dynamicOptions input.url {

@@ -64,37 +64,40 @@ class NameDB:
         return featureIDs
 
     # List matches per file for the given feature IDs.
-    def summarizeHits(self, featureIDs):
+    def summarizeHits(self, threeples):
         with self.conn:
             cur = self.conn.cursor()
 
             cur.execute("""
                 CREATE TEMPORARY TABLE tmpJoinBuff (
-                    featureID INT
+                    featureID INT,
+                    matchiness REAL,
+                    queryID INT
                 )
             """)
 
             cur.executemany(
-                "INSERT INTO tmpJoinBuff (featureID) VALUES (?)",
-                [(int(featureID),) for featureID in featureIDs]
+                "INSERT INTO tmpJoinBuff (featureID, matchiness, queryID) VALUES (?, ?, ?)",
+                [(int(featureID), 1 / (1 + float(distance)), int(queryID))
+                    for featureID, distance, queryID in threeples]
             )
 
             cur.execute("""
-                SELECT name, COUNT(*) ct
+                SELECT name, SUM(matchiness) ct
                 FROM names
                 JOIN (
-                    SELECT nameID
+                    SELECT nameID, MAX(matchiness) matchiness, queryID
                     FROM featureIDs
                     JOIN tmpJoinBuff
                         ON featureIDs.rowID = tmpJoinBuff.featureID
+                    GROUP BY nameID, queryID
+                    ORDER BY matchiness DESC
                 ) t1
                     ON names.rowID = t1.nameID
                 GROUP BY names.rowID
                 ORDER BY ct DESC
             """)
-
             summary = list(cur)
 
             cur.execute("DROP TABLE tmpJoinBuff")
-
             return [{"name": name, "score": score} for name, score in summary]

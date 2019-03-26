@@ -82,6 +82,9 @@ class NameDB:
                     for featureID, distance, queryID in threeples]
             )
 
+            # For each query feature, take only the best matched point from each melody,
+            # and add them together. If a melody is perfectly matching, the SUM(matchiness) will
+            # be equal to the number of query features.
             cur.execute("""
                 SELECT name, SUM(matchiness) ct
                 FROM names

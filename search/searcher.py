@@ -91,15 +91,15 @@ def main(argv):
     qFeatures = list(extractAllFeatures(notes, contextLen))
     results = searchIndex.knnQueryBatch(queries=qFeatures, k=k)
 
-    # Process results.
+    # Store information that will be used to summarize results.
     threeples = []
 
     # There are (up to) k results for each of the query features.
     for i in range(0, len(qFeatures)):
         IDs = results[i][0]
-        diffs = results[i][1]
+        distances = results[i][1]
         for j in range(0, len(IDs)):
-            threeples.append((IDs[j], diffs[j], i))
+            threeples.append((IDs[j], distances[j], i))
 
     print(json.dumps(
         nameDB.summarizeHits(threeples)[:10],

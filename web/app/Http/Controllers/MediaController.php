@@ -239,6 +239,17 @@ class MediaController extends Controller
         abort(404);
     }
 
+    public function patch(Request $request, $number)
+    {
+        $this->verifyJWT($request->jwt);
+        $media = Media::findOrFail($number);
+        if (isset($request->shouldIndex)) {
+            $media->shouldIndex = $request->shouldIndex;
+        }
+        $media->save();
+        return Media::find($number);
+    }
+
     public function post(Request $request)
     {
         $this->verifyJWT($request->jwt);

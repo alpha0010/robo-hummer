@@ -28,6 +28,10 @@ def computeFeatures(segment):
     refLen = float(segment[0]["len"])
     for val in segment[1:]:
         features.append(val["freq"] - refFreq)
+        if refLen <= 0:
+            refLen = 1
+        if val["len"] <= 0:
+            val["len"] = 1
         relativeLength = val["len"] / refLen
         # Testing about 26000 media files,
         # 95% of the pitch differences were between -9 and 8 semitones.

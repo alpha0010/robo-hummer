@@ -1,59 +1,82 @@
 @scaleH: 100% / 264;
 @scaleV: 3px;
-.WhiteKey{
-	background-color: white;
-	width: 24 * @scaleH;
-	height: 60 * @scaleV;
+.WhiteKey {
+  background-color: white;
+  width: 24 * @scaleH;
+  height: 60 * @scaleV;
 }
 
 /* different text aligns without messing up the box alignments. */
-.WhiteKey span{
-	position: relative;
-	bottom: -30 * @scaleV;
+.WhiteKey span {
+  position: relative;
+  bottom: -30 * @scaleV;
 }
 
-.BlackKey{
-	background-color: black;
-	color: white;
-	width: 15 * @scaleH;
-	height: 30 * @scaleV;
-	display: inline-block;
-	position: relative;
-	z-index: 10;
+.BlackKey {
+  background-color: black;
+  color: white;
+  width: 15 * @scaleH;
+  height: 30 * @scaleV;
+  display: inline-block;
+  position: relative;
+  z-index: 10;
 }
 /* The mechanism of each key is 14 apart */
-.BlackKey.cs, .BlackKey.fs{
-	margin-left: -9 * @scaleH;
-	margin-right: -6 * @scaleH;
+.BlackKey.cs,
+.BlackKey.fs {
+  margin-left: -9 * @scaleH;
+  margin-right: -6 * @scaleH;
 }
-.BlackKey.gs{
-	margin-left: -7 * @scaleH;
-	/* Made this one narrower so that by weird percent reasons, we don't wrap a key. */
-	margin-right: -9 * @scaleH;
+.BlackKey.gs {
+  margin-left: -7 * @scaleH;
+  /* Made this one narrower so that by weird percent reasons, we don't wrap a key. */
+  margin-right: -9 * @scaleH;
 }
-.BlackKey.ds, .BlackKey.as{
-	margin-left: -5 * @scaleH;
-	margin-right: -10 * @scaleH;
-}
-
-.keyboard{
-	/* Remove those pesky spaces in between a tags */
-	font-size: 0;
+.BlackKey.ds,
+.BlackKey.as {
+  margin-left: -5 * @scaleH;
+  margin-right: -10 * @scaleH;
 }
 
-.keyboard .WhiteKey, .keyboard .BlackKey{
-	font-size: 24px;
-	font-family: monospace;
-	box-sizing: border-box;
-	text-decoration: none;
-	padding: 1%;
-	border: 1px solid black;
-	display: inline-block;
-	text-align: center;
-	line-height: 30 * @scaleV;
+.keyboard {
+  /* Remove those pesky spaces in between a tags */
+  font-size: 0;
+}
+
+.keyboard .WhiteKey,
+.keyboard .BlackKey,
+.keyboard .Backspace {
+  font-size: 24px;
+  font-family: monospace;
+  box-sizing: border-box;
+  text-decoration: none;
+  padding: 1%;
+  border: 1px solid black;
+  display: inline-block;
+  text-align: center;
+  line-height: 30 * @scaleV;
+}
+
+.keyboard .Backspace {
+  background-color: gray;
+  width: 48 * @scaleH;
+  height: 15 * @scaleV;
+  line-height: 15 * @scaleV;
+  display: block;
+  margin-left: auto;
+  color: white;
+  padding: 0;
 }
 
 .keyboard input {
-	width: 100%;
-	height: 100px;
+  width: 100%;
+  height: 100px;
+}
+
+#staveInput div {
+  display: inline-block;
+}
+#staveInput svg {
+  width: 100%;
+  height: auto;
 }

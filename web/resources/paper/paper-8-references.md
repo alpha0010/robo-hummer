@@ -9,4 +9,3 @@ The web framework used for the site was laravel.
 
 For the keyboard frontend, we used MIDI.js for audio feedback and VexFlow for visual
 musical notation feedback.
-

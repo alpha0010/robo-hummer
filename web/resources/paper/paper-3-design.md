@@ -22,12 +22,13 @@ ignore differences in key and tempo.
 
 ![Segments.](note-context.pdf)
 
-| MIDI        |         Length |
-| -----------:| --------------:|
+|        MIDI |         Length |
+| ----------: | -------------: |
 |          72 |            500 |
 | **-1** (71) | **0.75** (375) |
 | **-3** (69) | **0.25** (125) |
-| **-5** (67) | **1.5**  (750) |
+| **-5** (67) |  **1.5** (750) |
+
 Table: Relative values of the first segment.
 
 Resulting feature vector: `< -1, 0.75, -3, 0.25, -5, 1.5 >`

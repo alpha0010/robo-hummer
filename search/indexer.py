@@ -115,10 +115,10 @@ def main(argv):
     sqliteDbName = indexpath + "/file-index-new.sqlite"
 
     nameDB = NameDB(sqliteDbName)
-    searchIndex = nmslib.init()
+    searchIndex = nmslib.init(space='l2')
 
     # TODO: Consider reading stdin beforehand to know many files there will be.
-    bar = ProgressBar(8000)
+    bar = ProgressBar(30000)
     bar.start()
 
     # Each filename is passed into stdin

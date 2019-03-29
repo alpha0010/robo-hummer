@@ -7,15 +7,29 @@ var revealWidth = 960;
 var fontPixelSize;
 
 $(document).ready(function () {
-  // TODO: Switch these automatically
-  switchVerse(1, 'data-v1');
-  switchVerse(2, 'data-v2');
-  switchVerse(3, 'data-v3');
-  switchVerse(4, 'data-v4');
-  alwaysShow('data-vrefrain');
+  $('#openDynamicOptions').click(window.toggleDynamicOptions);
 
   fillDynamicOptions();
-  setDisplay('melody', 'all', false);
+  var p;
+
+  if ((p = urlParam('dp-vall')) !== false) {
+    setDisplay(p, 'all', false);
+  }
+  for (let i = 1; i <= countVerses(); i++) {
+    switchVerse(i, 'data-v' + i);
+    if (urlParam('dp-v' + i) !== false) {
+      setDisplay(urlParam('dp-v' + i), i, false);
+    }
+  }
+  alwaysShow('data-vrefrain');
+
+  if ((p = urlParam('dp-noteHeight')) !== false) {
+    setNoteHeight(parseInt(p));
+  }
+  if ((p = urlParam('dp-fontSize')) !== false) {
+    setFontSize(parseInt(p));
+  }
+
   autosetNotesPerLine();
 
   var audio = document.getElementById('audio');
@@ -25,6 +39,14 @@ $(document).ready(function () {
       this.play();
     }
   };
+
+  $('#dynamicOptions .copyUrl').click(function () {
+    var text = $('#dynamicOptions span.url').text();
+    var input = $('#dynamicOptions input.url')[0];
+    input.value = text;
+    input.select();
+    document.execCommand('copy');
+  });
 });
 
 /**
@@ -48,6 +70,17 @@ function autosetNotesPerLine () {
 }
 
 function setDisplay (type, verse = 'all', doSetupPages = true) {
+  var options = $('.displayOpts')
+    .html()
+    .replace(/&amp;/g, '&');
+  if (verse === 'all') {
+    options = '';
+  }
+  var regex = new RegExp('&dp-v' + verse + '=[^&]*', 'g');
+  options = options.replace(regex, '');
+  options += '&dp-v' + verse + '=' + type;
+  $('.displayOpts').html(options);
+
   if (type === 'lyrics') {
     hideParts(verse);
   } else if (type === 'melody') {
@@ -67,6 +100,11 @@ function setDisplay (type, verse = 'all', doSetupPages = true) {
  * @brief Change the size of the font for the lyrics.
  */
 function setFontSize (s) {
+  s = parseInt(s);
+  if (!Number.isInteger(s) || s < 10 || s > 60) {
+    return;
+  }
+  $('.fontSize').html(s);
   fontPixelSize = undefined;
   $('.dynamic svg g text').each(function () {
     this.setAttribute('font-size', s + 'pt');
@@ -89,6 +127,11 @@ function setNotesPerLine (n) {
  * @brief Change the size of a notes.
  */
 function setNoteHeight (h) {
+  h = parseInt(h);
+  if (!Number.isInteger(h) || h < 3 || h > 40) {
+    return;
+  }
+  $('.noteHeight').html(h);
   $('.dynamic svg rect[data-y]').each(function () {
     var y = parseFloat(this.attributes['data-y']['value']) * h;
     this.setAttribute('y', y);
@@ -404,7 +447,9 @@ function setupPageSlideIsFull (slide) {
       .find('.dynamic svg')
       .attr('height')
   );
-  var canHold = Math.floor(revealHeight / svgHeight);
+  // Subtract a few pixels from revealHeight
+  // so that there's always at least a little space between each line.
+  var canHold = Math.floor((revealHeight - 50) / svgHeight);
   var numberOfChildren = $(slide).find('.dynamic svg').length;
   return numberOfChildren >= canHold;
 }
@@ -421,7 +466,6 @@ function setViewBoxes () {
       .closest('[data-page]')
       .attr('data-page');
     if (sections.length > pageNum && $(sections[pageNum]).attr('width') > 0) {
-      console.log(sections.length);
       x = sections[pageNum].attributes['x']['value'];
       $(this).attr('width', sections[pageNum].attributes['width']['value']);
     } else {
@@ -468,4 +512,12 @@ function squishText (el) {
     $(el).attr('textLength', null);
   }
   el.innerHTML = text;
+}
+
+function urlParam (name) {
+  var results = new RegExp('[?&]' + name + '=([^&#]*)').exec(
+    window.location.search
+  );
+
+  return results !== null ? results[1] || 0 : false;
 }

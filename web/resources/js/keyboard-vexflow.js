@@ -15,8 +15,7 @@ $(document).ready(function () {
  * @brief Make the stave match the state of the csv.
  */
 function updateStave (wholeLength = 2000) {
-  var notes = '';
-  var totalTime = 0;
+  var notes = [];
 
   var ln = {
     1: 'w',
@@ -29,39 +28,57 @@ function updateStave (wholeLength = 2000) {
     0.0625: '16'
   };
 
-  var lines = $('#csv')
-    .text()
-    .split('\n');
-  for (var i = 0; i < lines.length; i++) {
-    var note = lines[i].split(',');
+  var notesPerSection = 8;
+
+  for (let i = 0; i < window.list.length; i++) {
+    let j = parseInt(i / notesPerSection);
+    if (j === i / notesPerSection) {
+      notes.push({ notestring: '', time: 0 });
+    }
+    var note = window.list[i];
     if (MIDI.noteToKey[note[0]] !== undefined) {
       var gamut = MIDI.noteToKey[note[0]];
       var time = getLength(parseInt(note[1]), wholeLength);
       var length = ln[time];
-      notes += gamut + '/' + length + ',';
-      totalTime += time;
+
+      notes[j].notestring += gamut + '/' + length + ',';
+      notes[j].time += time;
     }
   }
-
   $('#staveInput').text('');
 
-  var vf = new Vex.Flow.Factory({
-    renderer: { elementId: 'staveInput', width: 500, height: 200 }
-  });
+  for (let i = 0; i < notes.length; i++) {
+    let $div = $("<div id='staveInput" + i + "'>");
+    $('#staveInput').append($div);
 
-  var score = vf.EasyScore();
-  var system = vf.System();
+    var vf = new Vex.Flow.Factory({
+      renderer: { elementId: 'staveInput' + i, width: 500, height: 125 }
+    });
 
-  system
-    .addStave({
-      voices: [
-        score.voice(score.notes(notes, { stem: 'up' }), {
-          time: totalTime * 16 + '/16'
-        })
-      ]
-    })
-    .addClef('treble');
-  vf.draw();
+    var score = vf.EasyScore();
+    var system = vf.System();
+
+    system
+      .addStave({
+        voices: [
+          score.voice(score.notes(notes[i].notestring, { stem: 'up' }), {
+            time: notes[i].time * 16 + '/16'
+          })
+        ]
+      })
+      .addClef('treble');
+    vf.draw();
+  }
+  // Trim off the treble clef from all but the first stave.
+  var width = 400;
+  $('#staveInput svg')
+    .attr('viewBox', '50 25 450 100')
+    .attr('width', width * 0.9)
+    .attr('height', width * 0.25);
+  $('#staveInput div:first-of-type svg')
+    .attr('viewBox', '0 25 500 100')
+    .attr('width', width)
+    .attr('height', width * 0.25);
 }
 
 /**

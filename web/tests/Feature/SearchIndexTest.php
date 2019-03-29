@@ -61,6 +61,7 @@ class SearchIndexTest extends TestCase
         $response->assertOk();
 
         // Make sure that "Holy, Holy, Holy!" is the first result.
+        // TODO: Assert that the first entry is a 100% match.
         $response->assertJson([
             ['robohummer_media_id' => 2],
             ['robohummer_media_id' => 1],
@@ -87,11 +88,10 @@ class SearchIndexTest extends TestCase
         $response = $this->call('POST', '/api/uploadCSV', [], [], [], [], $csv);
         $response->assertOk();
 
-        // Currently, because of the small size of the index,
-        // the longer song (Holy, Holy, Holy) always scores higher.
-        /*$response->assertJson([
+        // TODO: Assert that the first entry is a 100% match.
+        $response->assertJson([
             ['robohummer_media_id' => 1],
             ['robohummer_media_id' => 2],
-        ]);*/
+        ]);
     }
 }

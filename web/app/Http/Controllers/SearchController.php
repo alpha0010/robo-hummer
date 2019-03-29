@@ -90,7 +90,7 @@ class SearchController extends Controller
             $parts = explode("/", $result->name);
             array_pop($parts);
             $id = end($parts);
-            $result->robohummer_media_id = $id;
+            $result->robohummer_media_id = (int)$id;
             $result->path = "/media/$id/harmony.mp3";
         }
         return $results;

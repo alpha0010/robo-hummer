@@ -12,6 +12,11 @@
     <script src="{{ asset('js/slides.js') }}" defer></script>
     <link href="{{ asset('css/reveal.css') }}" rel="stylesheet">
     <link href="{{ asset('css/dynamic.css') }}" rel="stylesheet">
+    <style>
+        #dynamicOptions:not(.visible) {
+            opacity: 0;
+        }
+    </style>
 </head>
 <body>
     <div class="reveal">
@@ -30,11 +35,12 @@
                         <br/>
                     @endif
                     <b>Dynamic Options</b><br/>
+                    <span class='url'>{{Request::url()}}?dp-noteHeight=<i class='noteHeight'></i>&dp-fontSize=<i class='fontSize'></i><i class='displayOpts'></i></span>
+                    <input type='text' class='url'><button class='copyUrl'>Copy</button>
                     <div style="background-color: gray;">
                         <b>Note Height: </b>
-                        <input type="range" value="20" min="1" max="20" step="1"
-                            onchange='window.setNoteHeight(this.value);
-                                window.jQuery(".noteHeight").html(this.value);'>
+                        <input type="range" value="20" min="3" max="30" step="1"
+                            onchange='window.setNoteHeight(this.value);'>
                         <i class='noteHeight'></i>
                         <br/>
                         <b>Notes Per Line: </b>
@@ -45,13 +51,13 @@
                         <br/>
                         <b>Font Size: </b>
                         <input type="range" value="20" min="10" max="50" step="1"
-                            onchange='window.setFontSize(this.value);
-                                window.jQuery(".fontSize").html(this.value);'>
+                            onchange='window.setFontSize(this.value);'>
                         <i class='fontSize'></i>
                     </div>
                 </div>
             </div>
         </div>
+        <a href='#' id='openDynamicOptions'>&#x2699;</a>
         <div class="slides">
             @foreach ($slides as $key => $slide)
                 @if (isset($slide['name']))

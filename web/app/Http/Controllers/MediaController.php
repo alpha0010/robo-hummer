@@ -18,6 +18,10 @@ use Symfony\Component\Process\Process;
 
 class MediaController extends Controller
 {
+    public function getInfo(string $number)
+    {
+        return Media::findOrFail($number);
+    }
     public function get(string $number, string $type)
     {
         // Allow negative numbers to get you to newer media entries.
@@ -233,6 +237,17 @@ class MediaController extends Controller
             return;
         }
         abort(404);
+    }
+
+    public function patch(Request $request, $number)
+    {
+        $this->verifyJWT($request->jwt);
+        $media = Media::findOrFail($number);
+        if (isset($request->shouldIndex)) {
+            $media->shouldIndex = $request->shouldIndex;
+        }
+        $media->save();
+        return Media::find($number);
     }
 
     public function post(Request $request)

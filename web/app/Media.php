@@ -16,7 +16,7 @@ class Media extends Model
      * @var array
      */
     protected $fillable = [
-        "originalFile", "textID", "tuneID",
+        "originalFile", "shouldIndex", "textID", "tuneID",
     ];
 
     /**

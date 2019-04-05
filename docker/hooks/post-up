@@ -5,12 +5,14 @@ dart exec web composer install --no-suggest \
 	&& dart exec - ./artisan migrate                    \
 	&& dart x - chgrp python -R ../melodyindex \
 	&& dart x - chmod g+w    -R ../melodyindex \
-	&& ( [[ $IS_PRODUCTION ]] || (                      \
-		# Run these commands in development only.       \
+	&& ( [[ $IS_PRODUCTION ]] || (
+		# Run these commands in development only.
 		dart exec - chgrp www-data -R storage bootstrap \
 		&& dart exec - chmod g+w   -R storage bootstrap \
-		&& dart x - chown www-data -R /srv/robo-media-dart \
-		&& dart +artisan media:delete untracked         \
+        && dart exec - chmod a+w   /srv/robo-media-dart \
+        && echo "Avoid collisions when overlay files are more up to date than database." \
+        && INC=$(dart +mysql -NBe "SELECT MAX(id) + 100 from media;") \
+        && dart +mysql -e "ALTER TABLE media AUTO_INCREMENT = $INC" \
 	) )                                                 \
 	&& dart x - npm install --unsafe-perm               \
 	&& dart x - npm run dev                             \

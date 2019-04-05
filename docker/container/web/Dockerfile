@@ -22,6 +22,10 @@ RUN tar -xf /tmp/node.tar.xz -C /var/lib \
 RUN curl http://lilypond.org/download/binaries/linux-64/lilypond-2.18.2-1.linux-64.sh > lilypondinstall.sh \
     && sh lilypondinstall.sh
 
+# NFS-mounted files created inside the container switch to nobody:nogroup when the site is darted up again.
+# Add www-data to nogroup so it has write access to all media folders.
+RUN usermod -G nogroup www-data
+
 ENV PATH="${PATH}:/var/lib/nodejs/bin"
 
 FROM web AS cron

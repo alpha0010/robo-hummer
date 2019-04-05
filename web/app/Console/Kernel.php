@@ -25,7 +25,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command(CacheMedia::class, ['--type' => '6-tuples.json'])
+        $schedule->command(CacheMedia::class, ['--type' => '6.tuples.json'])
             ->withoutOverlapping()
             ->daily()
             ->appendOutputTo('/var/www/web/storage/logs/cacheTuples.log');

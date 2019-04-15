@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Console\Commands\CacheMedia;
+use App\Console\Commands\IndexListMelody;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -29,7 +30,11 @@ class Kernel extends ConsoleKernel
             ->withoutOverlapping()
             ->daily()
             ->appendOutputTo('/var/www/web/storage/logs/cacheTuples.log');
-        $schedule->exec("find /srv/robo-media-dart -perm /o+r -name 6.tuples.json "
+        $schedule->command(IndexListMelody::class)
+            ->withoutOverlapping()
+            ->daily()
+            ->appendOutputTo('/var/www/web/storage/logs/reindexMelody.log');
+        $schedule->exec("cat /var/www/web/storage/app/files-to-index.txt "
             . "| sudo -u python ../tools/indexer.py /var/www/melodyindex")
             ->withoutOverlapping()
             ->daily()

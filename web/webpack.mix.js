@@ -13,7 +13,7 @@ let mix = require('laravel-mix');
 
 mix.js('resources/js/app.js', 'public/js')
    .js('resources/js/welcome.js', 'public/js')
-   .js('resources/js/keyboard.js', 'public/js')
+   .js('resources/js/keyboard-usage.js', 'public/js')
    .js([
         'resources/js/slides.js',
         'resources/js/dynamic.js',

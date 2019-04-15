@@ -74,7 +74,8 @@ class SearchController extends Controller
                 "stderr" => $process->getErrorOutput(),
             ];
         }
-
+        // TODO: Allow searches to be made from any site.
+        // header("Access-Control-Allow-Origin: '*'", true, 200);
         $results = json_decode($process->getOutput());
         return $this->addData($results);
     }
@@ -91,7 +92,7 @@ class SearchController extends Controller
             array_pop($parts);
             $id = end($parts);
             $result->robohummer_media_id = (int)$id;
-            $result->path = "/media/$id/harmony.mp3";
+            $result->path = route("get media", ['number' => $id, 'type' => "harmony.mp3"]);
         }
         return $results;
     }
